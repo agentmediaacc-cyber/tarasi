@@ -1,0 +1,42 @@
+[
+  {
+    "timestamp": "2026-05-09T10:00:00",
+    "user": "Admin",
+    "action": "Logged in"
+  },
+  {
+    "timestamp": "2026-05-09T18:41:17.886623",
+    "user": "Admin",
+    "action": "Approved booking for John Doe"
+  },
+  {
+    "timestamp": "2026-05-09T18:41:52.594230",
+    "user": "Admin",
+    "action": "Generated invoice TAR-202605091841 for hhd"
+  },
+  {
+    "timestamp": "2026-05-09T18:44:13.309796",
+    "user": "Admin",
+    "action": "Generated invoice TAR-202605091844 for magnu"
+  },
+  {
+    "timestamp": "2026-05-09T18:44:14.644473",
+    "user": "Admin",
+    "action": "Generated invoice TAR-202605091844 for magnu"
+  },
+  {
+    "timestamp": "2026-05-09T18:44:15.348818",
+    "user": "Admin",
+    "action": "Generated invoice TAR-202605091844 for magnu"
+  },
+  {
+    "timestamp": "2026-05-09T18:44:30.776688",
+    "user": "Admin",
+    "action": "Generated invoice TAR-202605091844 for magnu"
+  },
+  {
+    "timestamp": "2026-05-09T18:46:36.232844",
+    "user": "Admin",
+    "action": "Downloaded system report"
+  }
+]

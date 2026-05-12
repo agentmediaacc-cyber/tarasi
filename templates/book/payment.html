@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Payment for {{ booking.reference }} | Tarasi{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="hero-card hero-spotlight">
+    <span class="eyebrow">Trip payment</span>
+    <h1>Payment for {{ booking.reference }}</h1>
+    <p>{{ booking.pickup }} to {{ booking.dropoff }} on {{ booking.date }}</p>
+    <div class="price-display">
+      <strong>Amount due: N${{ booking.amount }}</strong>
+    </div>
+    <span class="status-badge" data-status="{{ booking.payment_status|lower }}">{{ booking.payment_status }}</span>
+  </div>
+
+  <div class="grid grid-2">
+    <article class="panel">
+      <h3>Select payment method</h3>
+      <form method="post" enctype="multipart/form-data" class="field-grid">
+        <div class="field">
+          <label for="payment_method">Method</label>
+          <select id="payment_method" name="payment_method" required>
+            <option value="Cash" {% if booking.payment_method == 'Cash' %}selected{% endif %}>Cash to driver</option>
+            <option value="EFT / Bank transfer" {% if booking.payment_method == 'EFT / Bank transfer' %}selected{% endif %}>EFT / Bank transfer</option>
+            <option value="Card" disabled>Online Card (Coming soon)</option>
+            <option value="Wallet" disabled>Tarasi Wallet (Coming soon)</option>
+          </select>
+        </div>
+
+        <div id="eft-instructions" class="callout" {% if booking.payment_method != 'EFT / Bank transfer' %}hidden{% endif %}>
+          <strong>Bank Details (EFT)</strong>
+          <p>Bank: First National Bank (FNB)<br>Account: 62234567890<br>Branch: 280172<br>Reference: {{ booking.reference }}</p>
+          <div class="field">
+            <label for="proof_of_payment">Upload Proof of Payment (POP)</label>
+            <input type="file" id="proof_of_payment" name="proof_of_payment" accept=".png,.jpg,.jpeg,.pdf">
+            <p class="helper-text">Formats: PNG, JPG, PDF. Max 5MB.</p>
+          </div>
+          {% if booking.proof_of_payment %}
+          <p class="status-ready">✓ Proof of payment uploaded</p>
+          {% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Confirm payment selection</button>
+      </form>
+    </article>
+
+    <article class="panel">
+      <h3>Billing options</h3>
+      <div class="cta-row vertical">
+        <a class="btn btn-secondary btn-block" href="{{ url_for('booking.booking_invoice', reference=booking.reference) }}">View Invoice</a>
+        {% if booking.payment_status == 'Paid' %}
+        <a class="btn btn-secondary btn-block" href="{{ url_for('booking.booking_receipt', reference=booking.reference) }}">View Receipt</a>
+        {% endif %}
+        <a class="btn btn-secondary btn-block" href="{{ url_for('support.support_page') }}">Billing Support</a>
+      </div>
+    </article>
+  </div>
+</section>
+
+<script>
+  document.getElementById('payment_method').addEventListener('change', function() {
+    document.getElementById('eft-instructions').hidden = this.value !== 'EFT / Bank transfer';
+  });
+</script>
+{% endblock %}

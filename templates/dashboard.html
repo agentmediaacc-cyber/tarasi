@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Dashboard | Tarasi{% endblock %}
+{% block content %}
+<section class="hero-grid">
+  <article class="hero-card">
+    <span class="eyebrow">Dashboard</span>
+    <h1>Welcome back {{ user.full_name }}</h1>
+    <p>{{ user.account_type }} account.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="{{ url_for('booking.book_index') }}">Book ride</a>
+      <a class="btn btn-secondary" href="{{ url_for('track.track_index') }}">Track booking</a>
+      <a class="btn btn-secondary" href="{{ url_for('profile.profile') }}">Open profile</a>
+    </div>
+  </article>
+  <aside class="panel">
+    <h3>Database status</h3>
+    {% if db_status.connected %}
+    <p>Neon connected.</p>
+    {% else %}
+    <div class="empty-state">{{ db_status.error }}</div>
+    {% endif %}
+  </aside>
+</section>
+{% endblock %}

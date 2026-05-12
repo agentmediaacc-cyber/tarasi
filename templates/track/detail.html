@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+{% block title %}Track {{ reference }} | Tarasi{% endblock %}
+{% block head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/tarasi_maps.css') }}">
+{% endblock %}
+{% block content %}
+<section class="section">
+  {% if not_found %}
+  <div class="empty-state">Booking {{ reference }} was not found. Please check the reference and try again.</div>
+  {% else %}
+  <div class="hero-grid">
+    <article class="hero-card track-hero-card">
+      <span class="eyebrow">{{ 'Live tracking' if tracking.map_preview.mode == 'live' else 'Route preview' }}</span>
+      <h1>{{ booking.reference }}</h1>
+      <p>{{ booking.full_name }} • {{ booking.route_summary }}</p>
+      <span class="status-chip status-badge" data-status="{{ booking.status|lower|replace(' ', '-') }}" data-booking-status-badge>{{ booking.status }}</span>
+      {% if tracking.map_preview.eta %}
+      <div class="track-highlight-row">
+        <div class="track-highlight-card">
+          <strong>ETA</strong>
+          <span data-live-eta>{{ tracking.map_preview.eta }}</span>
+        </div>
+        <div class="track-highlight-card">
+          <strong>Tracking mode</strong>
+          <span>{{ 'Driver live' if tracking.map_preview.mode == 'live' else 'Preview only' }}</span>
+        </div>
+      </div>
+      {% endif %}
+      <div class="track-highlight-row">
+        <div class="track-driver-summary">
+          <div class="driver-avatar-mini">
+            {% if tracking.driver_card.photo %}
+            <img src="{{ tracking.driver_card.photo }}" alt="{{ tracking.driver_card.name }}">
+            {% else %}
+            <span>👤</span>
+            {% endif %}
+          </div>
+          <div class="track-highlight-card">
+            <strong>Driver</strong>
+            <span data-live-driver-name>{{ tracking.driver_card.name }}</span>
+          </div>
+        </div>
+        <div class="track-highlight-card">
+          <strong>Vehicle</strong>
+          <span data-live-vehicle>{{ tracking.driver_card.vehicle }}</span>
+        </div>
+      </div>
+      {% if booking.cancel_request_note %}
+      <p>Cancellation request: {{ booking.cancel_request_note }}</p>
+      {% endif %}
+      {% if booking.request_change_note %}
+      <p>Change request: {{ booking.request_change_note }}</p>
+      {% endif %}
+      <p class="track-helper-copy">{{ tracking.map_preview.message }}</p>
+      <div class="cta-row">
+        {% if tracking.driver_card.phone %}
+        <a class="btn btn-secondary" href="tel:{{ tracking.driver_card.phone }}">Call driver</a>
+        {% endif %}
+        <button class="btn btn-secondary" type="button" data-share-trip="{{ booking.reference }}">Share trip</button>
+        <a class="btn btn-primary" href="{{ url_for('support.support_page') }}">Emergency support</a>
+      </div>
+    </article>
+    <aside class="panel">
+      <div class="route-map-shell" data-map-root data-map-config='{{ tracking.map_preview|tojson|safe }}'>
+        <div class="map-empty-state">Loading trip preview…</div>
+      </div>
+    </aside>
+  </div>
+
+  <div class="grid tracking-detail-grid">
+    <article class="panel">
+      <h3>Status timeline</h3>
+      <div class="tracking-timeline">
+        {% for item in tracking.timeline %}
+        <div class="tracking-step tracking-step-{{ item.state }}">
+          <span class="timeline-dot" aria-hidden="true"></span>
+          <div>
+            <strong>{{ item.label }}</strong>
+            <p>{{ 'Completed' if item.state == 'complete' else ('Current status' if item.state == 'active' else 'Waiting') }}</p>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </article>
+    <article class="panel">
+      <h3>Trip summary</h3>
+      <ul class="list-clean">
+        <li><strong>Pickup:</strong> {{ booking.pickup or booking.pickup_location }}</li>
+        <li><strong>Drop-off:</strong> {{ booking.dropoff or booking.dropoff_location }}</li>
+        <li><strong>Vehicle:</strong> {{ booking.preferred_vehicle or booking.car or 'Assigned closer to departure' }}</li>
+        <li><strong>Date:</strong> {{ booking.date or 'TBC' }} {{ booking.time or '' }}</li>
+        <li><strong>Driver phone:</strong> {{ tracking.driver_card.phone or 'Shared after driver assignment' }}</li>
+        <li><strong>Last location update:</strong> <span data-live-last-update>{{ tracking.driver_card.last_location_at or 'Not shared yet' }}</span></li>
+        {% if tracking.driver_card.booking_pin %}
+        <li><strong>Ride PIN:</strong> {{ tracking.driver_card.booking_pin }}</li>
+        {% endif %}
+      </ul>
+    </article>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}
+{% block scripts %}
+  <script src="{{ url_for('static', filename='js/tarasi_maps.js') }}" defer></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const reference = "{{ booking.reference }}";
+      if (!reference) return;
+
+      const badge = document.querySelector("[data-booking-status-badge]");
+      const etaEl = document.querySelector("[data-live-eta]");
+      const updateEl = document.querySelector("[data-live-last-update]");
+
+      TarasiLive.init({
+        interval: 30000,
+        endpoints: [`/api/bookings/${reference}`],
+        onUpdate: (results) => {
+          const booking = results[0]?.data;
+          if (!booking) return;
+
+          // Update Status Badge
+          if (badge && booking.status) {
+            TarasiLive.updateStatusBadge(badge, booking.status);
+          }
+
+          // Update ETA
+          if (etaEl && booking.eta) {
+            etaEl.textContent = booking.eta;
+          }
+
+          // Update Last Update Time
+          if (updateEl && booking.last_location_at) {
+            updateEl.textContent = booking.last_location_at;
+          }
+
+          // Update Map Marker (handled by tarasi_maps.js if it exposes an update method)
+          if (window.TarasiMap && booking.lat && booking.lng) {
+            window.TarasiMap.updateDriverMarker(booking.lat, booking.lng);
+          }
+        }
+      });
+    });
+  </script>
+{% endblock %}

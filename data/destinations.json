@@ -1,0 +1,22 @@
+[
+  {
+    "name": "Windhoek Airport",
+    "category": "Airport Transfer",
+    "description": "Fast pickup and drop-off between Hosea Kutako Airport and Windhoek."
+  },
+  {
+    "name": "Swakopmund",
+    "category": "Coastal Trip",
+    "description": "Comfortable shuttle routes to Namibia’s adventure coast."
+  },
+  {
+    "name": "Etosha National Park",
+    "category": "Safari Tour",
+    "description": "Private and group transfers to lodges and safari destinations."
+  },
+  {
+    "name": "Sossusvlei",
+    "category": "Desert Tour",
+    "description": "Premium desert transfers for tourists and photographers."
+  }
+]

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}{{ tour.title }} | Tarasi{% endblock %}
+{% block content %}
+<section class="hero-grid">
+  <article class="hero-card tour-detail-hero">
+    <span class="eyebrow">Tour</span>
+    <h1>{{ tour.title }}</h1>
+    <p>{{ tour.subtitle }}</p>
+    <div class="meta">{{ tour.meta }}</div>
+    <div class="cta-row">
+      <a class="btn btn-primary booking-launch-link" href="{{ url_for('booking.book_form', booking_type='tourist') }}">Book tourist package</a>
+      <a class="btn btn-secondary" href="{{ url_for('tour.tours_page') }}">Back to tours</a>
+    </div>
+  </article>
+  <aside class="panel">
+    <h3>Tour overview</h3>
+    <p>{{ tour.description or "Tour details will appear here as records are expanded." }}</p>
+  </aside>
+</section>
+{% endblock %}

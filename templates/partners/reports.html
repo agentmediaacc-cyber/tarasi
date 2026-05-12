@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="partner-shell single">
+  <div class="partner-form-card">
+    <p class="eyebrow">Reports</p>
+    <h1>Daily, weekly and monthly reports</h1>
+    <div class="partner-stats">
+      <div><strong>{{ report.daily_bookings }}</strong><span>Daily</span></div>
+      <div><strong>{{ report.weekly_bookings }}</strong><span>Weekly</span></div>
+      <div><strong>{{ report.monthly_bookings }}</strong><span>Monthly</span></div>
+      <div><strong>N${{ report.revenue }}</strong><span>Revenue</span></div>
+    </div>
+    <div class="partner-card wide">
+      <h2>Report rows</h2>
+      {% for b in bookings %}
+      <div class="partner-row">
+        <strong>{{ b.booking_id }}</strong><span>{{ b.date }}</span><span>{{ b.amount }}</span><em>{{ b.status }}</em>
+      </div>
+      {% else %}<p>No report data yet.</p>{% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

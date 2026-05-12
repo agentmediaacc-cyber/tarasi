@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}{{ booking_meta.title }} | Tarasi{% endblock %}
+{% block head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/tarasi_maps.css') }}">
+{% endblock %}
+{% block content %}
+<section class="hero-grid">
+  <article class="hero-card booking-hero booking-hero-{{ booking_type }}">
+    <span class="eyebrow">{{ booking_meta.route_type }}</span>
+    <h1>{{ booking_meta.title }}</h1>
+    <p>{{ booking_meta.tagline }}</p>
+    <div class="route-board-grid compact-route-board">
+      {% for route in routes %}
+      <button
+        class="card booking-route-suggestion"
+        type="button"
+        data-route-suggestion
+        data-pickup="{{ route.pickup }}"
+        data-dropoff="{{ route.dropoff }}"
+        aria-label="Use route {{ route.route }}"
+      >
+        <div class="service-card-top">
+          <span class="card-tag">{{ route.route_type }}</span>
+          <span class="status-chip">{{ route.route_badge }}</span>
+        </div>
+        <h3>{{ route.route }}</h3>
+        <div class="route-spec-row">
+          {% if route.distance_label %}<span>{{ route.distance_label }}</span>{% endif %}
+          {% if route.duration_label %}<span>{{ route.duration_label }}</span>{% endif %}
+          {% if route.vehicle_type %}<span>{{ route.vehicle_type }}</span>{% endif %}
+        </div>
+        <div class="price">{{ route.price_label }}</div>
+      </button>
+      {% else %}
+      <div class="empty-state">No route suggestions are available yet.</div>
+      {% endfor %}
+    </div>
+  </article>
+  <aside class="panel">
+    <h3>{{ booking_meta.cta }}</h3>
+    <div
+      class="booking-map-helper"
+      data-booking-helper
+      data-routes='{{ all_routes|tojson|safe }}'
+      data-towns='{{ namibia_towns|tojson|safe }}'
+    >
+      <div class="helper-block">
+        <div class="helper-head">
+          <strong>Pickup and route helper</strong>
+          <span class="card-tag">Map preview</span>
+        </div>
+        <p>Pick a popular route, use a saved place, or enter known Namibia towns to preview the journey before you submit.</p>
+        <div class="suggestion-chip-row">
+          {% for place in saved_places %}
+          <button type="button" class="place-chip" data-fill-pickup="{{ place.address }}">{{ place.label }} · {{ place.address }}</button>
+          {% endfor %}
+        </div>
+        <div class="suggestion-chip-row">
+          {% for town in namibia_towns[:8] %}
+          <button type="button" class="place-chip" data-fill-town="{{ town.label }}">{{ town.label }}</button>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="helper-block">
+        <div class="route-map-shell compact" data-map-root data-booking-map data-map-config='{{ initial_route_preview.preview|tojson|safe }}'>
+          <div class="map-empty-state">Select pickup and drop-off points to preview the route.</div>
+        </div>
+        <div class="booking-preview-copy" data-booking-preview-copy>
+          <strong data-preview-route>Route preview will appear here.</strong>
+          <p data-preview-meta>Popular Namibia routes update the map instantly when both locations are known.</p>
+        </div>
+      </div>
+      <div class="helper-block">
+        <strong>Popular routes</strong>
+        <div class="popular-route-list">
+          {% for route in popular_routes %}
+          <button type="button" class="popular-route-row" data-fill-route="{{ route.pickup }}|{{ route.dropoff }}">
+            <span>{{ route.route }}</span>
+            <small>{{ route.price_label }}</small>
+          </button>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    <form method="post" class="field-grid">
+      {% for field in form_fields %}
+      <div class="field">
+        <label for="{{ field.name }}">{{ field.label }}</label>
+        {% if field.type == "textarea" %}
+        <textarea id="{{ field.name }}" name="{{ field.name }}" {% if field.required %}required{% endif %}></textarea>
+        {% elif field.type == "select" %}
+        <select id="{{ field.name }}" name="{{ field.name }}" {% if field.required %}required{% endif %}>
+          <option value="">Select {{ field.label|lower }}</option>
+          {% for option in field.options %}
+          <option value="{{ option }}">{{ option }}</option>
+          {% endfor %}
+        </select>
+        {% else %}
+        <input id="{{ field.name }}" name="{{ field.name }}" type="{{ field.type }}" {% if field.placeholder %}placeholder="{{ field.placeholder }}"{% endif %} {% if field.min is defined %}min="{{ field.min }}"{% endif %} {% if field.required %}required{% endif %}>
+        {% endif %}
+      </div>
+      {% endfor %}
+      <button class="btn btn-primary btn-block" type="submit">Submit booking</button>
+    </form>
+  </aside>
+</section>
+{% endblock %}
+{% block scripts %}
+  <script src="{{ url_for('static', filename='js/tarasi_maps.js') }}" defer></script>
+{% endblock %}

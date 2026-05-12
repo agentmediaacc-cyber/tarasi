@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Booking Confirmation | Tarasi{% endblock %}
+{% block content %}
+<section class="section">
+  {% if not_found %}
+  <div class="empty-state">Booking reference not found.</div>
+  {% else %}
+  <div class="hero-grid">
+    <article class="hero-card">
+      <span class="eyebrow">Booking received</span>
+      <h1>{{ booking.reference }}</h1>
+      <p>{{ booking.full_name }} • {{ booking.route_summary }} • {{ booking.date }} at {{ booking.time }}</p>
+      <div class="meta">{{ booking.storage_source }}</div>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="{{ url_for('track.track_detail', reference=booking.reference) }}">Track booking</a>
+        <a class="btn btn-secondary" href="{{ url_for('profile.account_booking_detail', reference=booking.reference) }}">Account view</a>
+        <a class="btn btn-secondary" href="{{ url_for('support.support_page') }}">Contact support</a>
+      </div>
+    </article>
+    <aside class="panel">
+      <h3>Status timeline</h3>
+      <ul class="list-clean">
+        {% for status in statuses %}
+        <li>{{ status }}</li>
+        {% endfor %}
+      </ul>
+    </aside>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

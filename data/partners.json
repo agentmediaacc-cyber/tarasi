@@ -1,0 +1,20 @@
+[
+  {
+    "name": "Etosha Shuttle Partner",
+    "type": "Tour Operator",
+    "town": "Windhoek",
+    "status": "Pending"
+  },
+  {
+    "name": "Coastal Luxury Transfers",
+    "type": "Private Cars",
+    "town": "Swakopmund",
+    "status": "Approved"
+  },
+  {
+    "name": "School Route Driver",
+    "type": "School Transport",
+    "town": "Windhoek",
+    "status": "Pending"
+  }
+]

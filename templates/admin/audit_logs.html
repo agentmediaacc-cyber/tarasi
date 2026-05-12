@@ -1,0 +1,33 @@
+{% extends "admin/base.html" %}
+{% block title %}Audit Logs | Tarasi{% endblock %}
+{% block admin_page %}
+<section class="admin-subhero">
+  <div>
+    <span class="admin-kicker">Audit logs</span>
+    <h1>Platform audit events and admin user visibility</h1>
+  </div>
+</section>
+
+<section class="admin-grid-2">
+  <article class="admin-panel">
+    <div class="admin-panel-head"><div><span class="admin-kicker">Audit events</span><h2>Recent log entries</h2></div></div>
+    <div class="admin-condensed-list">
+      {% for row in audit_logs %}
+      <span>{{ row.timestamp }} · {{ row.user }} · {{ row.action }}</span>
+      {% else %}
+      <div class="admin-empty">No real audit log rows are available.</div>
+      {% endfor %}
+    </div>
+  </article>
+  <article id="admin-users" class="admin-panel">
+    <div class="admin-panel-head"><div><span class="admin-kicker">Admin users / roles</span><h2>Admin access roster</h2></div></div>
+    <div class="admin-condensed-list">
+      {% for user in admin_users %}
+      <span>{{ user.email or user.full_name or "Admin user" }} · {{ user.role or "Role unavailable" }}</span>
+      {% else %}
+      <div class="admin-empty">No real admin-user rows are available.</div>
+      {% endfor %}
+    </div>
+  </article>
+</section>
+{% endblock %}

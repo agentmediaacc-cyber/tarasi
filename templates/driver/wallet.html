@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="driver-command single">
+  <div class="driver-form-card">
+    <p class="eyebrow">Driver wallet</p>
+    <h1>{{ driver.balance }}</h1>
+    <p>Trip earnings, payouts and pending balances will show here.</p>
+
+    <div class="driver-stats">
+      <div><strong>{{ trips|length }}</strong><span>Trips</span></div>
+      <div><strong>{{ driver.completed_trips }}</strong><span>Completed</span></div>
+      <div><strong>{{ driver.cancelled_trips }}</strong><span>Cancelled</span></div>
+      <div><strong>{{ driver.rating }}</strong><span>Rating</span></div>
+    </div>
+
+    <div class="driver-card wide">
+      <h2>Payout notes</h2>
+      <p>Admin can later connect bank details, payout approvals, commission, invoices and driver statements here.</p>
+    </div>
+  </div>
+</section>
+{% endblock %}

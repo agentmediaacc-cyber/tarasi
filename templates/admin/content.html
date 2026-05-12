@@ -1,0 +1,53 @@
+{% extends "admin/base.html" %}
+{% block title %}Content | Tarasi{% endblock %}
+{% block admin_page %}
+<section class="admin-subhero">
+  <div>
+    <span class="admin-kicker">Content / homepage</span>
+    <h1>Homepage source collections and notification readiness</h1>
+  </div>
+</section>
+
+<section class="admin-grid-2">
+  <article class="admin-panel">
+    <div class="admin-panel-head"><div><span class="admin-kicker">Routes content</span><h2>Homepage route sources</h2></div></div>
+    <div class="admin-condensed-list">
+      {% for route in routes %}
+      <span>{{ route.route_label }} · {{ route.base_price or "Unavailable" }}</span>
+      {% else %}
+      <div class="admin-empty">No real route content rows are available.</div>
+      {% endfor %}
+    </div>
+  </article>
+  <article class="admin-panel">
+    <div class="admin-panel-head"><div><span class="admin-kicker">Fleet content</span><h2>Homepage fleet sources</h2></div></div>
+    <div class="admin-condensed-list">
+      {% for vehicle in fleet %}
+      <span>{{ vehicle.name }} · {{ vehicle.vehicle_type }}</span>
+      {% else %}
+      <div class="admin-empty">No real fleet content rows are available.</div>
+      {% endfor %}
+    </div>
+  </article>
+  <article class="admin-panel">
+    <div class="admin-panel-head"><div><span class="admin-kicker">Tours content</span><h2>Homepage tour sources</h2></div></div>
+    <div class="admin-condensed-list">
+      {% for tour in tours %}
+      <span>{{ tour.title }} · {{ tour.price or "Unavailable" }}</span>
+      {% else %}
+      <div class="admin-empty">No real tour content rows are available.</div>
+      {% endfor %}
+    </div>
+  </article>
+  <article id="notifications" class="admin-panel">
+    <div class="admin-panel-head"><div><span class="admin-kicker">Notifications</span><h2>Admin notification feed</h2></div></div>
+    <div class="admin-condensed-list">
+      {% for note in notifications %}
+      <span>{{ note.title or note.message or "Notification row" }}</span>
+      {% else %}
+      <div class="admin-empty">No real notification rows are available.</div>
+      {% endfor %}
+    </div>
+  </article>
+</section>
+{% endblock %}

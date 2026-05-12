@@ -1,0 +1,141 @@
+[
+  {
+    "slug": "sossusvlei-desert-experience",
+    "title": "Sossusvlei Desert Experience",
+    "hero": "Sunrise dunes, lodge pickups and premium desert transfers",
+    "price": "N$4,900",
+    "duration": "2 days",
+    "pickup_locations": [
+      "Windhoek",
+      "Airport",
+      "Sossusvlei lodges"
+    ],
+    "itinerary": [
+      "Windhoek pickup",
+      "Desert route transfer",
+      "Dune sunrise coordination",
+      "Sesriem return"
+    ],
+    "included": [
+      "Transport",
+      "Driver coordination",
+      "Water"
+    ],
+    "summary": "Premium desert route transfer for travellers and lodges."
+  },
+  {
+    "slug": "etosha-safari-shuttle",
+    "title": "Etosha Safari Shuttle",
+    "hero": "Safari-focused road transfer for couples, families and groups",
+    "price": "N$5,600",
+    "duration": "2-3 days",
+    "pickup_locations": [
+      "Windhoek",
+      "Etosha gateway lodges"
+    ],
+    "itinerary": [
+      "Pickup",
+      "Northbound route",
+      "Safari stopovers",
+      "Lodge drop-off"
+    ],
+    "included": [
+      "Transport",
+      "Cooling water",
+      "Route planning"
+    ],
+    "summary": "Comfort shuttle service into Etosha and surrounding stays."
+  },
+  {
+    "slug": "swakopmund-coastal-adventure",
+    "title": "Swakopmund Coastal Adventure",
+    "hero": "Ocean roads, dune scenery and premium coastal mobility",
+    "price": "N$3,850",
+    "duration": "Full day",
+    "pickup_locations": [
+      "Windhoek",
+      "Swakopmund hotels"
+    ],
+    "itinerary": [
+      "Departure",
+      "Coastal transfer",
+      "Activity windows",
+      "Evening return"
+    ],
+    "included": [
+      "Transport",
+      "Refreshments",
+      "Coordination"
+    ],
+    "summary": "Coastal transfer product built around activity and hotel timing."
+  },
+  {
+    "slug": "dune-7-walvis-bay-day-trip",
+    "title": "Dune 7 & Walvis Bay Day Trip",
+    "hero": "Dunes, lagoon views and premium same-day transport",
+    "price": "N$3,250",
+    "duration": "Full day",
+    "pickup_locations": [
+      "Swakopmund",
+      "Walvis Bay"
+    ],
+    "itinerary": [
+      "Hotel pickup",
+      "Dune 7 stop",
+      "Lagoon visit",
+      "Return transfer"
+    ],
+    "included": [
+      "Transport",
+      "Water",
+      "Flexible pickup"
+    ],
+    "summary": "Fast day trip between Walvis Bay and Dune 7."
+  },
+  {
+    "slug": "windhoek-city-tour",
+    "title": "Windhoek City Tour",
+    "hero": "Curated city discovery with hotel and airport pickups",
+    "price": "N$1,450",
+    "duration": "Half day",
+    "pickup_locations": [
+      "Windhoek hotels",
+      "Airport"
+    ],
+    "itinerary": [
+      "Pickup",
+      "City landmarks",
+      "Market stop",
+      "Return"
+    ],
+    "included": [
+      "Transport",
+      "Local recommendations",
+      "Photo stops"
+    ],
+    "summary": "Short-format city touring with a premium shuttle feel."
+  },
+  {
+    "slug": "airport-concierge-transfer",
+    "title": "Airport Concierge Transfer",
+    "hero": "Meet-and-greet premium airport handoff",
+    "price": "N$850",
+    "duration": "Per transfer",
+    "pickup_locations": [
+      "Hosea Kutako Airport",
+      "Windhoek"
+    ],
+    "itinerary": [
+      "Flight tracking",
+      "Meet and greet",
+      "Luggage support",
+      "Destination drop-off"
+    ],
+    "included": [
+      "Airport pickup",
+      "Luggage support",
+      "Priority coordination"
+    ],
+    "summary": "Concierge-grade airport arrival and departure support."
+  }
+]

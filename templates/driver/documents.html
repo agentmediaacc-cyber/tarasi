@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="driver-command single">
+  <div class="driver-form-card">
+    <p class="eyebrow">Documents & vehicle photos</p>
+    <h1>Upload verification documents</h1>
+    <p>Upload driver documents and vehicle photos. Admin must verify everything before trips are assigned.</p>
+
+    <form method="POST" enctype="multipart/form-data" class="driver-form">
+      <label>Document type
+        <select name="doc_type">
+          {% for doc in doc_types %}
+          <option>{{ doc }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>Upload file<input type="file" name="document" required></label>
+      <button class="driver-btn">Upload for verification</button>
+    </form>
+
+    <div class="driver-card wide">
+      <h2>Uploaded files</h2>
+      {% for doc in driver.documents %}
+      <div class="driver-trip-row">
+        <strong>{{ doc.type }}</strong>
+        <span>{{ doc.filename }}</span>
+        <em>{{ doc.status }}</em>
+      </div>
+      {% else %}
+      <p>No documents uploaded yet.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

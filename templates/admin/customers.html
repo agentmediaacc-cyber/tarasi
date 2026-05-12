@@ -1,0 +1,41 @@
+{% extends "admin/base.html" %}
+{% block title %}Customers | Tarasi{% endblock %}
+{% block admin_page %}
+<section class="admin-subhero">
+  <div>
+    <span class="admin-kicker">Customers</span>
+    <h1>Profiles, bookings, support and loyalty visibility</h1>
+  </div>
+</section>
+
+<section class="admin-panel">
+  <div class="admin-table-wrap">
+    <table class="admin-table">
+      <thead><tr><th>Customer</th><th>Town</th><th>Bookings</th><th>Wallet</th><th>Loyalty</th><th>Support</th><th>Controls</th></tr></thead>
+      <tbody>
+        {% for customer in customers %}
+        <tr>
+          <td>{{ customer.full_name }}<div class="cell-sub">{{ customer.email }}</div></td>
+          <td>{{ customer.town or "Unavailable" }}</td>
+          <td>{{ customer.booking_count }}</td>
+          <td>{{ customer.wallet_balance or "Unavailable" }}</td>
+          <td>{{ customer.loyalty_points }}</td>
+          <td>{{ customer.ticket_count }}</td>
+          <td>
+            <div class="admin-inline-actions">
+              <form method="post" action="{{ url_for('admin.customers') }}">
+                <input type="hidden" name="email" value="{{ customer.email }}">
+                <input type="hidden" name="action" value="{% if customer.blocked %}unblock{% else %}block{% endif %}">
+                <button class="admin-mini-btn {% if customer.blocked %}gold{% endif %}" type="submit">{% if customer.blocked %}Unblock{% else %}Block{% endif %}</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7"><div class="admin-empty">No real customer profiles are available from the connected backend.</div></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

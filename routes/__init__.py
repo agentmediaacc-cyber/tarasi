@@ -1,0 +1,35 @@
+from .admin_routes import admin_bp
+from .api_routes import api_bp
+from .auth_routes import auth_bp
+from .booking_routes import booking_bp
+from .driver_plus_routes import driver_plus_bp
+from .driver_routes import driver_bp
+from .fleet_routes import fleet_bp
+from .health_routes import health_bp
+from .partner_routes import partner_bp
+from .profile_routes import profile_bp
+from .public_routes import public_bp
+from .support_routes import support_bp
+from .tour_routes import tour_bp
+from .track_routes import track_bp
+
+
+def register_blueprints(app):
+    for blueprint in [
+        public_bp,
+        auth_bp,
+        booking_bp,
+        track_bp,
+        tour_bp,
+        fleet_bp,
+        support_bp,
+        profile_bp,
+        admin_bp,
+        driver_bp,
+        driver_plus_bp,
+        partner_bp,
+        health_bp,
+        api_bp,
+    ]:
+        if blueprint.name not in app.blueprints:
+            app.register_blueprint(blueprint)

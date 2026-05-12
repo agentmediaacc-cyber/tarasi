@@ -1,0 +1,20 @@
+[
+  {
+    "method": "Bank Transfer",
+    "description": "Parent monthly school plan",
+    "amount": "N$950",
+    "status": "Waiting proof"
+  },
+  {
+    "method": "Cash Pickup",
+    "description": "Airport transfer",
+    "amount": "N$450",
+    "status": "Driver confirm"
+  },
+  {
+    "method": "Wallet Payment",
+    "description": "Windhoek to Swakopmund",
+    "amount": "N$950",
+    "status": "Paid"
+  }
+]

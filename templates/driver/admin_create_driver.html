@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="driver-command single">
+  <div class="driver-form-card">
+    <p class="eyebrow">Admin driver creation</p>
+    <h1>Create driver login</h1>
+    <p>Create the driver account, give them a temporary PIN, assign radius and vehicle details. Driver cannot assign a car to themselves.</p>
+
+    <form method="POST" class="driver-form">
+      <label>Driver full name<input name="full_name" required></label>
+      <label>Driver email<input type="email" name="email" required></label>
+      <label>Cellphone number<input name="phone" required></label>
+      <label>Temporary PIN<input name="temporary_pin" placeholder="Leave empty to auto-generate"></label>
+
+      <label>Based area
+        <select name="based_area">
+          {% for area in service_areas %}
+          <option>{{ area }}</option>
+          {% endfor %}
+        </select>
+      </label>
+
+      <label>Service type
+        <select name="service_type">
+          <option>Monthly pickups</option>
+          <option>School transport</option>
+          <option>Airport transfer</option>
+          <option>Tourism routes</option>
+          <option>Corporate transport</option>
+          <option>Partner shuttle company</option>
+        </select>
+      </label>
+
+      <label>Assigned radius km<input type="number" name="assigned_radius_km" value="10"></label>
+
+      <h2>Admin assigned vehicle</h2>
+      <label>Car name<input name="vehicle_name" placeholder="Toyota Quantum"></label>
+      <label>Plate number<input name="plate_number" placeholder="N 12345 W"></label>
+      <label>Colour<input name="colour" placeholder="White"></label>
+      <label>Vehicle owner<input name="vehicle_owner" placeholder="Tarasi / Partner company"></label>
+
+      <button class="driver-btn">Create driver and PIN</button>
+    </form>
+  </div>
+</section>
+{% endblock %}

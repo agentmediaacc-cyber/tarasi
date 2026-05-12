@@ -1,0 +1,52 @@
+{% extends "profile/superapp_base.html" %}
+{% block title %}Referrals | Tarasi{% endblock %}
+
+{% block superapp_header %}
+<section class="subpage-hero glass-card">
+  <div>
+    <span class="hero-kicker">Referrals</span>
+    <h1>Invite riders into Tarasi Premium</h1>
+    <p>The referral area now behaves like a premium rewards module instead of a placeholder block.</p>
+  </div>
+  <div class="subpage-highlight">
+    <strong>{{ dashboard.referral.code }}</strong>
+    <span>Referral code</span>
+  </div>
+</section>
+{% endblock %}
+
+{% block superapp_content %}
+<section class="dashboard-module-grid">
+  <article class="module-card feature-card">
+    <div class="referral-hero-card">
+      <span class="module-kicker">Referral code</span>
+      <h2>{{ dashboard.referral.code }}</h2>
+      <p>Share this code with travelers booking airport, city and VIP transport through Tarasi.</p>
+      <button class="premium-btn gold" type="button">Copy referral code</button>
+    </div>
+  </article>
+
+  <article class="module-card">
+    <div class="analytics-grid">
+      <div><strong>{{ dashboard.referral.earned }}</strong><span>Referral value</span></div>
+      <div><strong>{{ dashboard.referral.rides_needed }}</strong><span>Trips to next reward</span></div>
+      <div><strong>{{ dashboard.loyalty.points }}</strong><span>Loyalty synergy</span></div>
+      <div><strong>{{ dashboard.stats.completed }}</strong><span>Completed rides</span></div>
+    </div>
+  </article>
+
+  <article class="module-card">
+    <div class="module-heading">
+      <div>
+        <span class="module-kicker">Why share Tarasi</span>
+        <h2>Referral talking points</h2>
+      </div>
+    </div>
+    <div class="stack-list">
+      <div class="stack-row"><div><strong>Premium airport transfers</strong><p>Luxury-first Namibia transport for arrivals and departures.</p></div><span>01</span></div>
+      <div class="stack-row"><div><strong>Safety-centered rides</strong><p>Trusted contacts, support visibility and booking traceability.</p></div><span>02</span></div>
+      <div class="stack-row"><div><strong>Wallet and loyalty growth</strong><p>Rewards stack across repeat travel behavior.</p></div><span>03</span></div>
+    </div>
+  </article>
+</section>
+{% endblock %}

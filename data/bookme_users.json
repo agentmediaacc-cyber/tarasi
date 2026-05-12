@@ -1,0 +1,37 @@
+[
+  {
+    "full_name": "tjandja kasera",
+    "email": "agentmediaacc@gmail.com",
+    "phone": "+264812613261",
+    "town": "Windhoek",
+    "account_type": "Customer",
+    "provider": "email",
+    "avatar_initials": "TK",
+    "created_at": "2026-05-11T18:29:30.654419",
+    "profile_complete": true,
+    "saved_places": [],
+    "loyalty_points": 0,
+    "total_bookings": 0,
+    "password_demo": "123456",
+    "base_area": "katutura",
+    "preferred_language": "English",
+    "service_class": "Employee monthly pickup",
+    "number_of_people": "1",
+    "extra_requests": "bood",
+    "next_of_kin": [
+      {
+        "full_name": "Elias Ghost",
+        "relationship": "coiusin",
+        "phone": "0817513576",
+        "based_at": "windhiek"
+      },
+      {
+        "full_name": "victoria iyambo",
+        "relationship": "ciusin",
+        "phone": "0814012155",
+        "based_at": "windhoek"
+      }
+    ],
+    "profile_photo": "/uploads/profile_photos/agentmediaacc_gmail.com_ChatGPT_Image_Apr_18_2026_10_51_24_AM.png"
+  }
+]

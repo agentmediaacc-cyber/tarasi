@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Routes | Tarasi{% endblock %}
+{% block head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/tarasi_maps.css') }}">
+{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="hero-grid route-explorer-hero">
+    <article class="hero-card">
+      <span class="eyebrow">Live route board</span>
+      <h1>Namibia route control, with map previews.</h1>
+      <p>Tarasi only shows routes that exist in the current platform dataset. Pickup and drop-off previews activate when route coordinates are available.</p>
+      <div class="pill-row">
+        <span class="pill">{{ routes|length }} active route{% if routes|length != 1 %}s{% endif %}</span>
+        <span class="pill">Windhoek-centered route map</span>
+        <span class="pill">Preview only, no fake vehicle movement</span>
+      </div>
+    </article>
+    <aside class="panel route-map-panel">
+      <div class="route-map-shell" data-map-root data-map-config='{{ {"center": map_center, "routes": routes}|tojson|safe }}'>
+        <div class="map-empty-state">Loading route map…</div>
+      </div>
+      <p class="map-caption">Route previews use stored route coordinates when they exist. If a route has no coordinates yet, Tarasi shows a clean availability state instead of inventing a path.</p>
+    </aside>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head">
+    <span class="eyebrow">Route cards</span>
+    <h2>Smart route suggestions</h2>
+    <p>Distance, duration, vehicle fit, and route suitability are all prepared server-side.</p>
+  </div>
+  <div class="route-board-grid">
+    {% for route in routes %}
+    <article class="card smart-route-card">
+      <div class="route-card-media">
+        <div class="route-thumbnail" data-route-thumbnail='{{ route.map_preview|tojson|safe }}' aria-hidden="true"></div>
+        <img src="{{ url_for('static', filename='img/namibia/' ~ route.theme_asset) }}" alt="" loading="lazy" decoding="async">
+      </div>
+      <div class="route-card-copy">
+        <div class="service-card-top">
+          <span class="card-tag">{{ route.route_type or 'Route' }}</span>
+          <span class="status-chip">{{ route.route_badge }}</span>
+        </div>
+        <h3>{{ route.route }}</h3>
+        <p>{{ route.region or 'Namibia' }}{% if route.road_type %} · {{ route.road_type }}{% endif %}</p>
+        <div class="route-spec-row">
+          {% if route.distance_label %}<span>{{ route.distance_label }}</span>{% endif %}
+          {% if route.duration_label %}<span>{{ route.duration_label }}</span>{% endif %}
+          {% if route.vehicle_type %}<span>{{ route.vehicle_type }}</span>{% endif %}
+        </div>
+        <div class="route-action-row">
+          <div>
+            <strong class="price">{{ route.price_label }}</strong>
+            <div class="meta">Starting price</div>
+          </div>
+          <a class="btn btn-primary booking-launch-link" href="{{ url_for('booking.book_form', booking_type='once-off') }}">Book this route</a>
+        </div>
+      </div>
+    </article>
+    {% else %}
+    <div class="empty-state">{{ empty_state_message }}</div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}
+{% block scripts %}
+  <script src="{{ url_for('static', filename='js/tarasi_maps.js') }}" defer></script>
+{% endblock %}

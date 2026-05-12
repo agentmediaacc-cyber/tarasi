@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="night" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#0a1729"/>
+      <stop offset="55%" stop-color="#13314c"/>
+      <stop offset="100%" stop-color="#ce7b3c"/>
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#night)"/>
+  <circle cx="1260" cy="156" r="76" fill="#ffdba0" opacity=".78"/>
+  <rect y="690" width="1600" height="210" fill="#10161f"/>
+  <rect x="120" y="470" width="120" height="220" fill="#172230"/>
+  <rect x="286" y="388" width="110" height="302" fill="#1d2c3b"/>
+  <rect x="452" y="420" width="155" height="270" fill="#162333"/>
+  <rect x="650" y="312" width="128" height="378" fill="#1e3041"/>
+  <rect x="844" y="354" width="178" height="336" fill="#1a2838"/>
+  <rect x="1080" y="438" width="126" height="252" fill="#152130"/>
+  <rect x="1268" y="378" width="160" height="312" fill="#1e3041"/>
+  <g fill="#f6d28b" opacity=".8">
+    <rect x="150" y="500" width="14" height="18"/><rect x="186" y="500" width="14" height="18"/><rect x="150" y="540" width="14" height="18"/>
+    <rect x="310" y="420" width="14" height="18"/><rect x="346" y="420" width="14" height="18"/><rect x="310" y="460" width="14" height="18"/>
+    <rect x="484" y="448" width="14" height="18"/><rect x="520" y="448" width="14" height="18"/><rect x="556" y="448" width="14" height="18"/>
+    <rect x="688" y="344" width="14" height="18"/><rect x="724" y="344" width="14" height="18"/><rect x="688" y="384" width="14" height="18"/>
+    <rect x="876" y="392" width="14" height="18"/><rect x="912" y="392" width="14" height="18"/><rect x="948" y="392" width="14" height="18"/>
+    <rect x="1298" y="410" width="14" height="18"/><rect x="1334" y="410" width="14" height="18"/><rect x="1370" y="410" width="14" height="18"/>
+  </g>
+</svg>

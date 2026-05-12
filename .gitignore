@@ -1,0 +1,11 @@
+.env
+__pycache__/
+*.pyc
+.env
+venv/
+__pycache__/
+*.pyc
+.DS_Store
+uploads/payments/
+uploads/documents/
+data/*.bak

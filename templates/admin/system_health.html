@@ -1,0 +1,42 @@
+{% extends "admin/base.html" %}
+{% block title %}System Health | Tarasi{% endblock %}
+{% block admin_page %}
+<section class="admin-subhero">
+  <div>
+    <span class="admin-kicker">System health</span>
+    <h1>Database, schema, API and auth readiness</h1>
+  </div>
+</section>
+
+<section class="admin-metric-grid compact">
+  <article class="admin-metric-card"><span>DB mode</span><strong>{{ db_status.database }}</strong></article>
+  <article class="admin-metric-card"><span>Connected</span><strong>{{ db_status.connected }}</strong></article>
+  <article class="admin-metric-card"><span>Schema ready</span><strong>{{ db_status.schema_ready }}</strong></article>
+  <article class="admin-metric-card"><span>Last check</span><strong>{{ last_checked }}</strong></article>
+</section>
+
+<section class="admin-grid-2">
+  <article class="admin-panel">
+    <div class="admin-panel-head"><div><span class="admin-kicker">Schema status</span><h2>Core platform tables</h2></div></div>
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead><tr><th>Table</th><th>Resolved</th></tr></thead>
+        <tbody>
+          {% for item in table_presence %}
+          <tr><td>{{ item.table }}</td><td>{{ item.resolved or "Unavailable" }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </article>
+  <article class="admin-panel">
+    <div class="admin-panel-head"><div><span class="admin-kicker">Platform health</span><h2>Status details</h2></div></div>
+    <div class="admin-stack-list">
+      <div class="admin-stack-row"><div><strong>Missing tables</strong><p>{{ db_status.missing_tables|join(', ') if db_status.missing_tables else "None" }}</p></div><span>{{ db_status.missing_tables|length }}</span></div>
+      <div class="admin-stack-row"><div><strong>Database error</strong><p>{{ db_status.error or "None" }}</p></div><span>DB</span></div>
+      <div class="admin-stack-row"><div><strong>Supabase auth</strong><p>{{ supabase_health.error or "Connected" }}</p></div><span>{{ supabase_health.connected }}</span></div>
+      <div class="admin-stack-row"><div><strong>API status</strong><p>{% if available %}Operational checks can query live tables{% else %}API-backed operations cannot read real backend rows{% endif %}</p></div><span>{% if available %}Ready{% else %}Blocked{% endif %}</span></div>
+    </div>
+  </article>
+</section>
+{% endblock %}

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="sky" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#10253a"/>
+      <stop offset="55%" stop-color="#d57032"/>
+      <stop offset="100%" stop-color="#f2cc7e"/>
+    </linearGradient>
+    <linearGradient id="duneA" x1="0" x2="1">
+      <stop offset="0%" stop-color="#8e4f22"/>
+      <stop offset="100%" stop-color="#d6a04e"/>
+    </linearGradient>
+    <linearGradient id="duneB" x1="0" x2="1">
+      <stop offset="0%" stop-color="#6c3d1b"/>
+      <stop offset="100%" stop-color="#bc7b38"/>
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#sky)"/>
+  <circle cx="1220" cy="180" r="82" fill="#ffe4a8" opacity=".82"/>
+  <path d="M0 575C183 505 340 485 492 542s284 56 446 14 330-54 662 62V900H0Z" fill="url(#duneA)"/>
+  <path d="M0 695C188 628 358 617 555 668s373 40 525-18 292-78 520 42V900H0Z" fill="url(#duneB)"/>
+  <path d="M360 566c121 58 248 88 383 90-81 18-162 17-244-4-80-20-148-49-203-86 25-5 47-5 64 0z" fill="#f3c979" opacity=".58"/>
+</svg>

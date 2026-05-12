@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="driver-login-page">
+  <div class="driver-login-card">
+    <p class="eyebrow">Driver secure access</p>
+    <h1>Tarasi Driver Portal</h1>
+    <p>This portal is only for drivers created by admin. Use the email and temporary PIN issued to you.</p>
+
+    <form method="POST" class="driver-login-form">
+      <label>Driver email</label>
+      <input type="email" name="email" required placeholder="driver@example.com">
+
+      <label>Temporary PIN</label>
+      <input type="password" name="pin" required placeholder="Admin PIN">
+
+      <button type="submit">Enter driver dashboard</button>
+    </form>
+
+    <small>Normal customer accounts cannot open the driver dashboard.</small>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Register | Tarasi{% endblock %}
+{% block content %}
+<section class="hero-grid">
+  <article class="hero-card">
+    <span class="eyebrow">Register</span>
+    <h1>Create your Tarasi account</h1>
+    <p>Register once and manage bookings, tracking and support from one account.</p>
+    <div class="cta-row">
+      <a class="btn btn-secondary" href="{{ url_for('auth.oauth_google') }}">Google</a>
+      <a class="btn btn-secondary" href="{{ url_for('auth.oauth_facebook') }}">Facebook</a>
+    </div>
+  </article>
+  <aside class="panel">
+    <form method="post" class="field-grid">
+      <div class="field"><label for="full_name">Full name</label><input id="full_name" name="full_name" required></div>
+      <div class="field"><label for="email">Email address</label><input id="email" type="email" name="email" required></div>
+      <div class="field"><label for="phone">Phone</label><input id="phone" name="phone" required></div>
+      <div class="field"><label for="account_type">Account type</label><select id="account_type" name="account_type"><option>Customer</option><option>Parent/guardian</option><option>Tourist</option><option>Business client</option><option>Driver partner</option></select></div>
+      <div class="field"><label for="password">Password</label><input id="password" type="password" name="password" required></div>
+      <div class="field"><label for="confirm_password">Confirm password</label><input id="confirm_password" type="password" name="confirm_password" required></div>
+      <button class="btn btn-primary btn-block" type="submit">Create account</button>
+    </form>
+  </aside>
+</section>
+{% endblock %}

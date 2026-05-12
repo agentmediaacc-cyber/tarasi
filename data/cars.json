@@ -1,0 +1,68 @@
+[
+  {
+    "name": "Toyota Quantum",
+    "vehicle_type": "Shuttle Van",
+    "seats": 14,
+    "luggage": "10 bags",
+    "aircon": "Yes",
+    "best_for": "Airport and city routes",
+    "price": "From N$450",
+    "status": "Available",
+    "image": ""
+  },
+  {
+    "name": "SUV",
+    "vehicle_type": "Executive SUV",
+    "seats": 6,
+    "luggage": "5 bags",
+    "aircon": "Yes",
+    "best_for": "VIP and safari transfers",
+    "price": "From N$850",
+    "status": "Available",
+    "image": ""
+  },
+  {
+    "name": "Sedan",
+    "vehicle_type": "City Sedan",
+    "seats": 4,
+    "luggage": "3 bags",
+    "aircon": "Yes",
+    "best_for": "Business and hotel pickups",
+    "price": "From N$380",
+    "status": "Available",
+    "image": ""
+  },
+  {
+    "name": "Luxury Van",
+    "vehicle_type": "Luxury Van",
+    "seats": 7,
+    "luggage": "6 bags",
+    "aircon": "Yes",
+    "best_for": "Private hire and family transport",
+    "price": "From N$1,200",
+    "status": "Available",
+    "image": ""
+  },
+  {
+    "name": "Minibus",
+    "vehicle_type": "Minibus",
+    "seats": 22,
+    "luggage": "16 bags",
+    "aircon": "Yes",
+    "best_for": "School and staff transport",
+    "price": "Quote required",
+    "status": "Available",
+    "image": ""
+  },
+  {
+    "name": "Bus",
+    "vehicle_type": "Tour Bus",
+    "seats": 44,
+    "luggage": "30 bags",
+    "aircon": "Yes",
+    "best_for": "Events and long-distance groups",
+    "price": "Quote required",
+    "status": "Available",
+    "image": ""
+  }
+]
