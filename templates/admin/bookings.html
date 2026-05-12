@@ -1,6 +1,13 @@
 {% extends "admin/base.html" %}
 {% block title %}Bookings Control | Tarasi{% endblock %}
 {% block admin_page %}
+<div style="margin: 0 0 18px; display:flex; gap:12px; flex-wrap:wrap;">
+  <a href="{{ url_for('admin.create_invoice') }}"
+     style="background:#0f766e;color:white;padding:14px 18px;border-radius:999px;font-weight:900;text-decoration:none;box-shadow:0 12px 30px rgba(15,118,110,.25);">
+    ▥ Create Invoice
+  </a>
+</div>
+
 <section class="admin-subhero">
   <div>
     <span class="admin-kicker">Bookings control</span>

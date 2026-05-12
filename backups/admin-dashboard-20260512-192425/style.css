@@ -1,0 +1,164 @@
+:root {
+  --primary: #0b6f88;
+  --gold: #f7c948;
+  --dark: #101828;
+  --light: #f9fafb;
+  --glass: rgba(255, 255, 255, 0.15);
+  --shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: var(--light);
+  color: var(--dark);
+  scroll-behavior: smooth;
+}
+
+/* Nav */
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 5%;
+  position: absolute;
+  width: 100%;
+  z-index: 100;
+  color: white;
+}
+.brand { font-size: 28px; font-weight: 900; letter-spacing: -1px; }
+nav a { color: white; text-decoration: none; margin: 0 15px; font-weight: 600; font-size: 14px; }
+.nav-btn { background: var(--gold); color: var(--dark); padding: 10px 20px; border-radius: 12px; font-weight: 700; text-decoration: none; }
+
+/* Hero */
+.premium-hero {
+  height: 100vh;
+  background: linear-gradient(rgba(11, 111, 136, 0.8), rgba(16, 24, 40, 0.9)), url("/static/img/desert-wallpaper.svg");
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  padding: 0 5%;
+  color: white;
+}
+
+.hero-content { flex: 1; padding-right: 50px; }
+.hero-content h1 { font-size: 56px; line-height: 1.1; margin: 20px 0; font-weight: 900; }
+.hero-content p { font-size: 18px; opacity: 0.9; max-width: 600px; line-height: 1.6; }
+
+.badge { background: var(--glass); padding: 8px 16px; border-radius: 99px; font-weight: 700; font-size: 12px; text-transform: uppercase; }
+
+.hero-actions { display: flex; gap: 15px; margin-top: 30px; }
+.btn { padding: 15px 30px; border-radius: 14px; text-decoration: none; font-weight: 700; transition: 0.3s; }
+.btn.gold { background: var(--gold); color: var(--dark); }
+.btn.glass { background: var(--glass); color: white; border: 1px solid rgba(255,255,255,0.3); }
+.btn:hover { transform: translateY(-3px); }
+
+/* Booking Card */
+.booking-card {
+  background: white;
+  padding: 40px;
+  border-radius: 30px;
+  width: 450px;
+  color: var(--dark);
+  box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+}
+.booking-card h2 { margin-top: 0; font-size: 28px; font-weight: 900; margin-bottom: 25px; }
+input, select { width: 100%; padding: 14px; border: 1px solid #ddd; border-radius: 12px; margin-bottom: 15px; font-family: inherit; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+button { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 12px; font-weight: 700; font-size: 16px; cursor: pointer; }
+
+/* Sections */
+.section { padding: 80px 5%; }
+.section.dark { background: var(--dark); color: white; }
+.section-head { text-align: center; margin-bottom: 50px; }
+.section-head span { color: var(--primary); font-weight: 900; text-transform: uppercase; font-size: 13px; }
+.section-head h2 { font-size: 36px; margin: 10px 0; font-weight: 900; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+.card { background: white; padding: 40px; border-radius: 24px; box-shadow: var(--shadow); transition: 0.3s; text-align: center; }
+.card:hover { transform: translateY(-10px); }
+.car-img { font-size: 60px; margin-bottom: 20px; }
+.card h3 { font-size: 24px; margin-bottom: 15px; }
+.card p { color: #666; line-height: 1.6; margin-bottom: 25px; }
+.card a { color: var(--primary); text-decoration: none; font-weight: 700; }
+
+.status-badge { padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 800; display: inline-block; margin-bottom: 10px; }
+.status-available { background: #dcfae6; color: #067647; }
+.status-busy { background: #ffe8e6; color: #b42318; }
+
+/* Pricing Grid */
+.route-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+.route-card { background: white; padding: 25px; border-radius: 20px; border: 1px solid #eee; transition: 0.3s; }
+.route-card:hover { border-color: var(--primary); }
+.route-card strong { display: block; font-size: 18px; margin-bottom: 8px; }
+.route-card p { font-size: 14px; color: #666; margin: 0 0 15px 0; }
+.route-card span { font-weight: 900; color: var(--primary); font-size: 20px; }
+
+/* Campaigns */
+.campaign-banner { background: linear-gradient(135deg, var(--gold), #ffcc33); padding: 40px; border-radius: 24px; color: var(--dark); margin-bottom: 40px; display: flex; justify-content: space-between; align-items: center; }
+.campaign-banner h3 { margin: 0; font-size: 28px; font-weight: 900; }
+.campaign-banner p { margin: 10px 0 0; font-size: 18px; }
+
+/* Footer */
+footer { background: var(--dark); color: white; padding: 60px 5%; text-align: center; }
+footer h2 { font-size: 32px; font-weight: 900; margin-bottom: 10px; }
+footer p { opacity: 0.6; }
+
+@media (max-width: 1000px) {
+  .premium-hero { flex-direction: column; height: auto; padding: 120px 5% 60px; }
+  .hero-content { padding: 0; text-align: center; margin-bottom: 40px; }
+  .hero-content h1 { font-size: 40px; }
+  .booking-card { width: 100%; }
+}
+
+/* Shuttle Marketplace Additions */
+.category-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; text-align: center; }
+.category-item { background: white; padding: 30px 20px; border-radius: 20px; box-shadow: var(--shadow); transition: 0.3s; }
+.category-item:hover { transform: translateY(-5px); border-bottom: 4px solid var(--gold); }
+.category-icon { font-size: 40px; margin-bottom: 15px; display: block; }
+.category-item h4 { margin: 0; font-size: 16px; font-weight: 800; }
+
+.benefit-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-top: 40px; }
+.benefit-card { display: flex; align-items: flex-start; gap: 15px; background: #f0f4f8; padding: 25px; border-radius: 18px; }
+.benefit-icon { background: var(--primary); color: white; width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 900; flex-shrink: 0; }
+.benefit-text h4 { margin: 0 0 5px 0; font-size: 17px; }
+.benefit-text p { margin: 0; font-size: 14px; opacity: 0.7; line-height: 1.4; }
+
+.pricing-table { margin-top: 15px; font-size: 13px; width: 100%; border-collapse: collapse; }
+.pricing-table td { padding: 8px 0; border-bottom: 1px solid #f0f0f0; }
+.pricing-table td:last-child { text-align: right; font-weight: 700; color: var(--primary); }
+
+.route-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+.btn-white { background: white; color: var(--dark); }
+
+/* Advanced Marketplace Styles */
+.search-bar { background: white; padding: 30px; border-radius: 24px; box-shadow: var(--shadow); margin-top: -60px; position: relative; z-index: 10; display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end; }
+.search-group { flex: 1; min-width: 200px; }
+.search-group label { display: block; font-size: 12px; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; color: var(--primary); }
+.search-bar input, .search-bar select { margin-bottom: 0; }
+.search-bar .btn { height: 48px; display: flex; align-items: center; justify-content: center; padding: 0 30px; }
+
+.schedule-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+.schedule-card { background: white; padding: 25px; border-radius: 20px; border-left: 5px solid var(--gold); display: flex; align-items: center; gap: 20px; transition: 0.3s; }
+.schedule-card:hover { transform: translateX(10px); }
+.time-slot { font-size: 24px; font-weight: 900; color: var(--primary); min-width: 80px; }
+.schedule-info h4 { margin: 0; font-size: 18px; }
+.schedule-info p { margin: 5px 0 0; font-size: 14px; opacity: 0.6; }
+
+.pickup-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+.pickup-card { background: white; padding: 30px 20px; border-radius: 24px; text-align: center; border: 1px solid #eee; }
+.pickup-icon { font-size: 32px; margin-bottom: 15px; display: block; }
+.pickup-card h4 { margin: 0 0 5px 0; font-size: 16px; }
+.pickup-card p { margin: 0 0 20px 0; font-size: 13px; opacity: 0.6; }
+
+.meta-info { display: flex; gap: 15px; margin-top: 15px; font-size: 12px; font-weight: 700; opacity: 0.8; }
+.meta-item { display: flex; align-items: center; gap: 5px; }
+
+.cta-box { background: linear-gradient(135deg, var(--primary), var(--dark)); color: white; padding: 60px; border-radius: 30px; text-align: center; }
+.cta-box h2 { font-size: 40px; margin-bottom: 15px; }
+.cta-box p { font-size: 18px; opacity: 0.8; margin-bottom: 35px; }
+.cta-actions { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+
+.estimator-result { background: #f0fdf4; border: 1px dashed #22c55e; padding: 20px; border-radius: 15px; margin-top: 20px; display: none; }

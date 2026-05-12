@@ -1,0 +1,61 @@
+{% extends "admin/base.html" %}
+{% block title %}Create Invoice | Tarasi Admin{% endblock %}
+{% block admin_page %}
+<section class="admin-hero light-hero">
+  <div>
+    <span class="admin-kicker">Professional billing</span>
+    <h1>Create customer invoice</h1>
+    <p>Generate a clean Tarasi invoice with client, trip, service and amount details.</p>
+  </div>
+</section>
+
+<form class="invoice-form-panel" method="post">
+  <div class="invoice-grid">
+    <label>Client full name
+      <input name="client_name" required placeholder="Customer full name">
+    </label>
+
+    <label>Contact number
+      <input name="contact_number" required placeholder="+264...">
+    </label>
+
+    <label>Number of clients/passengers
+      <input name="passengers" type="number" min="1" value="1" required>
+    </label>
+
+    <label>Service type
+      <select name="service_type" required>
+        <option>Airport Transfer</option>
+        <option>Once Off Ride</option>
+        <option>Monthly Transport</option>
+        <option>School Transport</option>
+        <option>Tourist Trip</option>
+        <option>VIP / Private Hire</option>
+        <option>Business Transport</option>
+      </select>
+    </label>
+
+    <label>Pickup location
+      <input name="pickup" required placeholder="Pickup location">
+    </label>
+
+    <label>Drop-off location
+      <input name="dropoff" required placeholder="Drop-off location">
+    </label>
+
+    <label>Date
+      <input name="service_date" type="date" required>
+    </label>
+
+    <label>Time
+      <input name="service_time" type="time" required>
+    </label>
+
+    <label>Amount NAD
+      <input name="amount" type="number" step="0.01" min="0" required placeholder="850.00">
+    </label>
+  </div>
+
+  <button class="invoice-generate-btn" type="submit">Generate Invoice</button>
+</form>
+{% endblock %}

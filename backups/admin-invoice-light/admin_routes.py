@@ -239,34 +239,3 @@ def refunds():
 def alerts():
     from services.admin_service import get_alerts_context
     return _render_admin("admin/alerts.html", "alerts", **get_alerts_context())
-
-
-from datetime import datetime
-import random
-import string
-from flask import request, render_template
-
-def _tarasi_invoice_code():
-    stamp = datetime.now().strftime("%Y%m%d")
-    rand = "".join(random.choices(string.ascii_uppercase + string.digits, k=5))
-    return f"TAR-INV-{stamp}-{rand}"
-
-@admin_bp.route("/invoices/create", methods=["GET", "POST"])
-def create_invoice():
-    if request.method == "POST":
-        invoice = {
-            "invoice_code": _tarasi_invoice_code(),
-            "created_at": datetime.now().strftime("%d %b %Y, %H:%M"),
-            "client_name": request.form.get("client_name", "").strip(),
-            "contact_number": request.form.get("contact_number", "").strip(),
-            "passengers": request.form.get("passengers", "1").strip(),
-            "service_type": request.form.get("service_type", "").strip(),
-            "pickup": request.form.get("pickup", "").strip(),
-            "dropoff": request.form.get("dropoff", "").strip(),
-            "service_date": request.form.get("service_date", "").strip(),
-            "service_time": request.form.get("service_time", "").strip(),
-            "amount": float(request.form.get("amount") or 0),
-        }
-        return render_template("admin/invoice_view.html", invoice=invoice, admin_shell=get_admin_shell("invoices"))
-
-    return render_template("admin/invoice_create.html", admin_shell=get_admin_shell("invoices"))
