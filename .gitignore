@@ -9,3 +9,5 @@ __pycache__/
 uploads/payments/
 uploads/documents/
 data/*.bak
+uploads/
+data/generated_docs/
