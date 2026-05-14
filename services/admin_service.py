@@ -7,8 +7,28 @@ from typing import Any
 from flask import url_for
 
 from services.booking_service import list_bookings
-from services.db_service import fetch_rows, get_database_mode, get_db_status, get_schema_status, insert_row, resolve_table_name, update_row
+from services.db_service import count_rows, fetch_rows, get_database_mode, get_db_status, get_schema_status, insert_row, resolve_table_name, update_row
+
+# Simple in-memory cache for dashboard metrics (60 seconds)
+_DASHBOARD_CACHE = {"data": None, "timestamp": None}
+
+def _get_cached_metrics():
+    now = datetime.now()
+    if _DASHBOARD_CACHE["data"] and _DASHBOARD_CACHE["timestamp"]:
+        if (now - _DASHBOARD_CACHE["timestamp"]).total_seconds() < 60:
+            return _DASHBOARD_CACHE["data"]
+    return None
+
+def _set_cached_metrics(data):
+    _DASHBOARD_CACHE["data"] = data
+    _DASHBOARD_CACHE["timestamp"] = datetime.now()
 from services.driver_service import assign_driver_to_booking, list_drivers
+from services.tarasi_pricing_engine import (
+    get_invoice_by_booking_number,
+    get_payment_by_booking_number,
+    list_bookings as list_pricing_bookings,
+    list_quotes,
+)
 from services.supabase_service import get_supabase_health
 
 
@@ -161,11 +181,17 @@ def _normalize_customer(row: dict[str, Any]) -> dict[str, Any]:
 
 def _normalize_vehicle(row: dict[str, Any]) -> dict[str, Any]:
     return {
+        "id": row.get("id"),
+        "driver_id": row.get("driver_id"),
         "name": row.get("name") or row.get("vehicle_type") or "Vehicle",
         "vehicle_type": row.get("vehicle_type") or "",
+        "plate_number": row.get("plate_number") or "",
         "status": row.get("status") or "Unknown",
         "seats": row.get("seats") or "",
         "luggage": row.get("luggage_capacity") or row.get("luggage") or "",
+        "aircon": row.get("aircon"),
+        "image_url": row.get("image_url") or "",
+        "fleet_group_id": row.get("fleet_group_id") or "",
         "image": row.get("image") or "",
         "assigned_driver": row.get("assigned_driver") or row.get("driver_name") or "",
         "maintenance_status": row.get("maintenance_status") or row.get("condition_status") or "",
@@ -210,7 +236,8 @@ def _normalize_tour(row: dict[str, Any]) -> dict[str, Any]:
 def _normalize_support(row: dict[str, Any]) -> dict[str, Any]:
     category = row.get("category") or row.get("issue_type") or row.get("subject") or "Support"
     return {
-        "reference": row.get("reference") or "",
+        "reference": row.get("reference") or row.get("id") or "",
+        "id": row.get("id"),
         "name": row.get("name") or row.get("full_name") or row.get("email") or "Support requester",
         "email": row.get("email") or "",
         "phone": row.get("phone") or "",
@@ -241,11 +268,52 @@ def _normalize_payment(row: dict[str, Any]) -> dict[str, Any]:
 
 def _normalize_invoice(row: dict[str, Any]) -> dict[str, Any]:
     return {
-        "invoice_no": row.get("invoice_no") or "",
-        "client": row.get("client") or "",
+        "invoice_no": row.get("invoice_no") or row.get("invoice_number") or "",
+        "client": row.get("client") or row.get("customer_name") or "",
         "service": row.get("service") or "",
         "amount": row.get("amount") or "",
         "date": row.get("date") or row.get("created_at") or "",
+        "raw": row,
+    }
+
+
+def _normalize_pricing_quote(row: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "quote_number": row.get("quote_number") or "",
+        "route": f"{row.get('pickup_text') or ''} to {row.get('dropoff_text') or ''}".strip(),
+        "pickup_zone": row.get("pickup_zone") or "",
+        "dropoff_zone": row.get("dropoff_zone") or "",
+        "vehicle_type": row.get("vehicle_type") or "",
+        "final_price": row.get("final_price"),
+        "driver_payout": row.get("driver_payout"),
+        "tarasi_commission": row.get("tarasi_commission"),
+        "estimated_profit": row.get("estimated_profit"),
+        "price_confidence": row.get("price_confidence") or "",
+        "status": row.get("status") or "quoted",
+        "created_at": row.get("created_at"),
+        "raw": row,
+    }
+
+
+def _normalize_pricing_booking(row: dict[str, Any]) -> dict[str, Any]:
+    payment = get_payment_by_booking_number(row.get("booking_number") or "")
+    invoice = get_invoice_by_booking_number(row.get("booking_number") or "")
+    return {
+        "booking_number": row.get("booking_number") or "",
+        "route": f"{row.get('pickup_text') or ''} to {row.get('dropoff_text') or ''}".strip(),
+        "pickup_zone": row.get("pickup_zone") or "",
+        "dropoff_zone": row.get("dropoff_zone") or "",
+        "vehicle_type": row.get("vehicle_type") or "",
+        "final_price": row.get("final_price"),
+        "status": row.get("status") or "pending",
+        "payment_status": row.get("payment_status") or "unpaid",
+        "proof_url": row.get("proof_url") or (payment or {}).get("proof_url") or "",
+        "invoice_number": row.get("invoice_number") or (invoice or {}).get("invoice_number") or "",
+        "assigned_driver_name": row.get("assigned_driver_name") or "",
+        "assigned_vehicle": row.get("assigned_vehicle") or "",
+        "price_confidence": "",
+        "created_at": row.get("created_at"),
+        "updated_at": row.get("updated_at"),
         "raw": row,
     }
 
@@ -265,34 +333,23 @@ def _metric(label: str, value: Any, available: bool, tone: str = "default") -> d
 
 def _admin_sections() -> list[dict[str, Any]]:
     return [
-        {"label": "Executive Dashboard", "endpoint": "admin.dashboard", "icon": "◉", "id": "dashboard"},
-        {"label": "Operational Alerts", "endpoint": "admin.alerts", "icon": "🔔", "id": "alerts"},
-        {"label": "Bookings Control", "endpoint": "admin.bookings", "icon": "▣", "id": "bookings"},
+        {"label": "Dashboard", "endpoint": "admin.dashboard", "icon": "◉", "id": "dashboard"},
+        {"label": "Operations", "endpoint": "admin.alerts", "icon": "🔔", "id": "alerts"},
+        {"label": "Bookings", "endpoint": "admin.bookings", "icon": "▣", "id": "bookings"},
         {"label": "Live Trips", "href": f"{url_for('admin.bookings')}#live-trips", "icon": "⌖", "id": "live_trips"},
         {"label": "Drivers", "endpoint": "admin.drivers", "icon": "◎", "id": "drivers"},
         {"label": "Customers", "endpoint": "admin.customers", "icon": "◌", "id": "customers"},
         {"label": "Fleet", "endpoint": "admin.fleet", "icon": "◫", "id": "fleet"},
-        {"label": "Routes & Pricing", "endpoint": "admin.routes_catalog", "icon": "↔", "id": "routes"},
+        {"label": "Pricing OS", "endpoint": "admin.pricing_dashboard", "icon": "¤", "id": "pricing"},
+        {"label": "Routes", "endpoint": "admin.routes_catalog", "icon": "↔", "id": "routes"},
         {"label": "Tours", "endpoint": "admin.tours", "icon": "◇", "id": "tours"},
-        {"label": "School Transport", "href": f"{url_for('admin.bookings')}#school-transport", "icon": "△", "id": "school"},
-        {"label": "Monthly Plans", "href": f"{url_for('admin.bookings')}#monthly-plans", "icon": "▤", "id": "monthly"},
-        {"label": "Airport Transfers", "href": f"{url_for('admin.bookings')}#airport-transfers", "icon": "✈", "id": "airport"},
-        {"label": "VIP / Private Hire", "href": f"{url_for('admin.bookings')}#vip-private-hire", "icon": "★", "id": "vip"},
-        {"label": "Business Transport", "href": f"{url_for('admin.bookings')}#business-transport", "icon": "□", "id": "business"},
-        {"label": "Support Tickets", "endpoint": "admin.support", "icon": "✦", "id": "support"},
-        {"label": "Complaints", "href": f"{url_for('admin.support')}#complaints", "icon": "!", "id": "complaints"},
-        {"label": "Lost Items", "href": f"{url_for('admin.support')}#lost-items", "icon": "⌂", "id": "lost_items"},
+        {"label": "Support", "endpoint": "admin.support", "icon": "✦", "id": "support"},
+        {"label": "Bot OS", "endpoint": "bot.admin_dashboard", "icon": "◈", "id": "bot"},
         {"label": "Payments", "endpoint": "admin.payments", "icon": "$", "id": "payments"},
-        {"label": "Refunds", "href": f"{url_for('admin.payments')}#refunds", "icon": "↺", "id": "refunds"},
-        {"label": "Wallets", "href": f"{url_for('admin.payments')}#wallets", "icon": "◈", "id": "wallets"},
-        {"label": "Coupons", "href": f"{url_for('admin.payments')}#coupons", "icon": "%", "id": "coupons"},
-        {"label": "Invoices", "href": f"{url_for('admin.payments')}#invoices", "icon": "▥", "id": "invoices"},
         {"label": "Reports", "endpoint": "admin.reports", "icon": "◬", "id": "reports"},
-        {"label": "Notifications", "href": f"{url_for('admin.content')}#notifications", "icon": "◍", "id": "notifications"},
-        {"label": "Content / Homepage", "endpoint": "admin.content", "icon": "☰", "id": "content"},
-        {"label": "System Health", "endpoint": "admin.system_health", "icon": "▲", "id": "system_health"},
+        {"label": "Homepage", "endpoint": "admin.content", "icon": "☰", "id": "content"},
+        {"label": "System", "endpoint": "admin.system_health", "icon": "▲", "id": "system_health"},
         {"label": "Audit Logs", "endpoint": "admin.audit_logs", "icon": "≡", "id": "audit_logs"},
-        {"label": "Admin Users / Roles", "href": f"{url_for('admin.audit_logs')}#admin-users", "icon": "☷", "id": "admin_roles"},
     ]
 
 
@@ -319,46 +376,137 @@ def _real_data_notice() -> str | None:
     return "Executive data is unavailable because Neon/Supabase is not connected in this environment. Admin pages are rendering empty operational states instead of fallback metrics."
 
 
-def _bookings() -> list[dict[str, Any]]:
-    rows = _safe_rows("bookings", limit=500)
-    if rows:
-        return [_normalize_booking(row) for row in rows]
-    return [_normalize_booking(row) for row in list_bookings()]
+def _bookings(limit: int = 100) -> list[dict[str, Any]]:
+    rows = _safe_rows("bookings", limit=limit)
+    return [_normalize_booking(row) for row in rows]
 
 
-def _drivers() -> list[dict[str, Any]]:
-    rows = _safe_rows("drivers", limit=300)
-    if rows:
-        return [_normalize_driver(row) for row in rows]
-    return [dict(driver) for driver in list_drivers()]
+def _drivers(limit: int = 100) -> list[dict[str, Any]]:
+    rows = _safe_rows("drivers", limit=limit)
+    users = _safe_rows("tarasi_users", limit=max(limit * 2, 200))
+    vehicles = _safe_rows("vehicles", limit=max(limit * 2, 200))
+    users_by_user_id = {str(row.get("supabase_user_id") or ""): row for row in users if row.get("supabase_user_id")}
+    users_by_email = {str(row.get("email") or "").strip().lower(): row for row in users if row.get("email")}
+    vehicles_by_driver_id = {}
+    for vehicle in vehicles:
+        driver_id = str(vehicle.get("driver_id") or "").strip()
+        if driver_id:
+            vehicles_by_driver_id[driver_id] = vehicle
+
+    enriched: list[dict[str, Any]] = []
+    for row in rows:
+        user = users_by_user_id.get(str(row.get("user_id") or "")) or users_by_email.get(str(row.get("email") or "").strip().lower())
+        vehicle = vehicles_by_driver_id.get(str(row.get("id") or row.get("driver_id") or "").strip())
+        merged = dict(row)
+        if user:
+            merged.setdefault("full_name", user.get("full_name"))
+            merged.setdefault("email", user.get("email"))
+            merged.setdefault("phone", user.get("phone"))
+        if vehicle:
+            merged.setdefault("vehicle_id", vehicle.get("id"))
+            merged.setdefault("vehicle_name", vehicle.get("name"))
+            merged.setdefault("assigned_vehicle", {"vehicle_id": vehicle.get("id"), "name": vehicle.get("name")})
+        enriched.append(_normalize_driver(merged))
+    return enriched
 
 
-def _customers() -> list[dict[str, Any]]:
-    return [_normalize_customer(row) for row in _safe_rows("profiles", limit=300)]
+def _customers(limit: int = 100) -> list[dict[str, Any]]:
+    return [_normalize_customer(row) for row in _safe_rows("profiles", limit=limit)]
 
 
-def _fleet() -> list[dict[str, Any]]:
-    return [_normalize_vehicle(row) for row in _safe_rows("fleet", limit=200)]
+def _fleet(limit: int = 100) -> list[dict[str, Any]]:
+    vehicles = _safe_rows("vehicles", limit=limit)
+    drivers = _safe_rows("drivers", limit=max(limit * 2, 200))
+    users = _safe_rows("tarasi_users", limit=max(limit * 2, 200))
+    driver_names = {}
+    users_by_user_id = {str(row.get("supabase_user_id") or ""): row for row in users if row.get("supabase_user_id")}
+    for driver in drivers:
+        user = users_by_user_id.get(str(driver.get("user_id") or ""))
+        driver_names[str(driver.get("id") or driver.get("driver_code") or "")] = (
+            (user or {}).get("full_name") or driver.get("driver_code") or "Assigned driver"
+        )
+    normalized = []
+    for row in vehicles:
+        record = dict(row)
+        driver_id = str(row.get("driver_id") or "").strip()
+        if driver_id and not record.get("assigned_driver"):
+            record["assigned_driver"] = driver_names.get(driver_id, "")
+        normalized.append(_normalize_vehicle(record))
+    return normalized
 
 
-def _routes() -> list[dict[str, Any]]:
-    return [_normalize_route(row) for row in _safe_rows("routes", limit=200)]
+def _routes(limit: int = 50) -> list[dict[str, Any]]:
+    return [_normalize_route(row) for row in _safe_rows("routes", limit=limit)]
 
 
-def _tours() -> list[dict[str, Any]]:
-    return [_normalize_tour(row) for row in _safe_rows("tours", limit=120)]
+def _tours(limit: int = 50) -> list[dict[str, Any]]:
+    return [_normalize_tour(row) for row in _safe_rows("tours", limit=limit)]
 
 
-def _support() -> list[dict[str, Any]]:
-    return [_normalize_support(row) for row in _safe_rows("support_tickets", limit=300)]
+def _support(limit: int = 100) -> list[dict[str, Any]]:
+    return [_normalize_support(row) for row in _safe_rows("support_tickets", limit=limit)]
 
 
-def _payments() -> list[dict[str, Any]]:
-    return [_normalize_payment(row) for row in _safe_rows("payments", limit=300)]
+def _payments(limit: int = 100) -> list[dict[str, Any]]:
+    return [_normalize_payment(row) for row in _safe_rows("payments", limit=limit)]
 
 
 def _extra_table_rows(table: str, limit: int = 200) -> list[dict[str, Any]]:
     return _safe_rows(table, limit=limit)
+
+
+def _homepage_content_sections() -> dict[str, dict[str, Any]]:
+    rows = _safe_rows("homepage_content", limit=100)
+    sections: dict[str, dict[str, Any]] = {}
+    sorted_rows = sorted(
+        rows,
+        key=lambda row: str(row.get("updated_at") or row.get("created_at") or ""),
+        reverse=True,
+    )
+    for row in sorted_rows:
+        section_name = str(row.get("section_name") or "").strip()
+        if not section_name or section_name in sections:
+            continue
+        content = row.get("content") if isinstance(row.get("content"), dict) else {}
+        sections[section_name] = content
+    return sections
+
+
+WINDHOEK_ZONE_SEEDS = [
+    {"zone_name": "CBD", "suburb_area": "CBD / Town", "base_fare": 35, "price_per_km": 14, "airport_fee": 220, "minimum_fare": 95, "night_fee": 50, "luggage_fee": 15, "waiting_fee": 25, "latitude": -22.5703, "longitude": 17.0832, "map_radius_km": 3.0, "is_active": True},
+    {"zone_name": "Katutura", "suburb_area": "Katutura", "base_fare": 40, "price_per_km": 14, "airport_fee": 230, "minimum_fare": 100, "night_fee": 50, "luggage_fee": 15, "waiting_fee": 25, "latitude": -22.5364, "longitude": 17.0603, "map_radius_km": 4.5, "is_active": True},
+    {"zone_name": "Wanaheda", "suburb_area": "Wanaheda", "base_fare": 40, "price_per_km": 14, "airport_fee": 235, "minimum_fare": 100, "night_fee": 50, "luggage_fee": 15, "waiting_fee": 25, "latitude": -22.5438, "longitude": 17.0675, "map_radius_km": 3.8, "is_active": True},
+    {"zone_name": "Khomasdal", "suburb_area": "Khomasdal", "base_fare": 38, "price_per_km": 14, "airport_fee": 225, "minimum_fare": 98, "night_fee": 50, "luggage_fee": 15, "waiting_fee": 25, "latitude": -22.5488, "longitude": 17.0403, "map_radius_km": 3.8, "is_active": True},
+    {"zone_name": "Hochland Park", "suburb_area": "Hochland Park", "base_fare": 38, "price_per_km": 14, "airport_fee": 230, "minimum_fare": 98, "night_fee": 50, "luggage_fee": 15, "waiting_fee": 25, "latitude": -22.5887, "longitude": 17.0564, "map_radius_km": 3.5, "is_active": True},
+    {"zone_name": "Pioneers Park", "suburb_area": "Pioneers Park", "base_fare": 38, "price_per_km": 14, "airport_fee": 230, "minimum_fare": 98, "night_fee": 50, "luggage_fee": 15, "waiting_fee": 25, "latitude": -22.6034, "longitude": 17.0838, "map_radius_km": 3.4, "is_active": True},
+    {"zone_name": "Eros", "suburb_area": "Eros", "base_fare": 36, "price_per_km": 14, "airport_fee": 225, "minimum_fare": 95, "night_fee": 50, "luggage_fee": 15, "waiting_fee": 25, "latitude": -22.5608, "longitude": 17.0977, "map_radius_km": 3.0, "is_active": True},
+    {"zone_name": "Klein Windhoek", "suburb_area": "Klein Windhoek", "base_fare": 36, "price_per_km": 14, "airport_fee": 220, "minimum_fare": 95, "night_fee": 50, "luggage_fee": 15, "waiting_fee": 25, "latitude": -22.5638, "longitude": 17.0981, "map_radius_km": 3.1, "is_active": True},
+    {"zone_name": "Olympia", "suburb_area": "Olympia", "base_fare": 37, "price_per_km": 14, "airport_fee": 225, "minimum_fare": 97, "night_fee": 50, "luggage_fee": 15, "waiting_fee": 25, "latitude": -22.5845, "longitude": 17.1043, "map_radius_km": 3.2, "is_active": True},
+    {"zone_name": "Kleine Kuppe", "suburb_area": "Kleine Kuppe", "base_fare": 37, "price_per_km": 14, "airport_fee": 225, "minimum_fare": 97, "night_fee": 50, "luggage_fee": 15, "waiting_fee": 25, "latitude": -22.5974, "longitude": 17.1008, "map_radius_km": 3.0, "is_active": True},
+    {"zone_name": "Goreangab", "suburb_area": "Goreangab", "base_fare": 42, "price_per_km": 14, "airport_fee": 235, "minimum_fare": 102, "night_fee": 50, "luggage_fee": 15, "waiting_fee": 25, "latitude": -22.5214, "longitude": 17.0282, "map_radius_km": 4.0, "is_active": True},
+    {"zone_name": "Rocky Crest", "suburb_area": "Rocky Crest", "base_fare": 40, "price_per_km": 14, "airport_fee": 232, "minimum_fare": 100, "night_fee": 50, "luggage_fee": 15, "waiting_fee": 25, "latitude": -22.5701, "longitude": 17.0372, "map_radius_km": 3.8, "is_active": True},
+    {"zone_name": "Otjomuise", "suburb_area": "Otjomuise", "base_fare": 41, "price_per_km": 14, "airport_fee": 233, "minimum_fare": 101, "night_fee": 50, "luggage_fee": 15, "waiting_fee": 25, "latitude": -22.5926, "longitude": 17.0294, "map_radius_km": 4.0, "is_active": True},
+    {"zone_name": "Cimbebasia", "suburb_area": "Cimbebasia", "base_fare": 39, "price_per_km": 14, "airport_fee": 230, "minimum_fare": 99, "night_fee": 50, "luggage_fee": 15, "waiting_fee": 25, "latitude": -22.6102, "longitude": 17.0507, "map_radius_km": 3.8, "is_active": True},
+    {"zone_name": "Auasblick", "suburb_area": "Auasblick", "base_fare": 39, "price_per_km": 14, "airport_fee": 228, "minimum_fare": 99, "night_fee": 50, "luggage_fee": 15, "waiting_fee": 25, "latitude": -22.5945, "longitude": 17.1190, "map_radius_km": 3.0, "is_active": True},
+    {"zone_name": "Prosperita", "suburb_area": "Prosperita", "base_fare": 38, "price_per_km": 14, "airport_fee": 228, "minimum_fare": 98, "night_fee": 50, "luggage_fee": 15, "waiting_fee": 25, "latitude": -22.6208, "longitude": 17.0788, "map_radius_km": 3.3, "is_active": True},
+    {"zone_name": "Windhoek West", "suburb_area": "Windhoek West", "base_fare": 37, "price_per_km": 14, "airport_fee": 225, "minimum_fare": 97, "night_fee": 50, "luggage_fee": 15, "waiting_fee": 25, "latitude": -22.5701, "longitude": 17.0588, "map_radius_km": 3.2, "is_active": True},
+    {"zone_name": "Hosea Kutako Airport", "suburb_area": "Hosea Kutako Airport", "base_fare": 80, "price_per_km": 16, "airport_fee": 250, "minimum_fare": 250, "night_fee": 65, "luggage_fee": 20, "waiting_fee": 30, "latitude": -22.4799, "longitude": 17.4709, "map_radius_km": 6.0, "is_active": True},
+    {"zone_name": "Eros Airport", "suburb_area": "Eros Airport", "base_fare": 45, "price_per_km": 14, "airport_fee": 90, "minimum_fare": 120, "night_fee": 55, "luggage_fee": 15, "waiting_fee": 25, "latitude": -22.6122, "longitude": 17.0804, "map_radius_km": 2.0, "is_active": True},
+]
+
+
+def ensure_windhoek_zones() -> dict[str, Any]:
+    if not _real_backend_ready() or not resolve_table_name("pricing_zones"):
+        return {"seeded": 0, "available": False}
+    existing = _safe_rows("pricing_zones", limit=5)
+    if existing:
+        return {"seeded": 0, "available": True}
+    seeded = 0
+    for row in WINDHOEK_ZONE_SEEDS:
+        created = insert_row("pricing_zones", {**row, "created_at": datetime.now().isoformat(), "updated_at": datetime.now().isoformat()})
+        if created:
+            seeded += 1
+    return {"seeded": seeded, "available": True}
 
 
 def _today_and_month_counts(bookings: list[dict[str, Any]]) -> tuple[int | None, int | None]:
@@ -378,53 +526,98 @@ def _today_and_month_counts(bookings: list[dict[str, Any]]) -> tuple[int | None,
     return today_count, month_count
 
 
-def get_dashboard_context() -> dict[str, Any]:
-    bookings = _bookings()
-    drivers = _drivers()
-    customers = _customers()
-    fleet = _fleet()
-    support_rows = _support()
+def log_admin_action(action: str, table_name: str = None, record_id: str = None, old_value: Any = None, new_value: Any = None):
+    """
+    Records an admin action into the audit_logs table.
+    """
+    from flask import session, request
+    user = session.get("user") or {}
+    admin_email = user.get("email")
+    admin_user_id = user.get("user_id")
+    
+    payload = {
+        "admin_user_id": admin_user_id,
+        "admin_email": admin_email,
+        "action": action,
+        "table_name": table_name,
+        "record_id": str(record_id) if record_id else None,
+        "old_value": old_value,
+        "new_value": new_value,
+        "ip_address": request.remote_addr if request else None,
+        "user_agent": request.user_agent.string if request else None,
+        "created_at": datetime.now().isoformat()
+    }
+    
+    insert_row("audit_logs", payload)
+
+
+def get_dashboard_summary() -> dict[str, Any]:
+    """Lightweight summary for API or fast initial load."""
+    cached = _get_cached_metrics()
+    if cached:
+        return cached
 
     available = _real_backend_ready()
-    revenue_values = [item["amount_value"] for item in bookings if item["amount_value"] is not None]
-    today_bookings, monthly_bookings = _today_and_month_counts(bookings)
+    if not available:
+        return {"available": False, "metrics": []}
 
-    def count_status(group: str) -> int | None:
-        if not available:
-            return None
-        keys = STATUS_GROUPS[group]
-        return sum(1 for item in bookings if item["status_key"] in keys)
+    total_bookings = count_rows("bookings")
+    active_rides = count_rows("bookings", filters={"status": "driver_assigned"}) + \
+                   count_rows("bookings", filters={"status": "on_the_way"}) + \
+                   count_rows("bookings", filters={"status": "arrived"}) + \
+                   count_rows("bookings", filters={"status": "picked_up"})
+    
+    total_customers = count_rows("profiles")
+    total_drivers = count_rows("drivers")
+    open_tickets = count_rows("support_tickets", filters={"status": "open"})
+    total_payments = count_rows("payments")
+    available_vehicles = count_rows("fleet", filters={"status": "available"})
 
-    type_counts = Counter(item.get("booking_type", "") for item in bookings)
-    available_vehicle_count = sum(1 for item in fleet if str(item.get("status", "")).lower() == "available") if available else None
     metrics = [
-        _metric("Total bookings", len(bookings), available, "gold"),
-        _metric("Pending bookings", count_status("pending"), available),
-        _metric("Confirmed bookings", count_status("confirmed"), available),
-        _metric("Active rides", count_status("active"), available, "teal"),
-        _metric("Completed rides", count_status("completed"), available),
-        _metric("Cancellation requests", count_status("cancellation_requested"), available),
-        _metric("Total customers", len(customers), available),
-        _metric("Total drivers", len(drivers), available),
-        _metric("Available vehicles", available_vehicle_count, available),
-        _metric("Support tickets", len(support_rows), available),
-        _metric("Estimated revenue", _money(sum(revenue_values) if available and revenue_values else 0.0 if available else None), available),
-        _metric("Today bookings", today_bookings, available),
-        _metric("Monthly bookings", monthly_bookings, available),
-        _metric("Airport bookings", type_counts.get("airport") if available else None, available),
-        _metric("School bookings", type_counts.get("school") if available else None, available),
-        _metric("Tourist bookings", type_counts.get("tourist") if available else None, available),
-        _metric("VIP bookings", type_counts.get("vip") if available else None, available),
-        _metric("Business bookings", type_counts.get("business") if available else None, available),
+        _metric("Total bookings", total_bookings, available, "gold"),
+        _metric("Active rides", active_rides, available, "teal"),
+        _metric("Customers", total_customers, available),
+        _metric("Drivers", total_drivers, available),
+        _metric("Open tickets", open_tickets, available, "rose" if open_tickets > 5 else "default"),
+        _metric("Available vehicles", available_vehicles, available),
+        _metric("Total payments", total_payments, available),
     ]
+    
+    data = {
+        "metrics": metrics,
+        "available": available,
+        "timestamp": datetime.now().isoformat()
+    }
+    _set_cached_metrics(data)
+    return data
+
+
+def get_dashboard_context() -> dict[str, Any]:
+    summary = get_dashboard_summary()
+    
+    # Fetch recent items for the tables
+    bookings = _bookings(limit=8)
+    support_rows = _support(limit=6)
+    payments = _payments(limit=6)
+    audit_logs = _extra_table_rows("audit_logs", limit=10)
+
+    available = summary["available"]
 
     return {
-        "metrics": metrics,
-        "bookings": bookings[:8],
-        "live_trips": [item for item in bookings if item["status_key"] in STATUS_GROUPS["active"]][:8],
-        "support_rows": support_rows[:6],
+        "metrics": summary["metrics"],
+        "bookings": bookings,
+        "live_trips": [item for item in bookings if item["status_key"] in STATUS_GROUPS["active"]],
+        "support_rows": support_rows,
+        "payments": payments,
+        "drivers_online": sum(
+            1
+            for item in _drivers(limit=200)
+            if str(item.get("status") or item.get("availability") or "").strip().lower() in {"online", "available", "active"}
+        ),
+        "audit_logs": [_normalize_audit(row) for row in audit_logs],
         "notice": _real_data_notice(),
         "available": available,
+        "system_status": "REAL DATABASE CONNECTED" if available else "FALLBACK MODE",
     }
 
 
@@ -470,12 +663,26 @@ def get_drivers_context() -> dict[str, Any]:
     drivers = _drivers()
     fleet = _fleet()
     bookings = _bookings()
+    documents = _extra_table_rows("driver_documents")
+    
+    # Attach documents to drivers
+    docs_by_driver = {}
+    for doc in documents:
+        did = str(doc.get("driver_id"))
+        if did not in docs_by_driver:
+            docs_by_driver[did] = []
+        docs_by_driver[did].append(doc)
+    
+    for driver in drivers:
+        did = str(driver.get("driver_id") or driver.get("id"))
+        driver["documents"] = docs_by_driver.get(did, [])
+
     active_by_driver = Counter(item.get("driver_id") or item.get("driver_name") for item in bookings if item["status_key"] in STATUS_GROUPS["active"])
     return {
         "drivers": drivers,
         "fleet": fleet,
         "driver_metrics": {
-            "approved": sum(1 for item in drivers if item.get("admin_approved")),
+            "approved": sum(1 for item in drivers if item.get("admin_approved") or item.get("verified")),
             "suspended": sum(1 for item in drivers if "suspend" in str(item.get("verification_status", "")).lower()),
             "active_trips": sum(active_by_driver.values()),
         } if _real_backend_ready() else {},
@@ -504,7 +711,13 @@ def get_customers_context() -> dict[str, Any]:
 
 
 def get_fleet_context() -> dict[str, Any]:
-    return {"fleet": _fleet(), "notice": _real_data_notice(), "available": _real_backend_ready()}
+    return {
+        "fleet": _fleet(),
+        "fleet_groups": _extra_table_rows("fleet_groups"),
+        "drivers": _drivers(limit=200),
+        "notice": _real_data_notice(),
+        "available": _real_backend_ready(),
+    }
 
 
 def get_routes_context() -> dict[str, Any]:
@@ -594,7 +807,11 @@ def get_system_health_context() -> dict[str, Any]:
 
 
 def get_content_context() -> dict[str, Any]:
+    sections = _homepage_content_sections()
     return {
+        "content_sections": sections,
+        "hero_section": sections.get("hero_section", {}),
+        "promotions": sections.get("promotions", {}),
         "routes": _routes()[:8],
         "fleet": _fleet()[:8],
         "tours": _tours()[:8],
@@ -610,6 +827,47 @@ def get_audit_context() -> dict[str, Any]:
     return {
         "audit_logs": audit_logs,
         "admin_users": admin_users,
+        "notice": _real_data_notice(),
+        "available": _real_backend_ready(),
+    }
+
+
+def get_pricing_context() -> dict[str, Any]:
+    zone_seed_status = ensure_windhoek_zones()
+    raw_quotes = list_quotes(limit=100)
+    raw_bookings = list_pricing_bookings(limit=100)
+    quote_rows = [_normalize_pricing_quote(row) for row in raw_quotes]
+    quote_confidence_by_id = {str(row.get("id")): row.get("price_confidence", "") for row in raw_quotes}
+    booking_rows = []
+    for row in raw_bookings:
+        booking = _normalize_pricing_booking(row)
+        booking["price_confidence"] = quote_confidence_by_id.get(str(row.get("quote_id")), "")
+        booking_rows.append(booking)
+    
+    zones = _extra_table_rows("pricing_zones")
+    rules = _extra_table_rows("pricing_rules")
+    
+    total_quotes = len(quote_rows)
+    total_bookings = len(booking_rows)
+    total_profit = sum(float(row.get("estimated_profit") or 0) for row in quote_rows)
+    avg_confidence = ", ".join(sorted({row.get("price_confidence") for row in quote_rows if row.get("price_confidence")})) or "n/a"
+    rule_lookup = {
+        str(row.get("rule_name") or row.get("name") or row.get("rule_type") or row.get("id") or ""): row
+        for row in rules
+    }
+    return {
+        "quotes": quote_rows[:20],
+        "pricing_bookings": booking_rows[:20],
+        "pricing_zones": zones,
+        "pricing_rules": rules,
+        "pricing_rule_lookup": rule_lookup,
+        "pricing_metrics": {
+            "total_quotes": total_quotes,
+            "total_bookings": total_bookings,
+            "estimated_profit": _money(total_profit) if quote_rows else "N$0.00",
+            "confidence_mix": avg_confidence,
+        },
+        "zone_seeded": zone_seed_status.get("seeded", 0),
         "notice": _real_data_notice(),
         "available": _real_backend_ready(),
     }
@@ -691,7 +949,8 @@ def update_customer_block(email: str, blocked: bool) -> bool:
 def update_support_ticket(reference: str, payload: dict[str, Any]) -> bool:
     if not _real_backend_ready() or not reference:
         return False
-    match_field = "reference"
+    rows = fetch_rows("support_tickets", filters={"id": reference}, limit=1)
+    match_field = "id" if rows else "reference"
     updated = update_row("support_tickets", match_field, reference, payload)
     return bool(updated)
 

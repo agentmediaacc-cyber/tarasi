@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="partner-auth">
+  <div class="partner-auth-card">
+    <p class="eyebrow">Partner application</p>
+    <h1>Register shuttle company</h1>
+    <form method="POST" class="partner-form">
+      <label>Company name<input name="company_name" required></label>
+      <label>Email<input type="email" name="email" required></label>
+      <label>Phone<input name="phone" required></label>
+      <label>Town<input name="town" required></label>
+      <label>Service area
+        <select name="service_area">
+          {% for area in areas %}<option>{{ area }}</option>{% endfor %}
+        </select>
+      </label>
+      <label>Temporary PIN<input name="temporary_pin" placeholder="Leave empty to auto-generate"></label>
+      <button>Submit partner application</button>
+    </form>
+  </div>
+</section>
+{% endblock %}

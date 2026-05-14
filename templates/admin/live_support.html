@@ -1,0 +1,63 @@
+{% extends "admin/base.html" %}
+{% block title %}Live Support | Admin{% endblock %}
+{% block admin_page %}
+<section class="admin-hero">
+  <div>
+    <span class="admin-kicker">Real-time Takeover</span>
+    <h1>Live Support Dashboard</h1>
+    <p>Monitor and join active client chats when the AI assistant needs human help.</p>
+  </div>
+</section>
+
+<section class="admin-grid-1">
+  <article class="admin-panel">
+    <div class="admin-panel-head">
+      <div>
+        <span class="admin-kicker">Queue</span>
+        <h2>Active support sessions</h2>
+      </div>
+    </div>
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Chat #</th>
+            <th>Client</th>
+            <th>Reason</th>
+            <th>Status</th>
+            <th>Admin</th>
+            <th>Last Message</th>
+            <th>Waiting Time</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for chat in chats %}
+          <tr>
+            <td><strong>{{ chat.chat_number }}</strong></td>
+            <td>
+              {{ chat.user_name or "Guest" }}
+              <br><small>{{ chat.user_phone or "No phone" }}</small>
+            </td>
+            <td>{{ chat.handoff_reason }}</td>
+            <td>
+              <span class="status-badge {{ 'active' if chat.status == 'active' else 'waiting' }}">
+                {{ chat.status.title() }}
+              </span>
+            </td>
+            <td>{{ chat.assigned_admin or "None" }}</td>
+            <td><small>{{ chat.last_message or "No messages" }}</small></td>
+            <td>{{ chat.created_at }}</td>
+            <td>
+              <a href="{{ url_for('admin.live_support_room', chat_number=chat.chat_number) }}" class="admin-btn-small">Open Room</a>
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="8"><div class="admin-empty">No active support chats at the moment.</div></td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </article>
+</section>
+{% endblock %}

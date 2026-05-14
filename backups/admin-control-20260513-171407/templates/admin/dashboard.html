@@ -1,0 +1,136 @@
+{% extends "admin/base.html" %}
+{% block title %}Executive Dashboard | Tarasi{% endblock %}
+{% block admin_page %}
+<section class="admin-hero">
+  <div>
+    <span class="admin-kicker">Executive dashboard</span>
+    <h1>Tarasi platform command center</h1>
+    <p>Monitor bookings, operations, support, fleet, payments and infrastructure from a single premium operations surface.</p>
+  </div>
+  <div class="admin-hero-stack">
+    <div class="admin-hero-card">
+      <span>Live trips</span>
+      <strong data-live-trips-count>{% if available %}{{ live_trips|length }}{% else %}0{% endif %}</strong>
+    </div>
+    <div class="admin-hero-card">
+      <span>Drivers online</span>
+      <strong data-live-drivers-count>0</strong>
+    </div>
+    <div class="admin-hero-card">
+      <span>Support queue</span>
+      <strong data-live-support-count>{% if available %}{{ support_rows|length }}{% else %}0{% endif %}</strong>
+    </div>
+  </div>
+</section>
+
+<section class="admin-metric-grid">
+  {% for metric in metrics %}
+  <article class="admin-metric-card tone-{{ metric.tone }}">
+    <span>{{ metric.label }}</span>
+    <strong>{{ metric.value }}</strong>
+  </article>
+  {% endfor %}
+</section>
+
+<section class="admin-grid-2">
+  <article class="admin-panel">
+    <div class="admin-panel-head">
+      <div>
+        <span class="admin-kicker">Recent bookings</span>
+        <h2>Executive booking feed</h2>
+      </div>
+      <a href="{{ url_for('admin.bookings') }}">Open bookings</a>
+    </div>
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead><tr><th>Reference</th><th>Customer</th><th>Type</th><th>Route</th><th>Status</th></tr></thead>
+        <tbody>
+          {% for booking in bookings %}
+          <tr>
+            <td><a href="{{ url_for('admin.booking_detail', reference=booking.reference) }}">{{ booking.reference }}</a></td>
+            <td>{{ booking.full_name or "Unknown" }}</td>
+            <td>{{ booking.booking_type|replace('-', ' ')|title }}</td>
+            <td>{{ booking.pickup }} to {{ booking.dropoff }}</td>
+            <td><span class="status-badge" data-status="{{ booking.status|lower|replace(' ', '-') }}">{{ booking.status }}</span></td>
+          </tr>
+          {% else %}
+          <tr><td colspan="5"><div class="admin-empty">No bookings found yet.</div></td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </article>
+
+  <article class="admin-panel">
+    <div class="admin-panel-head">
+      <div>
+        <span class="admin-kicker">Live operations</span>
+        <h2>Trips and support</h2>
+      </div>
+    </div>
+    <div class="admin-stack-list">
+      {% for ride in live_trips[:4] %}
+      <div class="admin-stack-row">
+        <div>
+          <strong>{{ ride.reference }}</strong>
+          <p>{{ ride.pickup }} to {{ ride.dropoff }}</p>
+        </div>
+        <span>{{ ride.status }}</span>
+      </div>
+      {% else %}
+      <div class="admin-empty">No live trips active right now.</div>
+      {% endfor %}
+      {% for ticket in support_rows[:2] %}
+      <div class="admin-stack-row">
+        <div>
+          <strong>{{ ticket.category }}</strong>
+          <p>{{ ticket.name }}</p>
+        </div>
+        <span>{{ ticket.status }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </article>
+</section>
+
+{% block scripts %}
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const tripsCount = document.querySelector("[data-live-trips-count]");
+      const supportCount = document.querySelector("[data-live-support-count]");
+      const driversCount = document.querySelector("[data-live-drivers-count]");
+
+      TarasiLive.init({
+        interval: 30000,
+        endpoints: ["/api/health", "/api/bookings"],
+        onUpdate: (results) => {
+          const health = results.find(r => r.url === "/api/health")?.data;
+          const bookings = results.find(r => r.url === "/api/bookings")?.data;
+
+          if (health && driversCount) {
+             driversCount.textContent = health.drivers_online ?? "0";
+          }
+
+          if (bookings && Array.isArray(bookings)) {
+            if (tripsCount) {
+              const active = bookings.filter(b => ["Driver assigned", "On the way", "Picked up"].includes(b.status));
+              tripsCount.textContent = active.length;
+            }
+            
+            // Update table badges if visible
+            document.querySelectorAll(".admin-table .status-badge").forEach(badge => {
+               const row = badge.closest("tr");
+               const ref = row?.querySelector("td a")?.textContent;
+               const booking = bookings.find(b => b.reference === ref);
+               if (booking) {
+                 TarasiLive.updateStatusBadge(badge, booking.status);
+               }
+            });
+          }
+        }
+      });
+    });
+  </script>
+{% endblock %}
+
+{% endblock %}

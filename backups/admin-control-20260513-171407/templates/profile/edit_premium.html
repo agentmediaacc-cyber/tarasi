@@ -1,0 +1,87 @@
+{% extends "profile/superapp_base.html" %}
+{% block title %}Settings | Tarasi{% endblock %}
+
+{% block superapp_header %}
+<section class="subpage-hero glass-card">
+  <div>
+    <span class="hero-kicker">Settings</span>
+    <h1>Edit your premium travel profile</h1>
+    <p>Update the personal, safety and ride preference details that power the rest of the dashboard experience.</p>
+  </div>
+  <div class="subpage-highlight">
+    <strong>{{ dashboard.profile_completion.percent }}%</strong>
+    <span>Completion score</span>
+  </div>
+</section>
+{% endblock %}
+
+{% block superapp_content %}
+<section class="dashboard-module-grid">
+  <article class="module-card wide-card">
+    <form class="premium-settings-form" method="post">
+      <div class="settings-form-grid">
+        <label>Full name
+          <input name="full_name" value="{{ dashboard.profile.full_name }}" required>
+        </label>
+        <label>Phone
+          <input name="phone" value="{{ dashboard.profile.phone }}">
+        </label>
+        <label>Town / City
+          <input name="town" value="{{ dashboard.profile.town }}">
+        </label>
+        <label>Region
+          <input name="region" value="{{ dashboard.profile.region }}">
+        </label>
+        <label>Preferred language
+          <input name="language" value="{{ dashboard.profile.language }}">
+        </label>
+        <label>Emergency contact
+          <input name="emergency_contact" value="{{ dashboard.profile.emergency_contact }}">
+        </label>
+        <label>Preferred vehicle type
+          <input name="preferred_vehicle" value="{{ dashboard.profile.preferred_vehicle }}">
+        </label>
+        <label>Quiet ride preference
+          <select name="quiet_ride">
+            <option {% if dashboard.profile.quiet_ride == "No preference" %}selected{% endif %}>No preference</option>
+            <option {% if dashboard.profile.quiet_ride == "Quiet ride" %}selected{% endif %}>Quiet ride</option>
+            <option {% if dashboard.profile.quiet_ride == "Music allowed" %}selected{% endif %}>Music allowed</option>
+          </select>
+        </label>
+        <label class="full">Accessibility needs
+          <textarea name="accessibility_needs">{{ dashboard.profile.accessibility_needs }}</textarea>
+        </label>
+      </div>
+      <button class="premium-btn gold" type="submit">Save profile</button>
+    </form>
+  </article>
+
+  <article class="module-card">
+    <div class="module-heading">
+      <div>
+        <span class="module-kicker">What is missing</span>
+        <h2>Completion checklist</h2>
+      </div>
+    </div>
+    <div class="stack-list">
+      {% for item in dashboard.profile_completion.missing %}
+      <div class="stack-row">
+        <div>
+          <strong>{{ item }}</strong>
+          <p>Adding this helps dispatch, support or safety workflows.</p>
+        </div>
+        <span>Needed</span>
+      </div>
+      {% else %}
+      <div class="stack-row">
+        <div>
+          <strong>Everything essential is filled in</strong>
+          <p>Your premium profile has the core details needed for travel support.</p>
+        </div>
+        <span>Ready</span>
+      </div>
+      {% endfor %}
+    </div>
+  </article>
+</section>
+{% endblock %}

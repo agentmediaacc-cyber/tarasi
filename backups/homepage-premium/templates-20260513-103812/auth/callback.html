@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Auth Callback | Tarasi{% endblock %}
+{% block content %}
+<section class="hero-grid">
+  <article class="hero-card" data-oauth-bridge>
+    <span class="eyebrow">OAuth callback</span>
+    <h1>Completing your login</h1>
+    <p data-oauth-message>{% if error_message %}{{ error_message }}{% else %}Tarasi is finalizing your Supabase social login session.{% endif %}</p>
+  </article>
+</section>
+{% endblock %}

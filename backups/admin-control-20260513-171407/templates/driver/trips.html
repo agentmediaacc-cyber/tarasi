@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Driver Trips | Tarasi{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="section-head">
+    <span class="eyebrow">Assigned trips</span>
+    <h1>Your active and completed Tarasi trips</h1>
+    <p>Only bookings assigned to your driver account appear here.</p>
+  </div>
+  <div class="cards-grid">
+    {% for booking in bookings %}
+    <article class="card">
+      <span class="status-chip">{{ booking.status }}</span>
+      <h3>{{ booking.reference }}</h3>
+      <p>{{ booking.route_summary }}</p>
+      <p>{{ booking.date }} {{ booking.time }}</p>
+      <p>{{ booking.driver_name or driver.full_name }} · {{ booking.vehicle_name or driver.vehicle_name or "Vehicle pending" }}</p>
+      <a class="btn btn-primary" href="{{ url_for('driver.trip_detail', reference=booking.reference) }}">Manage trip</a>
+    </article>
+    {% else %}
+    <div class="empty-state">No trips are assigned to this driver yet.</div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

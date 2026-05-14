@@ -1,0 +1,95 @@
+{% extends "profile/superapp_base.html" %}
+{% block title %}Wallet | Tarasi{% endblock %}
+
+{% block superapp_header %}
+<section class="subpage-hero glass-card">
+  <div>
+    <span class="hero-kicker">Wallet</span>
+    <h1>Payments, credits and rewards</h1>
+    <p>Your Tarasi wallet is now framed like an app module, with ride credits, coupon count and reward value surfaced upfront.</p>
+  </div>
+  <div class="subpage-highlight">
+    <strong>{{ dashboard.wallet.balance }}</strong>
+    <span>Current balance</span>
+  </div>
+</section>
+{% endblock %}
+
+{% block superapp_content %}
+<section class="dashboard-module-grid">
+  <article class="module-card feature-card">
+    <div class="wallet-snapshot-grid">
+      <div><strong>{{ dashboard.wallet.balance }}</strong><span>Available balance</span></div>
+      <div><strong>{{ dashboard.wallet.ride_credits }}</strong><span>Ride credits</span></div>
+      <div><strong>{{ dashboard.wallet.coupon_count }}</strong><span>Coupons ready</span></div>
+      <div><strong>{{ dashboard.wallet.rewards_value }}</strong><span>Reward value</span></div>
+    </div>
+  </article>
+
+  <article class="module-card">
+    <div class="module-heading">
+      <div>
+        <span class="module-kicker">Usage snapshot</span>
+        <h2>Travel finance overview</h2>
+      </div>
+    </div>
+    <div class="stack-list">
+      <div class="stack-row"><div><strong>{{ dashboard.wallet.monthly_spend }}</strong><p>All-time spend across bookings</p></div><span>Spend</span></div>
+      <div class="stack-row"><div><strong>{{ dashboard.stats.completed }}</strong><p>Trips currently eligible for wallet-linked rewards</p></div><span>Trips</span></div>
+      <div class="stack-row"><div><strong>{{ dashboard.profile.preferred_vehicle }}</strong><p>Preferred vehicle carried into new bookings</p></div><span>Preference</span></div>
+    </div>
+  </article>
+
+  <article class="module-card wide-card">
+    <div class="module-heading">
+      <div>
+        <span class="module-kicker">Transaction history</span>
+        <h2>Wallet & payment activity</h2>
+      </div>
+      <div class="pill-badge">{{ dashboard.wallet.pending_refunds }} Pending Refund</div>
+    </div>
+    <div class="stack-list">
+      {% for txn in dashboard.wallet.transactions %}
+      <div class="stack-row">
+        <div>
+          <strong>{{ txn.description }}</strong>
+          <p>{{ txn.created_at[:10] }} · {{ txn.type|title }}</p>
+        </div>
+        <span class="{% if txn.type == 'credit' %}status-ready{% else %}status-busy{% endif %}">
+          {% if txn.type == 'credit' %}+{% else %}-{% endif %}N${{ txn.amount }}
+        </span>
+      </div>
+      {% else %}
+      <div class="empty-premium-block">
+        <h3>No transaction records</h3>
+        <p>Wallet deposits and trip payments will appear here.</p>
+      </div>
+      {% endfor %}
+    </div>
+  </article>
+
+  <article class="module-card wide-card">
+    <div class="module-heading">
+      <div>
+        <span class="module-kicker">Reward activity</span>
+        <h2>Recent credit routes</h2>
+      </div>
+      <a href="{{ url_for('booking.book_index') }}">Book ride</a>
+    </div>
+    <div class="feed-list">
+      {% for route in dashboard.wallet.recent_credit_routes %}
+      <div class="feed-item">
+        <span>Credit eligible</span>
+        <strong>{{ route }}</strong>
+        <p>This completed route contributes toward wallet credits and loyalty value.</p>
+      </div>
+      {% else %}
+      <div class="empty-premium-block">
+        <h3>No wallet activity yet</h3>
+        <p>Completed trips and future payment features will populate this section without changing your current booking logic.</p>
+      </div>
+      {% endfor %}
+    </div>
+  </article>
+</section>
+{% endblock %}

@@ -24,19 +24,32 @@
           <td>
             <form method="post" action="{{ url_for('admin.support') }}" class="admin-inline-form">
               <input type="hidden" name="reference" value="{{ ticket.reference }}">
-              <input type="text" name="assigned_to" placeholder="Assign to">
               <select name="status">
                 <option value="">Keep status</option>
                 <option>Open</option>
                 <option>Assigned</option>
                 <option>Resolved</option>
+                <option>Closed</option>
               </select>
               <button class="admin-mini-btn" type="submit">Save</button>
             </form>
+            {% if ticket.reference %}
+            <form method="post" action="{{ url_for('admin.support_close') }}" class="admin-inline-form">
+              <input type="hidden" name="reference" value="{{ ticket.reference }}">
+              <button class="admin-mini-btn danger" type="submit">Close</button>
+            </form>
+            {% endif %}
           </td>
         </tr>
         {% else %}
-        <tr><td colspan="6"><div class="admin-empty">No real support rows are available from the connected backend.</div></td></tr>
+        <tr>
+          <td colspan="6">
+            <div class="admin-empty-state">
+              <p>No records yet.</p>
+              <a class="admin-btn gold" href="{{ url_for('support.support_page') }}">Open support page</a>
+            </div>
+          </td>
+        </tr>
         {% endfor %}
       </tbody>
     </table>
@@ -50,7 +63,7 @@
       {% for ticket in complaints %}
       <span>{{ ticket.name }} · {{ ticket.category }}</span>
       {% else %}
-      <div class="admin-empty">No complaint rows available.</div>
+      <div class="admin-empty-state"><p>No records yet.</p></div>
       {% endfor %}
     </div>
   </article>
@@ -60,7 +73,7 @@
       {% for ticket in lost_items %}
       <span>{{ ticket.name }} · {{ ticket.category }}</span>
       {% else %}
-      <div class="admin-empty">No lost-item rows available.</div>
+      <div class="admin-empty-state"><p>No records yet.</p></div>
       {% endfor %}
     </div>
   </article>
@@ -70,7 +83,7 @@
       {% for ticket in emergency %}
       <span>{{ ticket.name }} · {{ ticket.status }} · {{ ticket.priority }}</span>
       {% else %}
-      <div class="admin-empty">No emergency support rows available.</div>
+      <div class="admin-empty-state"><p>No records yet.</p></div>
       {% endfor %}
     </div>
   </article>

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="partner-shell single">
+  <div class="partner-form-card">
+    <p class="eyebrow">Fleet management</p>
+    <h1>Register partner vehicle</h1>
+    <form method="POST" class="partner-form">
+      <label>Vehicle name<input name="vehicle_name" required></label>
+      <label>Plate number<input name="plate_number" required></label>
+      <label>Colour<input name="colour"></label>
+      <label>Seats<input type="number" name="seats"></label>
+      <label>Vehicle type<input name="vehicle_type" placeholder="Quantum, Bus, Sedan"></label>
+      <button>Add vehicle</button>
+    </form>
+
+    <div class="partner-card wide">
+      <h2>Your fleet</h2>
+      {% for car in fleet %}
+      <div class="partner-row">
+        <strong>{{ car.vehicle_name }}</strong><span>{{ car.plate_number }}</span><span>{{ car.colour }}</span><em>{{ car.condition_status }}</em>
+      </div>
+      {% else %}<p>No fleet yet.</p>{% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

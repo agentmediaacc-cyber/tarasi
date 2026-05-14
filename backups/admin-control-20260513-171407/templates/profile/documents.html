@@ -1,0 +1,39 @@
+{% extends "profile/superapp_base.html" %}
+{% block title %}Documents | Tarasi{% endblock %}
+
+{% block superapp_header %}
+<section class="subpage-hero glass-card">
+  <div>
+    <span class="hero-kicker">Documents</span>
+    <h1>Travel records and rider paperwork</h1>
+    <p>The documents area now has a premium dashboard frame and clearer structure for travel, school and support-related records.</p>
+  </div>
+  <div class="subpage-highlight">
+    <strong>{{ dashboard.stats.total }}</strong>
+    <span>Trips on record</span>
+  </div>
+</section>
+{% endblock %}
+
+{% block superapp_content %}
+<section class="dashboard-module-grid">
+  <article class="module-card feature-card">
+    <div class="stack-list">
+      <div class="stack-row"><div><strong>Travel confirmations</strong><p>Booking references and ride history are already retained in your profile.</p></div><span>{{ dashboard.stats.total }}</span></div>
+      <div class="stack-row"><div><strong>Safety notes</strong><p>Emergency contact and accessibility preferences remain tied to your profile settings.</p></div><span>{{ dashboard.profile_completion.percent }}%</span></div>
+      <div class="stack-row"><div><strong>Support records</strong><p>Open and resolved support interactions are summarized for quick follow-up.</p></div><span>{{ dashboard.support_summary.total }}</span></div>
+    </div>
+  </article>
+
+  <article class="module-card">
+    <div class="module-heading">
+      <div>
+        <span class="module-kicker">Next step</span>
+        <h2>Keep profile data ready</h2>
+      </div>
+    </div>
+    <p class="module-paragraph">When more document upload flows are activated, this structure is already prepared without disturbing existing routes or storage behavior.</p>
+    <a class="premium-btn gold" href="{{ url_for('profile.edit_profile') }}">Review profile settings</a>
+  </article>
+</section>
+{% endblock %}

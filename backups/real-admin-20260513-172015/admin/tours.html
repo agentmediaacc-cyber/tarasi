@@ -1,0 +1,29 @@
+{% extends "admin/base.html" %}
+{% block title %}Tours | Tarasi{% endblock %}
+{% block admin_page %}
+<section class="admin-subhero">
+  <div>
+    <span class="admin-kicker">Tours</span>
+    <h1>Tours publishing and itinerary visibility</h1>
+  </div>
+</section>
+
+<section class="admin-card-grid">
+  {% for tour in tours %}
+  <article class="admin-data-card">
+    <span class="status-badge">{% if tour.published %}Published{% else %}Unpublished{% endif %}</span>
+    <h3>{{ tour.title }}</h3>
+    <p>{{ tour.slug }}</p>
+    <div class="admin-data-pairs">
+      <span>Price <strong>{{ tour.price or "Unavailable" }}</strong></span>
+      <span>Duration <strong>{{ tour.duration or "Unavailable" }}</strong></span>
+      <span>Pickup locations <strong>{{ tour.pickup_locations|length }}</strong></span>
+      <span>Included items <strong>{{ tour.included_items|length if tour.included_items is iterable and tour.included_items is not string else 0 }}</strong></span>
+    </div>
+    <p class="card-copy">{{ tour.summary or "No summary available." }}</p>
+  </article>
+  {% else %}
+  <div class="admin-empty">No real tour rows are available from the connected backend.</div>
+  {% endfor %}
+</section>
+{% endblock %}

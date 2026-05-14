@@ -1,1 +1,54 @@
-[]
+[
+  {
+    "id": "NOT-1778747235469",
+    "user_email": "magnusmaulisius9@gmail.com",
+    "booking_reference": "TAR-2026-0003",
+    "title": "Booking Confirmed",
+    "message": "Your trip TAR-2026-0003 is now confirmed.",
+    "type": "booking_confirmed",
+    "channel": "in_app",
+    "status": "unread",
+    "action_url": "/track/TAR-2026-0003",
+    "created_at": "2026-05-14T10:27:15.469306",
+    "read_at": null
+  },
+  {
+    "id": "NOT-1778747802636",
+    "user_email": "magnusmaulisius9@gmail.com",
+    "booking_reference": "TAR-2026-0003",
+    "title": "Booking Confirmed",
+    "message": "Your trip TAR-2026-0003 is now confirmed.",
+    "type": "booking_confirmed",
+    "channel": "in_app",
+    "status": "unread",
+    "action_url": "/track/TAR-2026-0003",
+    "created_at": "2026-05-14T10:36:42.636920",
+    "read_at": null
+  },
+  {
+    "id": "NOT-1778747839155",
+    "user_email": "magnusmaulisius9@gmail.com",
+    "booking_reference": "TAR-2026-0003",
+    "title": "Booking Confirmed",
+    "message": "Your trip TAR-2026-0003 is now confirmed.",
+    "type": "booking_confirmed",
+    "channel": "in_app",
+    "status": "unread",
+    "action_url": "/track/TAR-2026-0003",
+    "created_at": "2026-05-14T10:37:19.155568",
+    "read_at": null
+  },
+  {
+    "id": "NOT-1778748165169",
+    "user_email": "magnusmaulisius9@gmail.com",
+    "booking_reference": "TAR-2026-0003",
+    "title": "Booking Confirmed",
+    "message": "Your trip TAR-2026-0003 is now confirmed.",
+    "type": "booking_confirmed",
+    "channel": "in_app",
+    "status": "unread",
+    "action_url": "/track/TAR-2026-0003",
+    "created_at": "2026-05-14T10:42:45.169171",
+    "read_at": null
+  }
+]

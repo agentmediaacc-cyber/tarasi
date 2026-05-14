@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block body_class %}tarasi-admin-page{% endblock %}
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tarasi_admin.css') }}">
+{% endblock %}
+{% block content %}
+<section class="admin-shell">
+  <div class="admin-glow admin-glow-a"></div>
+  <div class="admin-glow admin-glow-b"></div>
+
+  <header class="admin-topbar">
+    <div class="admin-topbar-start">
+      <button class="admin-hamburger" type="button" aria-label="Open admin navigation" aria-expanded="false" aria-controls="admin-drawer" data-admin-drawer-open>
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <a class="admin-logo" href="{{ url_for('admin.dashboard') }}">
+        <span class="admin-logo-mark">T</span>
+        <span>
+          <strong>Tarasi Executive</strong>
+          <small>Admin control center</small>
+        </span>
+      </a>
+    </div>
+
+    <div class="admin-searchbar">
+      <input type="search" placeholder="Search bookings, drivers, customers, routes" aria-label="Search admin records">
+    </div>
+
+    <div class="admin-topbar-end">
+      <div class="admin-bell">◌</div>
+      <div class="admin-profile-pill">
+        <strong>Admin</strong>
+        <span>{{ admin_shell.db_status.database }}</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="admin-drawer-backdrop" data-admin-drawer-backdrop hidden></div>
+  <aside class="admin-drawer" id="admin-drawer" data-admin-drawer aria-hidden="true">
+    <div class="admin-drawer-head">
+      <div class="admin-drawer-brand">
+        <span class="admin-logo-mark">T</span>
+        <div>
+          <strong>Tarasi Executive</strong>
+          <span>Operations control</span>
+        </div>
+      </div>
+      <button class="admin-drawer-close" type="button" aria-label="Close admin navigation" data-admin-drawer-close>×</button>
+    </div>
+    <nav class="admin-drawer-nav" aria-label="Admin navigation">
+<a class="admin-create-invoice-link admin-force-invoice" href="{{ url_for('admin.create_invoice') }}">
+  <span>▥</span>
+  <span>Create Invoice</span>
+</a>
+
+      {% for item in admin_shell.sections %}
+      <a class="{% if item.active %}is-active{% endif %}" href="{{ item.target }}">
+        <span>{{ item.icon }}</span>
+        <span>{{ item.label }}</span>
+      </a>
+      {% endfor %}
+    </nav>
+  </aside>
+
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <div class="admin-sidebar-brand admin-glass">
+        <span class="admin-logo-mark">T</span>
+        <div>
+          <strong>Tarasi Executive</strong>
+          <span>Premium operations shell</span>
+        </div>
+      </div>
+
+      <nav class="admin-sidebar-nav admin-glass" aria-label="Admin section navigation">
+<a class="admin-create-invoice-link admin-force-invoice" href="{{ url_for('admin.create_invoice') }}">
+  <span>▥</span>
+  <span>Create Invoice</span>
+</a>
+
+        {% for item in admin_shell.sections %}
+        <a class="{% if item.active %}is-active{% endif %}" href="{{ item.target }}">
+          <span>{{ item.icon }}</span>
+          <span>{{ item.label }}</span>
+        </a>
+        {% endfor %}
+      </nav>
+
+      <div class="admin-sidebar-status admin-glass">
+        <span>System mode</span>
+        <strong>{{ admin_shell.db_status.database }}</strong>
+        <p>{% if admin_shell.real_data_ready %}Real backend connected{% else %}Real backend unavailable{% endif %}</p>
+      </div>
+    </aside>
+
+    <main class="admin-main">
+      {% if notice %}
+      <div class="admin-notice">{{ notice }}</div>
+      {% endif %}
+      {% block admin_page %}{% endblock %}
+    </main>
+  </div>
+
+  <div class="admin-mobile-actions">
+    <a href="{{ url_for('admin.create_invoice') }}">Invoice</a>
+    <a href="{{ url_for('admin.bookings') }}">Bookings</a>
+    <a href="{{ url_for('admin.support') }}">Support</a>
+    <a href="{{ url_for('admin.system_health') }}">Health</a>
+  </div>
+</section>
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('static', filename='js/tarasi_admin.js') }}" defer></script>
+{% endblock %}

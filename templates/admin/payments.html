@@ -16,7 +16,13 @@
       <tbody>
         {% for payment in payments %}
         <tr>
-          <td><a href="{{ url_for('admin.booking_detail', reference=payment.reference) }}">{{ payment.reference or "-" }}</a></td>
+          <td>
+            {% if payment.reference %}
+            <a href="{{ url_for('admin.booking_detail', reference=payment.reference) }}">{{ payment.reference }}</a>
+            {% else %}
+            -
+            {% endif %}
+          </td>
           <td>{{ payment.customer }}</td>
           <td>{{ payment.method or "Unavailable" }}</td>
           <td>
@@ -42,7 +48,14 @@
           </td>
         </tr>
         {% else %}
-        <tr><td colspan="6"><div class="admin-empty">No real payment rows are available from the connected backend.</div></td></tr>
+        <tr>
+          <td colspan="7">
+            <div class="admin-empty-state">
+              <p>No records yet.</p>
+              <a class="admin-btn gold" href="{{ url_for('admin.bookings') }}">Open bookings</a>
+            </div>
+          </td>
+        </tr>
         {% endfor %}
       </tbody>
     </table>
@@ -56,7 +69,10 @@
       {% for refund in refunds %}
       <span>{{ refund.reference or "-" }} · {{ refund.amount or "Unavailable" }} · {{ refund.status }}</span>
       {% else %}
-      <div class="admin-empty">No real refund rows are available.</div>
+      <div class="admin-empty-state">
+        <p>No records yet.</p>
+        <a class="admin-btn gold" href="{{ url_for('admin.payments') }}">Refresh payments</a>
+      </div>
       {% endfor %}
     </div>
   </article>
@@ -66,7 +82,7 @@
       {% for wallet in wallets %}
       <span>{{ wallet.reference or wallet.email or "Wallet row" }}</span>
       {% else %}
-      <div class="admin-empty">No real wallet rows are available.</div>
+      <div class="admin-empty-state"><p>No records yet.</p></div>
       {% endfor %}
     </div>
   </article>
@@ -76,7 +92,7 @@
       {% for coupon in coupons %}
       <span>{{ coupon.code or coupon.name or "Coupon row" }}</span>
       {% else %}
-      <div class="admin-empty">No real coupon rows are available.</div>
+      <div class="admin-empty-state"><p>No records yet.</p></div>
       {% endfor %}
     </div>
   </article>
@@ -86,7 +102,10 @@
       {% for invoice in invoices %}
       <span>{{ invoice.invoice_no }} · {{ invoice.client }} · {{ invoice.amount }}</span>
       {% else %}
-      <div class="admin-empty">No real invoice rows are available.</div>
+      <div class="admin-empty-state">
+        <p>No records yet.</p>
+        <a class="admin-btn gold" href="{{ url_for('admin.create_invoice') }}">Create invoice</a>
+      </div>
       {% endfor %}
     </div>
   </article>

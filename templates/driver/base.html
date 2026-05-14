@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>{% block title %}Driver Dashboard | Tarasi{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tarasi_driver.css') }}">
+    {% block head %}{% endblock %}
+</head>
+<body class="driver-body">
+    <header class="driver-header">
+        <div class="driver-header-start">
+            <a href="{{ url_for('driver.dashboard') }}" class="driver-logo">T</a>
+            <div class="driver-status-pill {% if status == 'Online' %}is-online{% endif %}">
+                {{ status }}
+            </div>
+        </div>
+        <div class="driver-header-end">
+            <div class="driver-earnings">
+                <span>Today</span>
+                <strong>{{ earnings_today }}</strong>
+            </div>
+        </div>
+    </header>
+
+    <main class="driver-main">
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            {% for message in messages %}
+              <div class="driver-alert">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+        
+        {% block content %}{% endblock %}
+    </main>
+
+    <nav class="driver-nav">
+        <a href="{{ url_for('driver.dashboard') }}" class="{% if request.endpoint == 'driver.dashboard' %}active{% endif %}">
+            <span>🏠</span>
+            <small>Home</small>
+        </a>
+        <a href="{{ url_for('driver.trips') }}" class="{% if request.endpoint == 'driver.trips' %}active{% endif %}">
+            <span>🚗</span>
+            <small>Trips</small>
+        </a>
+        <a href="#" class="emergency-btn">
+            <span>🆘</span>
+            <small>SOS</small>
+        </a>
+        <a href="{{ url_for('auth.logout') }}">
+            <span>🚪</span>
+            <small>Exit</small>
+        </a>
+    </nav>
+
+    <script src="{{ url_for('static', filename='js/tarasi_driver.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

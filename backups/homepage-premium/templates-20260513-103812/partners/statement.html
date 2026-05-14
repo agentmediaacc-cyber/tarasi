@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="partner-shell single">
+  <div class="partner-form-card">
+    <p class="eyebrow">Statements</p>
+    <h1>Partner statement</h1>
+    <p>{{ partner.company_name }} • {{ partner.email }}</p>
+
+    <div class="partner-card wide">
+      {% for b in bookings %}
+      <div class="partner-row">
+        <strong>{{ b.booking_id }}</strong><span>{{ b.customer_name }}</span><span>N${{ b.amount }}</span><em>{{ b.status }}</em>
+      </div>
+      {% else %}<p>No statement rows yet.</p>{% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

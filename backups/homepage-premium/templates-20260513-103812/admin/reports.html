@@ -1,0 +1,59 @@
+{% extends "admin/base.html" %}
+{% block title %}Reports | Tarasi{% endblock %}
+{% block admin_page %}
+<section class="admin-subhero">
+  <div>
+    <span class="admin-kicker">Reports</span>
+    <h1>Bookings, revenue and performance reporting</h1>
+  </div>
+</section>
+
+<section class="admin-metric-grid compact">
+  <article class="admin-metric-card"><span>Revenue estimate</span><strong>{{ revenue_estimate }}</strong></article>
+  <article class="admin-metric-card"><span>Customer growth</span><strong>{{ customer_growth if available else "Unavailable" }}</strong></article>
+  <article class="admin-metric-card"><span>Support volume</span><strong>{{ support_volume if available else "Unavailable" }}</strong></article>
+</section>
+
+<section class="admin-grid-2">
+  <article class="admin-panel">
+    <div class="admin-panel-head"><div><span class="admin-kicker">Daily bookings</span><h2>Seven-day view</h2></div></div>
+    <div class="admin-condensed-list">
+      {% for day, count in daily_bookings %}
+      <span>{{ day }} · {{ count }}</span>
+      {% else %}
+      <div class="admin-empty">No real daily booking data is available.</div>
+      {% endfor %}
+    </div>
+  </article>
+  <article class="admin-panel">
+    <div class="admin-panel-head"><div><span class="admin-kicker">Top routes</span><h2>Most used journeys</h2></div></div>
+    <div class="admin-condensed-list">
+      {% for route, count in top_routes %}
+      <span>{{ route }} · {{ count }}</span>
+      {% else %}
+      <div class="admin-empty">No real top-route data is available.</div>
+      {% endfor %}
+    </div>
+  </article>
+  <article class="admin-panel">
+    <div class="admin-panel-head"><div><span class="admin-kicker">Booking type breakdown</span><h2>Service mix</h2></div></div>
+    <div class="admin-condensed-list">
+      {% for booking_type, count in booking_type_breakdown %}
+      <span>{{ booking_type|replace('-', ' ')|title }} · {{ count }}</span>
+      {% else %}
+      <div class="admin-empty">No real booking-type data is available.</div>
+      {% endfor %}
+    </div>
+  </article>
+  <article class="admin-panel">
+    <div class="admin-panel-head"><div><span class="admin-kicker">Driver performance</span><h2>Trip allocation leaders</h2></div></div>
+    <div class="admin-condensed-list">
+      {% for item in driver_performance %}
+      <span>{{ item.driver }} · {{ item.trips }}</span>
+      {% else %}
+      <div class="admin-empty">No real driver-performance data is available.</div>
+      {% endfor %}
+    </div>
+  </article>
+</section>
+{% endblock %}

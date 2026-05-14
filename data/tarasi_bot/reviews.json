@@ -1,0 +1,83 @@
+[
+  {
+    "id": "ae728ea3-f0bb-4930-9b19-9b1e1deb54cf",
+    "conversation_id": "7f312059-f727-41bf-9319-9809574b48b5",
+    "user_id": null,
+    "rating": 5,
+    "review_text": "Helpful",
+    "sentiment": "positive",
+    "created_at": "2026-05-13T12:00:14"
+  },
+  {
+    "id": "22d42c64-e0b9-49e2-beb8-1732d01242c2",
+    "conversation_id": "410f6517-ca7a-43e9-83c4-360e6ecfa16f",
+    "user_id": null,
+    "rating": 5,
+    "review_text": "Helpful",
+    "sentiment": "positive",
+    "created_at": "2026-05-13T12:54:47"
+  },
+  {
+    "id": "cf564354-f680-4619-a184-99f6b5bad1ce",
+    "conversation_id": "410f6517-ca7a-43e9-83c4-360e6ecfa16f",
+    "user_id": null,
+    "rating": 2,
+    "review_text": "Needs human follow-up",
+    "sentiment": "negative",
+    "created_at": "2026-05-13T12:54:48"
+  },
+  {
+    "id": "5e97ec81-4a67-4c8c-8ffd-61c2bf3503cd",
+    "conversation_id": "410f6517-ca7a-43e9-83c4-360e6ecfa16f",
+    "user_id": null,
+    "rating": 2,
+    "review_text": "Needs human follow-up",
+    "sentiment": "negative",
+    "created_at": "2026-05-13T13:59:06"
+  },
+  {
+    "id": "b33963d1-ff8b-40f6-88d3-2e057ae1b25e",
+    "conversation_id": "410f6517-ca7a-43e9-83c4-360e6ecfa16f",
+    "user_id": null,
+    "rating": 5,
+    "review_text": "Helpful",
+    "sentiment": "positive",
+    "created_at": "2026-05-13T13:59:08"
+  },
+  {
+    "id": "06339d64-1e6e-4dfe-92de-cfa2f0cad990",
+    "conversation_id": "410f6517-ca7a-43e9-83c4-360e6ecfa16f",
+    "user_id": null,
+    "rating": 5,
+    "review_text": "Helpful",
+    "sentiment": "positive",
+    "created_at": "2026-05-13T14:54:49"
+  },
+  {
+    "id": "259f0506-559b-4bf2-95fe-76b3eaac3b21",
+    "conversation_id": "410f6517-ca7a-43e9-83c4-360e6ecfa16f",
+    "user_id": null,
+    "rating": 2,
+    "review_text": "Needs human follow-up",
+    "sentiment": "negative",
+    "created_at": "2026-05-13T14:54:50"
+  },
+  {
+    "id": "60087a47-f412-4c53-8de3-409db8efd7c0",
+    "conversation_id": "410f6517-ca7a-43e9-83c4-360e6ecfa16f",
+    "user_id": null,
+    "rating": 2,
+    "review_text": "Needs human follow-up",
+    "sentiment": "negative",
+    "created_at": "2026-05-13T14:55:26"
+  },
+  {
+    "id": "4639e5ca-0333-4917-97c9-ace2866c0866",
+    "conversation_id": "410f6517-ca7a-43e9-83c4-360e6ecfa16f",
+    "user_id": null,
+    "rating": 2,
+    "review_text": "Needs human follow-up",
+    "sentiment": "negative",
+    "created_at": "2026-05-13T14:55:28"
+  }
+]

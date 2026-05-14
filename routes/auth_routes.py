@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from flask import Blueprint, current_app, flash, jsonify, redirect, render_template, request, url_for
+from flask import Blueprint, current_app, flash, jsonify, redirect, render_template, request, session, url_for
 
-from services.auth_service import current_user, establish_oauth_session, get_oauth_redirect, login_user, logout_user, register_user, require_auth
+from services.auth_service import current_user, establish_oauth_session, get_login_redirect, get_oauth_redirect, login_user, logout_user, register_user, require_auth
 from services.booking_service import list_bookings
 from services.db_service import get_db_status
 from services.profile_service import get_profile
@@ -27,13 +27,50 @@ def register():
 @auth_bp.route("/auth/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        try:
-            ok, message = login_user(request.form.get("email", ""), request.form.get("password", ""))
-            flash(message)
-            return redirect(url_for("auth.dashboard" if ok else "auth.login"))
-        except Exception as exc:
-            flash(f"Login failed: {exc}")
-    return render_template("auth/login.html", supabase_status=get_supabase_config_status(), supabase_health=get_supabase_health())
+        print("[LOGIN DEBUG] form=", dict(request.form))
+
+        email = str(
+            request.form.get("email")
+            or request.form.get("login")
+            or request.form.get("username")
+            or ""
+        ).lower().strip()
+
+        password = str(
+            request.form.get("password")
+            or request.form.get("user_password")
+            or request.form.get("pass")
+            or ""
+        )
+
+        print("[LOGIN DEBUG] email=", email)
+        print("[LOGIN DEBUG] password length=", len(password))
+
+        ok, message = login_user(email, password)
+        user = current_user()
+
+        print("[LOGIN DEBUG] ok=", ok)
+        print("[LOGIN DEBUG] message=", message)
+        print("[LOGIN DEBUG] user=", user)
+
+        if ok and user:
+            if user.get("is_admin") is True or user.get("account_type") == "Admin":
+                print("[LOGIN DEBUG] redirect=/admin")
+                return redirect("/admin")
+            if user.get("account_type") == "Driver":
+                print("[LOGIN DEBUG] redirect=/driver/dashboard")
+                return redirect("/driver/dashboard")
+            print("[LOGIN DEBUG] redirect=/dashboard")
+            return redirect("/dashboard")
+
+        flash(message or "Login failed.")
+        return redirect(url_for("auth.login"))
+
+    return render_template(
+        "auth/login.html",
+        supabase_status=get_supabase_config_status(),
+        supabase_health=get_supabase_health()
+    )
 
 
 @auth_bp.route("/auth/logout")
@@ -73,7 +110,7 @@ def auth_callback():
             )
             if not ok:
                 return jsonify({"ok": False, "message": message}), 400
-            return jsonify({"ok": True, "message": message, "redirect": url_for("auth.dashboard")})
+            return jsonify({"ok": True, "message": message, "redirect": get_login_redirect()})
         except Exception as exc:
             current_app.logger.exception("OAuth callback failed")
             return jsonify({"ok": False, "message": str(exc)}), 400

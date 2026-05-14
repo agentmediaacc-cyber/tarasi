@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} | Tarasi{% endblock %}
+{% block content %}
+<section class="section">
+  <article class="hero-card">
+    <span class="eyebrow">{{ title }}</span>
+    <h1>{{ title }}</h1>
+    <p>{{ description }}</p>
+    <a class="btn btn-primary" href="{{ cta_href }}">{{ cta_label }}</a>
+  </article>
+</section>
+{% endblock %}

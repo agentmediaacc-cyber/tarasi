@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Fleet | Tarasi{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="section-head">
+    <span class="eyebrow">Fleet</span>
+    <h1>Tarasi fleet preview</h1>
+    <p>Only real fleet records are displayed here, with richer premium vehicle specs shown safely when fields are available.</p>
+  </div>
+  <div class="fleet-preview-grid">
+    {% for car in cars %}
+    <article class="card fleet-preview-card fleet-theme-{{ car.theme }}">
+      <div class="fleet-preview-top">
+        <span class="card-tag">{{ car.badge }}</span>
+        <span class="status-chip status-ready">{{ car.status or "Ready" }}</span>
+      </div>
+      <h3>{{ car.title }}</h3>
+      <p>{{ car.subtitle }}</p>
+      <div class="meta">{{ car.meta }}</div>
+      <div class="fleet-spec-grid">
+        {% for label, value in car.specs.items() %}
+        <span><strong>{{ label }}</strong>{{ value }}</span>
+        {% endfor %}
+      </div>
+      <p class="meta">{{ car.best_for }}</p>
+      <a class="btn btn-primary booking-launch-link" href="{{ url_for('booking.book_form', booking_type='once-off') }}">Book vehicle</a>
+    </article>
+    {% else %}
+    <div class="empty-state">{{ empty_state_message }}</div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

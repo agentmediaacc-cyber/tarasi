@@ -1,0 +1,96 @@
+{% extends "admin/base.html" %}
+{% block title %}Admin Control | Tarasi{% endblock %}
+{% block admin_page %}
+<section class="admin-subhero">
+  <div>
+    <span class="admin-kicker">Admin control</span>
+    <h1>Operations summary and executive visibility</h1>
+  </div>
+  <div class="admin-stat-pair">
+    <div><strong>{{ drivers_online if available else 0 }}</strong><span>Drivers online</span></div>
+    <div><strong>{{ live_trips|length if available else 0 }}</strong><span>Active trips</span></div>
+  </div>
+</section>
+
+<section class="admin-metric-grid compact">
+  {% for label, value in metrics.items() %}
+  <article class="admin-metric-card">
+    <div class="metric-content">
+      <span>{{ label }}</span>
+      <strong>{{ value }}</strong>
+    </div>
+  </article>
+  {% endfor %}
+</section>
+
+<section class="admin-grid-2">
+  <article class="admin-panel">
+    <div class="admin-panel-head">
+      <div>
+        <span class="admin-kicker">Recent bookings</span>
+        <h2>Latest activity</h2>
+      </div>
+      <a href="{{ url_for('admin.bookings') }}">Open bookings</a>
+    </div>
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead><tr><th>Reference</th><th>Customer</th><th>Route</th><th>Status</th></tr></thead>
+        <tbody>
+          {% for booking in bookings[:8] %}
+          <tr>
+            <td><a href="{{ url_for('admin.booking_detail', reference=booking.reference) }}">{{ booking.reference }}</a></td>
+            <td>{{ booking.full_name or "Unknown" }}</td>
+            <td>{{ booking.pickup }} to {{ booking.dropoff }}</td>
+            <td><span class="status-badge" data-status="{{ booking.status_key }}">{{ booking.status }}</span></td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="4">
+              <div class="admin-empty-state">
+                <p>No records yet.</p>
+                <a class="admin-btn gold" href="{{ url_for('admin.bookings') }}">Open bookings</a>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </article>
+
+  <article class="admin-panel">
+    <div class="admin-panel-head">
+      <div>
+        <span class="admin-kicker">Support and payments</span>
+        <h2>Queues needing review</h2>
+      </div>
+    </div>
+    <div class="admin-stack-list">
+      {% for ticket in support_rows[:4] %}
+      <div class="admin-stack-row">
+        <div>
+          <strong>{{ ticket.category }}</strong>
+          <p>{{ ticket.name }}</p>
+        </div>
+        <span>{{ ticket.status }}</span>
+      </div>
+      {% else %}
+      <div class="admin-empty-state">
+        <p>No records yet.</p>
+        <a class="admin-btn gold" href="{{ url_for('admin.support') }}">Open support</a>
+      </div>
+      {% endfor %}
+
+      {% for payment in payments[:3] %}
+      <div class="admin-stack-row">
+        <div>
+          <strong>{{ payment.reference or "Payment" }}</strong>
+          <p>{{ payment.customer }}</p>
+        </div>
+        <span>{{ payment.status }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </article>
+</section>
+{% endblock %}

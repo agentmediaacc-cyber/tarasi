@@ -1,54 +1,101 @@
 from __future__ import annotations
 
-from flask import Blueprint, flash, redirect, render_template, request, session, url_for
+from datetime import datetime
+from flask import Blueprint, flash, jsonify, redirect, render_template, request, session, url_for
 
-from services.driver_service import current_driver_from_session, get_driver_trip, list_driver_trips, update_driver_trip_status
-
+from services.auth_service import current_user, require_driver
+from services.driver_dashboard_service import (
+    get_driver_dashboard_context, 
+    record_driver_event, 
+    update_live_location
+)
+from services.driver_service import (
+    update_driver_trip_status, 
+    get_driver, 
+    update_row as update_driver_row
+)
+from services.booking_service import update_booking_status
 
 driver_bp = Blueprint("driver", __name__, url_prefix="/driver")
 
-
-def _require_driver():
-    driver = current_driver_from_session(session)
-    if not driver:
-        flash("Driver login is required.")
-        return None
-    return driver
-
-
-@driver_bp.route("")
+@driver_bp.route("/dashboard")
+@require_driver
 def dashboard():
-    driver = _require_driver()
-    if not driver:
-        return redirect(url_for("driver_plus.driver_login"))
-    trips = list_driver_trips(driver)
-    assigned = [item for item in trips if str(item.get("status", "")).lower().replace(" ", "_") in {"driver_assigned", "on_the_way", "arrived", "picked_up"}]
-    return render_template("driver/dashboard.html", driver=driver, bookings=trips, assigned=assigned)
-
+    user = current_user()
+    context = get_driver_dashboard_context(user["user_id"])
+    if not context.get("available"):
+        flash(context.get("error", "Access denied."))
+        return redirect(url_for("public.index"))
+    return render_template("driver/dashboard.html", **context)
 
 @driver_bp.route("/trips")
+@require_driver
 def trips():
-    driver = _require_driver()
+    user = current_user()
+    context = get_driver_dashboard_context(user["user_id"])
+    return render_template("driver/trips.html", **context)
+
+@driver_bp.route("/status", methods=["POST"])
+@require_driver
+def update_status():
+    user = current_user()
+    status = request.form.get("status", "Offline")
+    driver = get_driver(user["email"])
+    if driver:
+        update_driver_row("drivers", "driver_id", driver["driver_id"], {"status": status})
+        flash(f"Status updated to {status}")
+    return redirect(url_for("driver.dashboard"))
+
+@driver_bp.route("/location/update", methods=["POST"])
+@require_driver
+def location_update():
+    user = current_user()
+    data = request.get_json() or {}
+    
+    lat = data.get("lat")
+    lng = data.get("lng")
+    speed = data.get("speed")
+    booking_id = data.get("booking_id")
+    
+    driver = get_driver(user["email"])
+    if driver and lat and lng:
+        update_live_location(
+            driver["driver_id"], 
+            lat, lng, 
+            speed=speed, 
+            booking_id=booking_id
+        )
+        return jsonify({"ok": True})
+    return jsonify({"ok": False}), 400
+
+@driver_bp.route("/trips/<reference>/<action>", methods=["POST"])
+@require_driver
+def trip_action(reference: str, action: str):
+    user = current_user()
+    driver = get_driver(user["email"])
     if not driver:
-        return redirect(url_for("driver_plus.driver_login"))
-    return render_template("driver/trips.html", driver=driver, bookings=list_driver_trips(driver))
+        return jsonify({"ok": False, "error": "Driver not found"}), 404
+        
+    # Actions: accept, reject, start, arrived-pickup, picked-up, arrived-dropoff, complete
+    ok = update_driver_trip_status(reference, driver, action)
+    
+    if ok:
+        record_driver_event(driver["driver_id"], reference, action)
+        flash(f"Trip status updated: {action.replace('-', ' ').title()}")
+    else:
+        flash("Failed to update trip status.")
+        
+    return redirect(url_for("driver.dashboard"))
 
-
-@driver_bp.route("/trips/<reference>")
-def trip_detail(reference: str):
-    driver = _require_driver()
-    if not driver:
-        return redirect(url_for("driver_plus.driver_login"))
-    booking = get_driver_trip(driver, reference)
-    return render_template("driver/trip_detail.html", driver=driver, booking=booking, not_found=booking is None), (404 if booking is None else 200)
-
-
-@driver_bp.route("/trips/<reference>/status", methods=["POST"])
-def trip_status(reference: str):
-    driver = _require_driver()
-    if not driver:
-        return redirect(url_for("driver_plus.driver_login"))
-    status = request.form.get("status", "").strip()
-    booking = update_driver_trip_status(reference, driver, status)
-    flash(f"Trip {reference} updated." if booking else "Trip not found.")
-    return redirect(url_for("driver.trip_detail", reference=reference))
+@driver_bp.route("/trips/<reference>/navigate")
+@require_driver
+def navigate(reference: str):
+    user = current_user()
+    context = get_driver_dashboard_context(user["user_id"])
+    # Find the specific trip
+    trip = next((t for t in context.get("active_trips", []) if t["reference"] == reference), None)
+    if not trip:
+        flash("Trip not found.")
+        return redirect(url_for("driver.dashboard"))
+        
+    return render_template("driver/navigation.html", trip=trip, driver=context["driver"])

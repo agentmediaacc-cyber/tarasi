@@ -1,0 +1,110 @@
+{% extends "admin/base.html" %}
+{% block title %}Create Invoice / Quotation | Tarasi Admin{% endblock %}
+
+{% block admin_page %}
+<form class="tarasi-doc-form" method="post">
+  <h1>Create Tarasi Invoice / Quotation</h1>
+  <p>Premium A4 document with real QR code, banking details, watermark and full transport details.</p>
+
+  <div class="tarasi-form-grid">
+    <label>Document Type
+      <select name="document_type">
+        <option value="INVOICE">Invoice</option>
+        <option value="QUOTATION">Quotation</option>
+      </select>
+    </label>
+
+    <label>Payment Status
+      <select name="payment_status">
+        <option>PAID</option>
+        <option>UNPAID</option>
+        <option>PENDING</option>
+      </select>
+    </label>
+
+    <label>Prepared By
+      <input name="prepared_by" placeholder="Tarasi Operations">
+    </label>
+
+    <label>Client Name
+      <input name="client_name" required placeholder="John Michael">
+    </label>
+
+    <label>Phone
+      <input name="contact_number" required placeholder="+264 81 234 5678">
+    </label>
+
+    <label>Email
+      <input name="email" placeholder="johnmichael@email.com">
+    </label>
+
+    <label>Service Type
+      <select name="service_type">
+        <option>Airport Transfer</option>
+        <option>Once Off Ride</option>
+        <option>Monthly Transport</option>
+        <option>School Transport</option>
+        <option>Tourist Trip</option>
+        <option>VIP Services</option>
+        <option>Corporate Transport</option>
+      </select>
+    </label>
+
+    <label>Vehicle Type
+      <select name="vehicle_type">
+        <option>SUV</option>
+        <option>Sedan</option>
+        <option>Minibus</option>
+        <option>Luxury Van</option>
+      </select>
+    </label>
+
+    <label>Passengers
+      <input name="passengers" type="number" min="1" value="3">
+    </label>
+
+    <label>Pickup
+      <input name="pickup" required placeholder="Hosea Kutako International Airport">
+    </label>
+
+    <label>Drop-off
+      <input name="dropoff" required placeholder="Windhoek, Klein Windhoek">
+    </label>
+
+    <label>Detail Mode
+      <select name="detail_mode">
+        <option>Full Trip Details</option>
+        <option>Service Rendered Only</option>
+      </select>
+    </label>
+
+    <label>Date
+      <input name="service_date" type="date" required>
+    </label>
+
+    <label>Time
+      <input name="service_time" type="time" required>
+    </label>
+
+    <label>Amount NAD
+      <input name="amount" type="number" step="0.01" value="850.00" required>
+    </label>
+
+    <label>Discount NAD
+      <input name="discount" type="number" step="0.01" value="0">
+    </label>
+
+    <label>VAT %
+      <input name="vat" type="number" step="0.01" value="15">
+    </label>
+
+    <label class="tarasi-full">Notes / Instructions
+      <textarea name="notes">Thank you for choosing Tarasi Shuttle and Transfer Services.
+Please use the invoice number as payment reference.
+For any queries, feel free to contact us.</textarea>
+    </label>
+  </div>
+
+  <button class="tarasi-submit" type="submit">Generate Document</button>
+</form>
+{% endblock %}

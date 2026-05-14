@@ -1,0 +1,78 @@
+{% extends "admin/base.html" %}
+{% block title %}Support | Tarasi{% endblock %}
+{% block admin_page %}
+<section class="admin-subhero">
+  <div>
+    <span class="admin-kicker">Support</span>
+    <h1>Tickets, emergency queue, complaints and lost items</h1>
+  </div>
+</section>
+
+<section class="admin-panel">
+  <div class="admin-panel-head"><div><span class="admin-kicker">Support tickets</span><h2>Operational ticket queue</h2></div></div>
+  <div class="admin-table-wrap">
+    <table class="admin-table">
+      <thead><tr><th>Reference</th><th>Requester</th><th>Category</th><th>Status</th><th>Priority</th><th>Assign / Resolve</th></tr></thead>
+      <tbody>
+        {% for ticket in tickets %}
+        <tr>
+          <td>{{ ticket.reference or "-" }}</td>
+          <td>{{ ticket.name }}</td>
+          <td>{{ ticket.category }}</td>
+          <td><span class="status-badge">{{ ticket.status }}</span></td>
+          <td>{{ ticket.priority }}</td>
+          <td>
+            <form method="post" action="{{ url_for('admin.support') }}" class="admin-inline-form">
+              <input type="hidden" name="reference" value="{{ ticket.reference }}">
+              <input type="text" name="assigned_to" placeholder="Assign to">
+              <select name="status">
+                <option value="">Keep status</option>
+                <option>Open</option>
+                <option>Assigned</option>
+                <option>Resolved</option>
+              </select>
+              <button class="admin-mini-btn" type="submit">Save</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6"><div class="admin-empty">No real support rows are available from the connected backend.</div></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="admin-grid-2">
+  <article id="complaints" class="admin-panel">
+    <div class="admin-panel-head"><div><span class="admin-kicker">Complaints</span><h2>Complaint queue</h2></div></div>
+    <div class="admin-condensed-list">
+      {% for ticket in complaints %}
+      <span>{{ ticket.name }} · {{ ticket.category }}</span>
+      {% else %}
+      <div class="admin-empty">No complaint rows available.</div>
+      {% endfor %}
+    </div>
+  </article>
+  <article id="lost-items" class="admin-panel">
+    <div class="admin-panel-head"><div><span class="admin-kicker">Lost items</span><h2>Recovery queue</h2></div></div>
+    <div class="admin-condensed-list">
+      {% for ticket in lost_items %}
+      <span>{{ ticket.name }} · {{ ticket.category }}</span>
+      {% else %}
+      <div class="admin-empty">No lost-item rows available.</div>
+      {% endfor %}
+    </div>
+  </article>
+  <article class="admin-panel span-full">
+    <div class="admin-panel-head"><div><span class="admin-kicker">Emergency requests</span><h2>Priority support</h2></div></div>
+    <div class="admin-condensed-list">
+      {% for ticket in emergency %}
+      <span>{{ ticket.name }} · {{ ticket.status }} · {{ ticket.priority }}</span>
+      {% else %}
+      <div class="admin-empty">No emergency support rows available.</div>
+      {% endfor %}
+    </div>
+  </article>
+</section>
+{% endblock %}

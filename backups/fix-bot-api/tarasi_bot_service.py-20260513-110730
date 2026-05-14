@@ -1,0 +1,219 @@
+import os, re, uuid, json
+from datetime import datetime, timedelta
+from pathlib import Path
+
+try:
+    from supabase import create_client
+except Exception:
+    create_client = None
+
+COMPANY = {
+    "name": "Tarasi Shuttle and Transfer Services CC",
+    "tin": "15733730-011",
+    "reg_no": "CC/2025/11107",
+    "po_box": "P.O. Box 60216, Windhoek",
+    "email": "tarasishuttle@gmail.com",
+    "bank": "First National Bank (FNB)",
+    "account_name": "Tarasi Shuttle and Transfer Services CC",
+    "account_number": "64289981259",
+    "branch": "Maerua Mall",
+    "branch_code": "282273",
+}
+
+DEFAULT_ROUTES = [
+    {"from": "windhoek", "to": "hosea kutako airport", "vehicle": "sedan", "price": 350, "service_type": "airport"},
+    {"from": "hosea kutako airport", "to": "windhoek", "vehicle": "sedan", "price": 350, "service_type": "airport"},
+    {"from": "windhoek", "to": "swakopmund", "vehicle": "sedan", "price": 950, "service_type": "long_distance"},
+    {"from": "windhoek", "to": "walvis bay", "vehicle": "sedan", "price": 1050, "service_type": "long_distance"},
+    {"from": "windhoek", "to": "sossusvlei", "vehicle": "sedan", "price": 1650, "service_type": "tour"},
+    {"from": "windhoek", "to": "etosha", "vehicle": "sedan", "price": 1800, "service_type": "tour"},
+]
+
+VEHICLE_MULTIPLIERS = {
+    "sedan": 1,
+    "suv": 1.45,
+    "quantum": 2.1,
+    "minibus": 2.8,
+    "vip": 1.8,
+}
+
+TOWN_KEYWORDS = {
+    "wanaheda": "windhoek town pickup",
+    "katutura": "windhoek town pickup",
+    "khomasdal": "windhoek town pickup",
+    "klein windhoek": "windhoek town pickup",
+    "eros": "windhoek town pickup",
+    "ausspannplatz": "windhoek town pickup",
+    "pioneerspark": "windhoek town pickup",
+    "cimbebasia": "windhoek town pickup",
+}
+
+def ticket_number(prefix="TRQ"):
+    return f"{prefix}-{datetime.now().strftime('%Y%m%d')}-{str(uuid.uuid4())[:6].upper()}"
+
+def normalise(text):
+    return (text or "").lower().strip()
+
+def detect_service_type(message):
+    msg = normalise(message)
+    if any(w in msg for w in ["airport", "hikia", "hosea", "kutako", "flight"]):
+        return "airport"
+    if any(w in msg for w in ["school", "learner", "student", "monthly"]):
+        return "school"
+    if any(w in msg for w in ["tour", "safari", "sossusvlei", "etosha", "swakopmund", "walvis", "desert", "coast"]):
+        return "tour"
+    if any(w in msg for w in ["vip", "executive", "private", "business", "corporate"]):
+        return "vip"
+    if any(w in msg for w in ["quote", "quotation", "invoice", "price", "cost", "fare"]):
+        return "quote"
+    return "shuttle"
+
+def detect_vehicle(message):
+    msg = normalise(message)
+    for v in VEHICLE_MULTIPLIERS:
+        if v in msg:
+            return v
+    if "quantum" in msg or "van" in msg:
+        return "quantum"
+    if "bus" in msg:
+        return "minibus"
+    return "sedan"
+
+def extract_passengers(message):
+    msg = normalise(message)
+    found = re.findall(r"\b(\d{1,2})\s*(people|passengers|pax|person|persons)?\b", msg)
+    if found:
+        try:
+            n = int(found[0][0])
+            return max(1, n)
+        except Exception:
+            return 1
+    return 1
+
+def extract_route(message):
+    msg = normalise(message)
+    pickup = ""
+    dropoff = ""
+
+    patterns = [
+        r"from\s+(.+?)\s+to\s+(.+)",
+        r"pickup\s+(.+?)\s+drop.?off\s+(.+)",
+        r"(.+?)\s+to\s+(.+)",
+    ]
+
+    for p in patterns:
+        m = re.search(p, msg)
+        if m:
+            pickup = m.group(1).strip(" .,-")
+            dropoff = m.group(2).strip(" .,-")
+            break
+
+    return pickup, dropoff
+
+def get_supabase():
+    url = os.getenv("SUPABASE_URL")
+    key = os.getenv("SUPABASE_SERVICE_ROLE_KEY") or os.getenv("SUPABASE_SERVICE_KEY") or os.getenv("SUPABASE_ANON_KEY")
+    if not url or not key or not create_client:
+        return None
+    try:
+        return create_client(url, key)
+    except Exception:
+        return None
+
+def load_route_price(pickup, dropoff, vehicle="sedan"):
+    pickup_n = normalise(pickup)
+    dropoff_n = normalise(dropoff)
+    vehicle = normalise(vehicle) or "sedan"
+
+    sb = get_supabase()
+    if sb:
+        for table in ["tarasi_route_prices", "routes", "route_prices"]:
+            try:
+                res = sb.table(table).select("*").execute()
+                rows = res.data or []
+                for r in rows:
+                    rf = normalise(r.get("from_location") or r.get("origin") or r.get("from") or "")
+                    rt = normalise(r.get("to_location") or r.get("destination") or r.get("to") or "")
+                    rv = normalise(r.get("vehicle") or r.get("vehicle_type") or "sedan")
+                    if rf in pickup_n and rt in dropoff_n and (rv == vehicle or rv == "sedan"):
+                        return float(r.get("price") or r.get("base_price") or r.get("amount") or 0), "admin_route_price"
+            except Exception:
+                continue
+
+    for r in DEFAULT_ROUTES:
+        if r["from"] in pickup_n and r["to"] in dropoff_n:
+            base = r["price"]
+            return round(base * VEHICLE_MULTIPLIERS.get(vehicle, 1), 2), "default_route_price"
+
+    if any(k in pickup_n for k in TOWN_KEYWORDS) or any(k in dropoff_n for k in TOWN_KEYWORDS):
+        return 150, "windhoek_town_pickup_estimate"
+
+    if "windhoek" in pickup_n and "windhoek" in dropoff_n:
+        return 100, "windhoek_local_estimate"
+
+    return 0, "needs_manual_pricing"
+
+def missing_quote_fields(data):
+    missing = []
+    for key, label in [
+        ("client_name", "your full name"),
+        ("phone", "your phone or WhatsApp number"),
+        ("pickup", "pickup location"),
+        ("dropoff", "drop-off location"),
+        ("travel_date", "travel date"),
+        ("passengers", "number of passengers"),
+    ]:
+        if not data.get(key):
+            missing.append(label)
+    return missing
+
+def build_bot_reply(message, session_data=None):
+    session_data = session_data or {}
+    service_type = detect_service_type(message)
+    pickup, dropoff = extract_route(message)
+
+    vehicle = detect_vehicle(message)
+    passengers = extract_passengers(message)
+
+    if pickup:
+        session_data["pickup"] = pickup
+    if dropoff:
+        session_data["dropoff"] = dropoff
+    if vehicle:
+        session_data["vehicle"] = vehicle
+    if passengers:
+        session_data["passengers"] = passengers
+    session_data["service_type"] = service_type
+
+    price, source = load_route_price(session_data.get("pickup", ""), session_data.get("dropoff", ""), session_data.get("vehicle", "sedan"))
+
+    if price:
+        session_data["estimated_price"] = price
+        answer = (
+            f"Thank you for contacting Tarasi. I can help with your {service_type} request. "
+            f"For {session_data.get('pickup','your pickup')} to {session_data.get('dropoff','your destination')} "
+            f"using {session_data.get('vehicle','sedan')}, the estimated price is N$ {price:.2f}. "
+            "Would you like me to create a premium quotation for you?"
+        )
+    else:
+        answer = (
+            "Thank you for contacting Tarasi. I can help with airport transfers, town pickups, VIP movement, "
+            "school transport, tours and long-distance routes. Please send your pickup, drop-off, date, passengers "
+            "and preferred vehicle so I can prepare a proper quote."
+        )
+
+    suggestions = [
+        "Create a quotation",
+        "Airport transfer price",
+        "Town pickup",
+        "VIP shuttle",
+        "Tour package",
+        "Talk to support",
+    ]
+
+    return {
+        "reply": answer,
+        "session_data": session_data,
+        "suggestions": suggestions,
+        "price_source": source,
+    }

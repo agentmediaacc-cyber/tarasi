@@ -2,6 +2,7 @@
 {% block title %}{{ booking_meta.title }} | Tarasi{% endblock %}
 {% block head %}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/tarasi_maps.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/tarasi_booking_flow.css') }}">
 {% endblock %}
 {% block content %}
 <section class="hero-grid">
@@ -82,11 +83,45 @@
         </div>
       </div>
     </div>
-    <form method="post" class="field-grid">
+    <form method="post" class="field-grid tarasi-booking-flow" data-booking-flow data-booking-type="{{ booking_type }}">
+      <div class="booking-flow-intro">
+        <strong>Estimate first, then create the booking</strong>
+        <p>Enter the route, choose a vehicle, and Tarasi will calculate the estimated price, distance, duration and route notes before you confirm.</p>
+      </div>
       {% for field in form_fields %}
       <div class="field">
         <label for="{{ field.name }}">{{ field.label }}</label>
-        {% if field.type == "textarea" %}
+        {% if field.name == "pickup_location" %}
+        <input
+          id="{{ field.name }}"
+          name="{{ field.name }}"
+          type="text"
+          placeholder="Enter pickup street, suburb or landmark"
+          value="{{ prefill.get(field.name) or prefill.get('pickup') or '' }}"
+          data-pricing-pickup
+          {% if field.required %}required{% endif %}
+        >
+        {% elif field.name == "dropoff_location" %}
+        <input
+          id="{{ field.name }}"
+          name="{{ field.name }}"
+          type="text"
+          placeholder="Enter drop-off street, suburb or destination"
+          value="{{ prefill.get(field.name) or prefill.get('dropoff') or '' }}"
+          data-pricing-dropoff
+          {% if field.required %}required{% endif %}
+        >
+        {% elif field.name == "preferred_vehicle" %}
+        <select id="{{ field.name }}" name="{{ field.name }}" data-pricing-vehicle {% if field.required %}required{% endif %}>
+          <option value="sedan">Sedan</option>
+          <option value="suv">SUV</option>
+          <option value="quantum">Quantum</option>
+          <option value="vip">VIP</option>
+        </select>
+        {% elif field.name == "luggage" %}
+        <input id="luggage_count" name="luggage_count" type="number" min="0" value="0" data-pricing-luggage>
+        <input id="{{ field.name }}" name="{{ field.name }}" type="hidden" value="0 bag">
+        {% elif field.type == "textarea" %}
         <textarea id="{{ field.name }}" name="{{ field.name }}" {% if field.required %}required{% endif %}></textarea>
         {% elif field.type == "select" %}
         <select id="{{ field.name }}" name="{{ field.name }}" {% if field.required %}required{% endif %}>
@@ -96,15 +131,136 @@
           {% endfor %}
         </select>
         {% else %}
-        <input id="{{ field.name }}" name="{{ field.name }}" type="{{ field.type }}" {% if field.placeholder %}placeholder="{{ field.placeholder }}"{% endif %} {% if field.min is defined %}min="{{ field.min }}"{% endif %} {% if field.required %}required{% endif %}>
+        <input
+          id="{{ field.name }}"
+          name="{{ field.name }}"
+          type="{{ field.type }}"
+          {% if field.placeholder %}placeholder="{{ field.placeholder }}"{% endif %}
+          {% if field.min is defined %}min="{{ field.min }}"{% endif %}
+          {% if field.name in ['date', 'time', 'full_name', 'phone', 'email'] %}value="{{ prefill.get(field.name) or '' }}"{% endif %}
+          {% if field.name == 'passengers' %}value="{{ prefill.get(field.name) or '1' }}"{% endif %}
+          {% if field.name == "passengers" %}data-pricing-passengers{% endif %}
+          {% if field.name == "date" %}data-pricing-date{% endif %}
+          {% if field.name == "time" %}data-pricing-time{% endif %}
+          {% if field.required %}required{% endif %}
+        >
         {% endif %}
       </div>
       {% endfor %}
-      <button class="btn btn-primary btn-block" type="submit">Submit booking</button>
+
+      <div class="field">
+        <label for="pricing_service_type">Service type</label>
+        <select id="pricing_service_type" name="pricing_service_type" data-pricing-service-type>
+          <option value="town" {% if booking_type == "once-off" %}selected{% endif %}>Town</option>
+          <option value="airport" {% if booking_type == "airport" %}selected{% endif %}>Airport</option>
+          <option value="vip" {% if booking_type == "vip" %}selected{% endif %}>VIP</option>
+          <option value="tour" {% if booking_type == "tourist" %}selected{% endif %}>Tour</option>
+          <option value="school" {% if booking_type == "school" %}selected{% endif %}>School</option>
+          <option value="long_distance" {% if booking_type == "long-distance" %}selected{% endif %}>Long distance</option>
+        </select>
+      </div>
+
+      <input type="hidden" name="quote_number" data-created-quote-number>
+      <input type="hidden" name="final_price" data-created-final-price>
+
+      <div class="booking-action-row">
+        <button class="btn btn-secondary btn-block" type="button" data-estimate-price>Estimate Price</button>
+        <button class="btn btn-primary btn-block" type="button" data-create-booking disabled>Create Booking</button>
+      </div>
+
+      <div class="tarasi-pricing-card is-hidden" data-pricing-card>
+        <div class="tarasi-pricing-card-head">
+          <div>
+            <span class="eyebrow">Live pricing</span>
+            <h3>Estimated Tarasi trip</h3>
+          </div>
+          <span class="pricing-confidence" data-pricing-confidence>Estimate</span>
+        </div>
+
+        <div class="tarasi-pricing-summary">
+          <div>
+            <span>Pickup</span>
+            <strong data-summary-pickup>-</strong>
+          </div>
+          <div>
+            <span>Drop-off</span>
+            <strong data-summary-dropoff>-</strong>
+          </div>
+          <div>
+            <span>Vehicle</span>
+            <strong data-summary-vehicle>-</strong>
+          </div>
+          <div>
+            <span>Distance</span>
+            <strong data-summary-distance>-</strong>
+          </div>
+          <div>
+            <span>Duration</span>
+            <strong data-summary-duration>-</strong>
+          </div>
+          <div>
+            <span>Zone</span>
+            <strong data-summary-zone>-</strong>
+          </div>
+        </div>
+
+        <div class="tarasi-price-total">
+          <span>Estimated price</span>
+          <strong data-summary-price>N$0.00</strong>
+        </div>
+
+        <div class="tarasi-pricing-breakdown">
+          <div><span>Base fare</span><strong data-breakdown-base>N$0.00</strong></div>
+          <div><span>Distance</span><strong data-breakdown-distance>N$0.00</strong></div>
+          <div><span>Zone</span><strong data-breakdown-zone>N$0.00</strong></div>
+          <div><span>Waiting</span><strong data-breakdown-waiting>N$0.00</strong></div>
+          <div><span>Luggage</span><strong data-breakdown-luggage>N$0.00</strong></div>
+          <div><span>Night / service</span><strong data-breakdown-service>N$0.00</strong></div>
+        </div>
+
+        <div class="tarasi-pricing-notes">
+          <p data-pricing-notes>Pricing notes will appear here after estimation.</p>
+          <div class="suggestion-chip-row" data-pricing-suggestions></div>
+        </div>
+      </div>
+
+      <div class="tarasi-booking-confirmation is-hidden" data-booking-confirmation>
+        <span class="eyebrow">Booking created</span>
+        <h3 data-booking-number>Booking number</h3>
+        <p data-booking-price>Final price: N$0.00</p>
+        <p data-booking-status>Status: pending</p>
+        <p data-booking-payment>Payment status: unpaid</p>
+        <div class="tarasi-bank-details">
+          <strong>Tarasi Banking Details</strong>
+          <p>Bank: First National Bank (FNB)</p>
+          <p>Account Name: Tarasi Shuttle and Transfer Services CC</p>
+          <p>Account Number: 64289981259</p>
+          <p>Branch: Maerua Mall</p>
+          <p>Branch Code: 282273</p>
+          <p>Email: tarasishuttle@gmail.com</p>
+        </div>
+        <div class="field">
+          <label for="payment_proof_text">Proof of payment reference or note</label>
+          <textarea id="payment_proof_text" data-payment-proof-text placeholder="Example: EFT done from FNB at 14:26, ref 64289981259"></textarea>
+        </div>
+        <div class="booking-action-row">
+          <button class="btn btn-secondary btn-block" type="button" data-submit-payment-proof>I have paid</button>
+          <button class="btn btn-secondary btn-block" type="button" data-create-booking-invoice>Get invoice</button>
+        </div>
+        <p>Tarasi support can help if you need to update pickup details or luggage before dispatch.</p>
+        <div class="booking-action-row">
+          <a class="btn btn-secondary btn-block" href="#" data-track-booking-link>Track booking</a>
+          <a class="btn btn-secondary btn-block" href="https://wa.me/264814167042" target="_blank" rel="noreferrer">WhatsApp support</a>
+        </div>
+        <a class="btn btn-secondary btn-block is-hidden" href="#" data-booking-invoice-link>Open invoice</a>
+      </div>
+
+      <button class="btn btn-secondary btn-block booking-fallback-submit" type="submit">Use classic manual booking request instead</button>
     </form>
   </aside>
 </section>
 {% endblock %}
 {% block scripts %}
   <script src="{{ url_for('static', filename='js/tarasi_maps.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/tarasi_booking_flow.js') }}" defer></script>
 {% endblock %}

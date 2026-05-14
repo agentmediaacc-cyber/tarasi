@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="partner-shell">
+  <aside class="partner-side">
+    <div class="partner-logo">P</div>
+    <a href="/partners/dashboard">Dashboard</a>
+    <a href="/partners/fleet">Fleet</a>
+    <a href="/partners/drivers">Drivers</a>
+    <a href="/partners/staff">Staff accounts</a>
+    <a href="/partners/bookings">Bookings</a>
+    <a href="/partners/reports">Reports</a>
+    <a href="/partners/statement">Statements</a>
+    <a href="/partners/logout">Logout</a>
+  </aside>
+
+  <main class="partner-main">
+    <div class="partner-hero">
+      <div>
+        <p class="eyebrow">Partner company portal</p>
+        <h1>{{ partner.company_name }}</h1>
+        <p>{{ partner.email }} • {{ partner.service_area }} • {{ partner.status }}</p>
+      </div>
+      <a class="partner-btn" href="/partners/bookings">Create booking</a>
+    </div>
+
+    <div class="partner-stats">
+      <div><strong>{{ metrics.fleet_count }}</strong><span>Fleet</span></div>
+      <div><strong>{{ metrics.drivers_count }}</strong><span>Drivers</span></div>
+      <div><strong>{{ metrics.staff_count }}</strong><span>Staff</span></div>
+      <div><strong>{{ metrics.bookings_count }}</strong><span>Bookings</span></div>
+    </div>
+
+    <div class="partner-grid">
+      <section class="partner-card">
+        <h2>Fleet control</h2>
+        {% for car in fleet %}
+        <p><strong>{{ car.vehicle_name }}</strong> • {{ car.plate_number }} • {{ car.condition_status }}</p>
+        {% else %}<p>No fleet added.</p>{% endfor %}
+        <a href="/partners/fleet">Manage fleet</a>
+      </section>
+
+      <section class="partner-card">
+        <h2>Drivers</h2>
+        {% for d in drivers %}
+        <p><strong>{{ d.full_name }}</strong> • {{ d.phone }} • {{ d.verification_status }}</p>
+        {% else %}<p>No drivers added.</p>{% endfor %}
+        <a href="/partners/drivers">Register drivers</a>
+      </section>
+
+      <section class="partner-card wide">
+        <h2>Bookings</h2>
+        {% for b in bookings %}
+        <div class="partner-row">
+          <strong>{{ b.booking_id }}</strong>
+          <span>{{ b.customer_name }}</span>
+          <span>{{ b.pickup }} → {{ b.dropoff }}</span>
+          <em>{{ b.status }}</em>
+        </div>
+        {% else %}<p>No bookings yet.</p>{% endfor %}
+      </section>
+    </div>
+  </main>
+</section>
+{% endblock %}

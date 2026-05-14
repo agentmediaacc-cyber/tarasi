@@ -1,0 +1,149 @@
+{% extends "admin/base.html" %}
+{% block title %}Bookings Control | Tarasi{% endblock %}
+{% block admin_page %}
+<div style="margin: 0 0 18px; display:flex; gap:12px; flex-wrap:wrap;">
+  <a href="{{ url_for('admin.create_invoice') }}"
+     style="background:#0f766e;color:white;padding:14px 18px;border-radius:999px;font-weight:900;text-decoration:none;box-shadow:0 12px 30px rgba(15,118,110,.25);">
+    ▥ Create Invoice
+  </a>
+</div>
+
+<section class="admin-subhero">
+  <div>
+    <span class="admin-kicker">Bookings control</span>
+    <h1>Bookings, live trips and booking-type operations</h1>
+  </div>
+  <div class="admin-filter-pills">
+    <a class="{% if status_filter == 'all' %}is-active{% endif %}" href="{{ url_for('admin.bookings', status='all') }}">All</a>
+    <a class="{% if status_filter == 'active' %}is-active{% endif %}" href="{{ url_for('admin.bookings', status='active') }}">Active</a>
+    <a class="{% if status_filter == 'pending' %}is-active{% endif %}" href="{{ url_for('admin.bookings', status='pending') }}">Pending</a>
+    <a class="{% if status_filter == 'completed' %}is-active{% endif %}" href="{{ url_for('admin.bookings', status='completed') }}">Completed</a>
+    <a class="{% if status_filter == 'cancellation_requested' %}is-active{% endif %}" href="{{ url_for('admin.bookings', status='cancellation_requested') }}">Cancellation requested</a>
+  </div>
+</section>
+
+<section class="admin-panel">
+  <div class="admin-panel-head">
+    <div>
+      <span class="admin-kicker">Bookings control</span>
+      <h2>Operational booking table</h2>
+    </div>
+  </div>
+  <div class="admin-table-wrap">
+    <table class="admin-table">
+      <thead><tr><th>Reference</th><th>Customer</th><th>Type</th><th>Route</th><th>Driver</th><th>Status</th><th>Amount</th><th>Controls</th></tr></thead>
+      <tbody>
+        {% for booking in bookings %}
+        <tr>
+          <td><a href="{{ url_for('admin.booking_detail', reference=booking.reference) }}">{{ booking.reference }}</a></td>
+          <td>{{ booking.full_name or "Unknown" }}</td>
+          <td>{{ booking.booking_type|replace('-', ' ')|title }}</td>
+          <td>{{ booking.pickup }} to {{ booking.dropoff }}</td>
+          <td>{{ booking.driver_name or "Unassigned" }}</td>
+          <td><span class="status-badge">{{ booking.status }}</span></td>
+          <td>{{ booking.amount or "Unavailable" }}</td>
+          <td>
+            <div class="admin-inline-actions">
+              <a class="admin-action-link" href="{{ url_for('admin.booking_detail', reference=booking.reference) }}">View booking</a>
+              <a class="admin-action-link" href="{{ url_for('admin.assign_driver', reference=booking.reference) }}">Assign driver</a>
+              <a class="admin-action-link" href="{{ url_for('track.track_detail', reference=booking.reference) }}">View tracking</a>
+            </div>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="8"><div class="admin-empty">No bookings are available in this filter.</div></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="live-trips" class="admin-grid-2">
+  <article class="admin-panel">
+    <div class="admin-panel-head"><div><span class="admin-kicker">Live trips</span><h2>Active ride board</h2></div></div>
+    <div class="admin-stack-list">
+      {% for booking in live_trips %}
+      <div class="admin-stack-row">
+        <div>
+          <strong>{{ booking.reference }}</strong>
+          <p>{{ booking.driver_name or "Unassigned driver" }} · {{ booking.vehicle_name or "Vehicle pending" }}</p>
+        </div>
+        <span>{{ booking.status }}</span>
+      </div>
+      {% else %}
+      <div class="admin-empty">No active trip rows available from the connected backend.</div>
+      {% endfor %}
+    </div>
+  </article>
+
+  <article class="admin-panel">
+    <div class="admin-panel-head"><div><span class="admin-kicker">Assignment pool</span><h2>Available drivers for assignment</h2></div></div>
+    <div class="admin-stack-list">
+      {% for driver in drivers[:8] %}
+      <div class="admin-stack-row">
+        <div>
+          <strong>{{ driver.full_name }}</strong>
+          <p>{{ driver.assigned_vehicle_name or "No vehicle assigned" }}</p>
+        </div>
+        <span>{{ driver.availability }}</span>
+      </div>
+      {% else %}
+      <div class="admin-empty">No driver rows available for booking assignment.</div>
+      {% endfor %}
+    </div>
+  </article>
+</section>
+
+<section class="admin-grid-2">
+  <article id="school-transport" class="admin-panel">
+    <div class="admin-panel-head"><div><span class="admin-kicker">School transport</span><h2>School bookings</h2></div></div>
+    <div class="admin-condensed-list">
+      {% for booking in by_type.school %}
+      <a href="{{ url_for('admin.booking_detail', reference=booking.reference) }}">{{ booking.reference }} · {{ booking.pickup }} to {{ booking.dropoff }}</a>
+      {% else %}
+      <div class="admin-empty">No school transport bookings available.</div>
+      {% endfor %}
+    </div>
+  </article>
+  <article id="monthly-plans" class="admin-panel">
+    <div class="admin-panel-head"><div><span class="admin-kicker">Monthly plans</span><h2>Recurring bookings</h2></div></div>
+    <div class="admin-condensed-list">
+      {% for booking in by_type.monthly %}
+      <a href="{{ url_for('admin.booking_detail', reference=booking.reference) }}">{{ booking.reference }} · {{ booking.full_name }}</a>
+      {% else %}
+      <div class="admin-empty">No monthly plan bookings available.</div>
+      {% endfor %}
+    </div>
+  </article>
+  <article id="airport-transfers" class="admin-panel">
+    <div class="admin-panel-head"><div><span class="admin-kicker">Airport transfers</span><h2>Airport movement queue</h2></div></div>
+    <div class="admin-condensed-list">
+      {% for booking in by_type.airport %}
+      <a href="{{ url_for('admin.booking_detail', reference=booking.reference) }}">{{ booking.reference }} · {{ booking.pickup }} to {{ booking.dropoff }}</a>
+      {% else %}
+      <div class="admin-empty">No airport transfer rows available.</div>
+      {% endfor %}
+    </div>
+  </article>
+  <article id="vip-private-hire" class="admin-panel">
+    <div class="admin-panel-head"><div><span class="admin-kicker">VIP / private hire</span><h2>Executive rides</h2></div></div>
+    <div class="admin-condensed-list">
+      {% for booking in by_type.vip %}
+      <a href="{{ url_for('admin.booking_detail', reference=booking.reference) }}">{{ booking.reference }} · {{ booking.full_name }}</a>
+      {% else %}
+      <div class="admin-empty">No VIP/private hire rows available.</div>
+      {% endfor %}
+    </div>
+  </article>
+  <article id="business-transport" class="admin-panel span-full">
+    <div class="admin-panel-head"><div><span class="admin-kicker">Business transport</span><h2>Corporate movement</h2></div></div>
+    <div class="admin-condensed-list">
+      {% for booking in by_type.business %}
+      <a href="{{ url_for('admin.booking_detail', reference=booking.reference) }}">{{ booking.reference }} · {{ booking.full_name }} · {{ booking.pickup }} to {{ booking.dropoff }}</a>
+      {% else %}
+      <div class="admin-empty">No business transport rows available.</div>
+      {% endfor %}
+    </div>
+  </article>
+</section>
+{% endblock %}

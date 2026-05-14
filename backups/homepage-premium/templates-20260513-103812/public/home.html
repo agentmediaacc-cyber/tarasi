@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+{% block title %}Tarasi | Premium Namibia transport{% endblock %}
+{% block content %}
+<section class="tarasi-live-hero">
+  <article class="hero-card hero-card-live">
+    <div class="destination-slideshow" data-destination-slideshow{% if destination_slides|length <= 1 %} data-static="true"{% endif %}>
+      <div class="destination-slide-track">
+        {% for slide in destination_slides %}
+        <section
+          class="destination-slide{% if loop.first %} is-active{% endif %}"
+          data-destination-slide
+          data-slide-index="{{ loop.index0 }}"
+          style="--slide-wallpaper: url('{{ slide.wallpaper_url }}');"
+          aria-hidden="{% if loop.first %}false{% else %}true{% endif %}"
+        >
+          <div class="destination-slide-copy">
+            <span class="eyebrow">Premium Namibia transport</span>
+            <h1>{{ slide.name }}</h1>
+            <p>{{ slide.text }}</p>
+
+            <div class="hero-rotator-shell">
+              <span class="hero-rotator-label">Built for</span>
+              <span class="hero-rotator" aria-label="Transport categories">
+                {% for word in hero_words %}
+                <span{% if loop.first %} class="is-active"{% endif %}>{{ word }}</span>
+                {% endfor %}
+              </span>
+            </div>
+
+            <div class="cta-row">
+              <a class="btn btn-primary booking-launch-link" href="{{ slide.cta_href }}">{{ slide.cta_label }}</a>
+              <a class="btn btn-secondary" href="{{ url_for('track.track_index') }}">Track booking</a>
+            </div>
+
+            <div class="hero-microfacts">
+              {% if metrics.active_bookings %}<span class="pill live">Live bookings {{ metrics.active_bookings }}</span>{% endif %}
+              {% if metrics.route_count %}<span class="pill">Routes {{ metrics.route_count }}</span>{% endif %}
+              {% if metrics.fleet_count %}<span class="pill">Fleet {{ metrics.fleet_count }}</span>{% endif %}
+              {% if metrics.tour_count %}<span class="pill">Tours {{ metrics.tour_count }}</span>{% endif %}
+            </div>
+          </div>
+        </section>
+        {% endfor %}
+      </div>
+
+      <div class="destination-slide-controls">
+        <button class="slide-nav prev" type="button" aria-label="Previous destination" data-slide-prev>‹</button>
+        <button class="slide-nav next" type="button" aria-label="Next destination" data-slide-next>›</button>
+      </div>
+
+      <div class="destination-slide-dots" role="tablist" aria-label="Destination slideshow">
+        {% for slide in destination_slides %}
+        <button
+          type="button"
+          class="slide-dot{% if loop.first %} is-active{% endif %}"
+          aria-label="Show {{ slide.name }}"
+          aria-selected="{% if loop.first %}true{% else %}false{% endif %}"
+          data-slide-dot="{{ loop.index0 }}"
+        ></button>
+        {% endfor %}
+      </div>
+
+      <div class="route-chip-marquee" aria-hidden="true">
+        <div class="route-chip-track">
+          {% for route in route_highlights %}
+          <span>{{ route.title }}</span>
+          {% endfor %}
+          {% for route in route_highlights %}
+          <span>{{ route.title }}</span>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <aside class="hero-live-panel panel">
+    <span class="eyebrow">Live route board</span>
+    <h3>Current premium movement</h3>
+    <div class="live-route-board">
+      {% for route in route_board %}
+      <a class="live-route-row" href="{{ url_for('public.routes_page') }}">
+        <div class="route-board-info">
+          <div class="route-board-main">
+            <strong>{{ route.title }}</strong>
+            <span class="departure-label">Scheduled</span>
+          </div>
+          <p>{{ route.route_type or route.subtitle }}</p>
+        </div>
+        <div class="route-board-status">
+          <span class="status-chip status-ready">On Time</span>
+          <span class="price-chip">{{ route.base_price or "Quote" }}</span>
+        </div>
+      </a>
+      {% else %}
+      <div class="empty-state">Live route board appears automatically when matching routes exist in the platform.</div>
+      {% endfor %}
+    </div>
+  </aside>
+</section>
+
+<section class="section">
+  <div class="section-head">
+    <span class="eyebrow">Book services</span>
+    <h2>Choose the Tarasi service you need</h2>
+  </div>
+  <div class="live-service-grid">
+    {% for card in service_cards %}
+    <a class="service-card-live booking-launch-link" href="{{ card.href }}" aria-label="Open {{ card.title }}">
+      <div class="service-card-top">
+        <span class="service-icon">{{ card.icon }}</span>
+        <span class="card-tag">{{ card.badge }}</span>
+      </div>
+      <h3>{{ card.title }}</h3>
+      <p>{{ card.description }}</p>
+      <span class="service-card-link">Open service</span>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section" id="travel-categories">
+  <div class="section-head">
+    <span class="eyebrow">Travel categories</span>
+    <h2>Premium movement for every Namibian journey</h2>
+  </div>
+  <div class="category-glow-grid">
+    {% set cats = [
+      {'id': 'airport', 'title': 'Airport', 'icon': '✈', 'cta': '/book/airport', 'desc': 'Reliable HKIA transfers'},
+      {'id': 'vip', 'title': 'VIP', 'icon': '★', 'cta': '/book/vip', 'desc': 'Executive private hire'},
+      {'id': 'business', 'title': 'Business', 'icon': '💼', 'cta': '/book/business', 'desc': 'Corporate staff mobility'},
+      {'id': 'tours', 'title': 'Tours', 'icon': '🏜', 'cta': '/tours', 'desc': 'Safari & desert routes'},
+      {'id': 'school', 'title': 'School', 'icon': '🎒', 'cta': '/book/school', 'desc': 'Safe student transport'},
+      {'id': 'long-distance', 'title': 'Long-distance', 'icon': '🛣', 'cta': '/book/once-off', 'desc': 'Inter-city premium trips'}
+    ] %}
+    {% for cat in cats %}
+    <a href="{{ cat.cta }}" class="category-glow-card booking-launch-link">
+      <div class="cat-icon">{{ cat.icon }}</div>
+      <h3>{{ cat.title }}</h3>
+      <p>{{ cat.desc }}</p>
+      <span class="cat-cta">Book now →</span>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+
+{% if homepage_has_live_data %}
+<section class="section">
+  <div class="section-head">
+    <span class="eyebrow">Real route highlights</span>
+    <h2>Route previews from live platform data</h2>
+  </div>
+  <div class="cards-grid cards-grid-live">
+    {% for route in route_highlights %}
+    <a class="card route-preview-card booking-launch-link" href="{{ url_for('booking.book_form', booking_type='once-off') }}">
+      <div class="card-top">
+        <span class="card-tag">Route</span>
+        <span class="status-badge badge-live">Live</span>
+      </div>
+      <h3>{{ route.title }}</h3>
+      <p>{{ route.subtitle }}</p>
+      <div class="meta">{{ route.meta }}</div>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+
+{% if tours %}
+<section class="section">
+  <div class="section-head">
+    <span class="eyebrow">Tours</span>
+    <h2>Premium Namibia tour movement</h2>
+  </div>
+  <div class="cards-grid cards-grid-live">
+    {% for tour in tours %}
+    <a class="card tour-live-card tour-theme-{{ tour.theme }} booking-launch-link" href="{{ url_for('tour.tour_detail', slug=tour.slug) }}">
+      <span class="card-tag">Tour</span>
+      <h3>{{ tour.title }}</h3>
+      <p>{{ tour.subtitle }}</p>
+      <div class="meta">{{ tour.meta }}</div>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+{% if fleet %}
+<section class="section">
+  <div class="section-head">
+    <span class="eyebrow">Fleet preview</span>
+    <h2>Premium fleet and richer specs</h2>
+  </div>
+  <div class="fleet-preview-grid">
+    {% for vehicle in fleet %}
+    <article class="card fleet-preview-card fleet-theme-{{ vehicle.theme }}">
+      <div class="fleet-preview-top">
+        <span class="card-tag">{{ vehicle.badge }}</span>
+        <div class="fleet-badges">
+          <span class="comfort-badge">Premium Comfort</span>
+          <span class="status-chip status-ready">{{ vehicle.status or "Ready" }}</span>
+        </div>
+      </div>
+      <h3>{{ vehicle.title }}</h3>
+      <p>{{ vehicle.subtitle }}</p>
+      <div class="meta">{{ vehicle.meta }}</div>
+      <div class="fleet-spec-grid">
+        {% for label, value in vehicle.specs.items() %}
+        <span class="spec-item">
+          <strong>{{ label }}</strong>
+          <span>{{ value }}</span>
+        </span>
+        {% endfor %}
+      </div>
+      <a class="btn btn-primary booking-launch-link" href="{{ url_for('booking.book_form', booking_type='once-off') }}">Book vehicle</a>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+{% else %}
+<section class="section">
+  <article class="panel callout">
+    <h2>{{ empty_state_message }}</h2>
+    <div class="cta-row">
+      <a class="btn btn-primary booking-launch-link" href="{{ url_for('booking.book_index') }}">Make an enquiry</a>
+      <a class="btn btn-secondary" href="{{ url_for('support.support_page') }}">Contact support</a>
+    </div>
+  </article>
+</section>
+{% endif %}
+
+{% endblock %}

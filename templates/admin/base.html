@@ -20,7 +20,7 @@
         <span class="admin-logo-mark">T</span>
         <span>
           <strong>Tarasi Executive</strong>
-          <small>Admin control center</small>
+          <small>Command center</small>
         </span>
       </a>
     </div>
@@ -30,10 +30,18 @@
     </div>
 
     <div class="admin-topbar-end">
-      <div class="admin-bell">◌</div>
-      <div class="admin-profile-pill">
-        <strong>Admin</strong>
-        <span>{{ admin_shell.db_status.database }}</span>
+      <div class="admin-profile-pill master-admin-profile">
+        <div class="admin-avatar">
+          {% set initials = current_user.full_name[0]|upper if current_user.full_name else "A" %}
+          {{ initials }}
+        </div>
+        <div class="admin-info">
+          <strong>{{ current_user.full_name }}</strong>
+          <small>{{ current_user.account_type }} · {{ current_user.email }}</small>
+        </div>
+        <div class="admin-badge {% if admin_shell.real_data_ready %}is-online{% endif %}">
+          {% if admin_shell.real_data_ready %}Real Neon{% else %}Fallback{% endif %}
+        </div>
       </div>
     </div>
   </header>

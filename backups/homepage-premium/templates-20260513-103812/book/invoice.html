@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Invoice {{ booking.invoice_number or booking.reference }} | Tarasi{% endblock %}
+{% block head %}
+<style>
+  .invoice-box { max-width: 800px; margin: auto; padding: 30px; border: 1px solid #eee; background: white; color: #333; }
+  .invoice-header { display: flex; justify-content: space-between; margin-bottom: 40px; }
+  .invoice-brand { font-size: 2rem; font-weight: 800; color: var(--accent); }
+  .invoice-details { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 40px; }
+  .invoice-table { width: 100%; border-collapse: collapse; margin-bottom: 40px; }
+  .invoice-table th { background: #f9f9f9; text-align: left; padding: 12px; border-bottom: 2px solid #eee; }
+  .invoice-table td { padding: 12px; border-bottom: 1px solid #eee; }
+  .invoice-total { text-align: right; font-size: 1.5rem; font-weight: 800; }
+  .invoice-footer { border-top: 1px solid #eee; padding-top: 20px; font-size: 0.8rem; color: #777; }
+  @media print { .site-header, .site-footer, .btn, .sticky-mobile-cta, .floating-support-shell { display: none !important; } }
+</style>
+{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="invoice-box">
+    <div class="invoice-header">
+      <div class="invoice-brand">Tarasi</div>
+      <div style="text-align: right;">
+        <strong>Invoice: {{ booking.invoice_number or 'PRE-INV-' ~ booking.reference }}</strong><br>
+        Date: {{ booking.created_at[:10] }}
+      </div>
+    </div>
+
+    <div class="invoice-details">
+      <div>
+        <strong>Bill To:</strong><br>
+        {{ booking.full_name }}<br>
+        {{ booking.phone }}<br>
+        {{ booking.email }}
+      </div>
+      <div style="text-align: right;">
+        <strong>From:</strong><br>
+        Tarasi Premium Namibia<br>
+        Windhoek, Namibia<br>
+        billing@tarasi.com
+      </div>
+    </div>
+
+    <table class="invoice-table">
+      <thead>
+        <tr>
+          <th>Description</th>
+          <th>Date</th>
+          <th style="text-align: right;">Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>{{ booking.booking_type|title }} Transfer: {{ booking.pickup }} to {{ booking.dropoff }}</td>
+          <td>{{ booking.date }} {{ booking.time }}</td>
+          <td style="text-align: right;">N${{ booking.amount }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="invoice-total">
+      Total: N${{ booking.amount }}
+    </div>
+
+    <div style="margin: 40px 0;">
+      <strong>Payment Status: {{ booking.payment_status }}</strong><br>
+      Method: {{ booking.payment_method }}
+    </div>
+
+    <div class="invoice-footer">
+      <p>Please use reference <strong>{{ booking.reference }}</strong> for all payments.</p>
+      <p>Terms: Payment due before departure for scheduled shuttles and transfers.</p>
+    </div>
+  </div>
+
+  <div class="cta-row" style="justify-content: center; margin-top: 20px;">
+    <button class="btn btn-primary" onclick="window.print()">Print Invoice</button>
+    <a class="btn btn-secondary" href="{{ url_for('booking.booking_payment', reference=booking.reference) }}">Back to Payment</a>
+  </div>
+</section>
+{% endblock %}

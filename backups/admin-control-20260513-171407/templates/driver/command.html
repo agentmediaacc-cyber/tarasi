@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="driver-command">
+  <aside class="driver-side">
+    <div class="driver-logo">D</div>
+    <a href="/driver/command">Command center</a>
+    <a href="/driver/profile">My driver profile</a>
+    <a href="/driver/documents">Documents & car photos</a>
+    <a href="/driver/wallet">Wallet & payouts</a>
+    <a href="/driver/trips">Old trips page</a>
+    <a href="/support">Support</a>
+  </aside>
+
+  <main class="driver-main">
+    <div class="driver-hero">
+      <div>
+        <p class="eyebrow">Tarasi Driver Command</p>
+        <h1>{{ driver.full_name }}</h1>
+        <p>{{ driver.email }} • {{ driver.phone or "Phone missing" }}</p>
+        <div class="driver-pills">
+          <span>{{ driver.verification_status }}</span>
+          <span>{{ driver.availability }}</span>
+          <span>Radius: {{ driver.assigned_radius_km }} km</span>
+        </div>
+      </div>
+      <form method="POST" action="/driver/availability" class="availability-box">
+        <label>Availability</label>
+        <select name="availability">
+          <option {% if driver.availability == "Offline" %}selected{% endif %}>Offline</option>
+          <option {% if driver.availability == "Available" %}selected{% endif %}>Available</option>
+          <option {% if driver.availability == "Busy" %}selected{% endif %}>Busy</option>
+          <option {% if driver.availability == "On trip" %}selected{% endif %}>On trip</option>
+        </select>
+        <button>Update</button>
+      </form>
+    </div>
+
+    <div class="driver-stats">
+      <div><strong>{{ trips|length }}</strong><span>Orders / trips</span></div>
+      <div><strong>{{ driver.total_trips }}</strong><span>Total trips</span></div>
+      <div><strong>{{ driver.completed_trips }}</strong><span>Completed</span></div>
+      <div><strong>{{ driver.balance }}</strong><span>Balance</span></div>
+    </div>
+
+    <section class="driver-grid">
+      <div class="driver-card big">
+        <p class="eyebrow">Active trip</p>
+        <h2>{{ active_trip.reference }}</h2>
+        <p>{{ active_trip.pickup_zone }} → {{ active_trip.dropoff_zone }}</p>
+        <div class="trip-meta">
+          <span>Pickup: {{ active_trip.pickup_time }}</span>
+          <span>Knock-off: {{ active_trip.knockoff_time }}</span>
+          <span>Status: {{ active_trip.status }}</span>
+        </div>
+
+        <form method="POST" action="/driver/activate-trip" class="code-form">
+          <input type="hidden" name="reference" value="{{ active_trip.reference }}">
+          <label>Customer pickup activation code</label>
+          <input name="activation_code" placeholder="Enter code customer gives you">
+          <button>Activate ride</button>
+        </form>
+
+        <div class="action-buttons">
+          <form method="POST" action="/driver/trip-status">
+            <input type="hidden" name="reference" value="{{ active_trip.reference }}">
+            <input type="hidden" name="status" value="On the way">
+            <button>On the way</button>
+          </form>
+          <form method="POST" action="/driver/trip-status">
+            <input type="hidden" name="reference" value="{{ active_trip.reference }}">
+            <input type="hidden" name="status" value="Arrived">
+            <button>Arrived</button>
+          </form>
+          <form method="POST" action="/driver/trip-status">
+            <input type="hidden" name="reference" value="{{ active_trip.reference }}">
+            <input type="hidden" name="status" value="Completed">
+            <button>Completed</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="driver-card">
+        <h2>Admin assigned vehicle</h2>
+        <p><strong>{{ driver.assigned_vehicle.name }}</strong></p>
+        <p>Plate: {{ driver.assigned_vehicle.plate_number }}</p>
+        <p>Colour: {{ driver.assigned_vehicle.colour }}</p>
+        <p>Condition: {{ driver.assigned_vehicle.condition_status }}</p>
+        <small>Driver cannot assign vehicle. Admin verifies car physically and assigns it.</small>
+      </div>
+
+      <div class="driver-card">
+        <h2>Customer contact</h2>
+        <p>{{ active_trip.customer_name }}</p>
+        <p>{{ active_trip.customer_phone }}</p>
+        <div class="contact-grid">
+          <a href="tel:{{ active_trip.customer_phone }}">Call offline</a>
+          <a href="sms:{{ active_trip.customer_phone }}">Text SMS</a>
+          <a href="/driver/command">In-app call soon</a>
+        </div>
+      </div>
+
+      <div class="driver-card">
+        <h2>Verification checklist</h2>
+        <ul class="checklist">
+          <li>Profile picture</li>
+          <li>ID photo</li>
+          <li>Front and back licence</li>
+          <li>PDP / valid driving permit</li>
+          <li>Vehicle front, back and inside photos</li>
+          <li>Licence disc and roadworthy</li>
+          <li>Admin physical car condition check</li>
+        </ul>
+        <a class="driver-btn" href="/driver/documents">Upload documents</a>
+      </div>
+    </section>
+
+    <section class="driver-card wide">
+      <h2>Assigned monthly pickups and live orders</h2>
+      <div class="driver-trip-list">
+        {% for trip in trips %}
+        <div class="driver-trip-row">
+          <strong>{{ trip.reference }}</strong>
+          <span>{{ trip.service_class }}</span>
+          <span>{{ trip.pickup_zone }} → {{ trip.dropoff_zone }}</span>
+          <span>{{ trip.pickup_time }}</span>
+          <em>{{ trip.status }}</em>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+  </main>
+</section>
+{% endblock %}

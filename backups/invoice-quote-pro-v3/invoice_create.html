@@ -1,0 +1,151 @@
+{% extends "admin/base.html" %}
+{% block title %}Executive Invoice Studio | Tarasi{% endblock %}
+{% block admin_page %}
+
+<section class="invoice-studio-hero">
+  <div>
+    <span class="invoice-kicker">Tarasi Executive Billing</span>
+    <h1>Create premium customer invoice</h1>
+    <p>Generate professional invoices for airport transfers, tours, VIP transport, business rides and recurring services.</p>
+  </div>
+
+  <div class="invoice-hero-badges">
+    <span>PDF Ready</span>
+    <span>Premium Layout</span>
+    <span>Operations Billing</span>
+  </div>
+</section>
+
+<form class="invoice-studio-form" method="post">
+
+  <section class="invoice-section-card">
+    <div class="invoice-section-head">
+      <h2>Customer details</h2>
+      <p>Client and billing information</p>
+    </div>
+
+    <div class="invoice-grid-2">
+      <label>
+        Client full name
+        <input name="client_name" required placeholder="Full customer name">
+      </label>
+
+      <label>
+        Contact number
+        <input name="contact_number" required placeholder="+264...">
+      </label>
+
+      <label>
+        Email address
+        <input name="email" type="email" placeholder="client@email.com">
+      </label>
+
+      <label>
+        Passenger count
+        <input name="passengers" type="number" min="1" value="1">
+      </label>
+    </div>
+  </section>
+
+  <section class="invoice-section-card">
+    <div class="invoice-section-head">
+      <h2>Trip & service</h2>
+      <p>Operational transport details</p>
+    </div>
+
+    <div class="invoice-grid-2">
+
+      <label>
+        Service type
+        <select name="service_type">
+          <option>Airport Transfer</option>
+          <option>Executive VIP Transfer</option>
+          <option>Business Transport</option>
+          <option>Tourist Shuttle</option>
+          <option>School Transport</option>
+          <option>Monthly Transport</option>
+          <option>Private Hire</option>
+        </select>
+      </label>
+
+      <label>
+        Vehicle type
+        <select name="vehicle_type">
+          <option>Sedan</option>
+          <option>SUV</option>
+          <option>Luxury SUV</option>
+          <option>Minibus</option>
+          <option>Executive Van</option>
+        </select>
+      </label>
+
+      <label>
+        Pickup location
+        <input name="pickup" required placeholder="Pickup point">
+      </label>
+
+      <label>
+        Drop-off location
+        <input name="dropoff" required placeholder="Destination">
+      </label>
+
+      <label>
+        Pickup date
+        <input name="service_date" type="date" required>
+      </label>
+
+      <label>
+        Pickup time
+        <input name="service_time" type="time" required>
+      </label>
+
+    </div>
+  </section>
+
+  <section class="invoice-section-card">
+    <div class="invoice-section-head">
+      <h2>Billing</h2>
+      <p>Charges and totals</p>
+    </div>
+
+    <div class="invoice-grid-2">
+
+      <label>
+        Base amount (NAD)
+        <input name="amount" type="number" step="0.01" required placeholder="850.00">
+      </label>
+
+      <label>
+        Discount %
+        <input name="discount" type="number" step="0.01" value="0">
+      </label>
+
+      <label>
+        VAT %
+        <input name="vat" type="number" step="0.01" value="15">
+      </label>
+
+      <label>
+        Payment status
+        <select name="payment_status">
+          <option>Pending</option>
+          <option>Paid</option>
+          <option>Partially Paid</option>
+        </select>
+      </label>
+
+      <label class="full-width">
+        Notes / Instructions
+        <textarea name="notes" rows="5" placeholder="VIP instructions, airport terminal, payment notes, business account notes..."></textarea>
+      </label>
+
+    </div>
+  </section>
+
+  <div class="invoice-submit-bar">
+    <button type="submit">Generate Premium Invoice</button>
+  </div>
+
+</form>
+
+{% endblock %}

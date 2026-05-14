@@ -1,0 +1,223 @@
+[
+  {
+    "name": "CBD / Town",
+    "aliases": ["cbd", "town", "windhoek cbd", "windhoek town", "wernhil", "ausspannplatz", "independence avenue", "maerua mall"],
+    "zone_type": "business_core",
+    "pickup_fee": 20,
+    "dropoff_fee": 15,
+    "risk_level": "medium",
+    "vip_probability": "medium",
+    "airport_distance_hint": 45,
+    "notes": "Main business and shopping zone with traffic variation during working hours."
+  },
+  {
+    "name": "Wanaheda",
+    "aliases": ["wanaheda"],
+    "zone_type": "local_high_volume",
+    "pickup_fee": 20,
+    "dropoff_fee": 20,
+    "risk_level": "medium",
+    "vip_probability": "low",
+    "airport_distance_hint": 47,
+    "notes": "Common local pickup zone, confirm exact street and landmark."
+  },
+  {
+    "name": "Katutura",
+    "aliases": ["katutura"],
+    "zone_type": "local_high_volume",
+    "pickup_fee": 20,
+    "dropoff_fee": 20,
+    "risk_level": "medium",
+    "vip_probability": "low",
+    "airport_distance_hint": 48,
+    "notes": "High-volume local area, exact street and callback support help dispatch."
+  },
+  {
+    "name": "Okuryangava",
+    "aliases": ["okuryangava"],
+    "zone_type": "local_high_volume",
+    "pickup_fee": 20,
+    "dropoff_fee": 20,
+    "risk_level": "medium",
+    "vip_probability": "low",
+    "airport_distance_hint": 49,
+    "notes": "Good local demand zone, confirm nearest landmark for pickup."
+  },
+  {
+    "name": "Khomasdal",
+    "aliases": ["khomasdal"],
+    "zone_type": "residential",
+    "pickup_fee": 18,
+    "dropoff_fee": 18,
+    "risk_level": "medium",
+    "vip_probability": "low",
+    "airport_distance_hint": 46,
+    "notes": "Residential movement zone, allow a little extra driver approach time."
+  },
+  {
+    "name": "Klein Windhoek",
+    "aliases": ["klein windhoek", "weinberg"],
+    "zone_type": "executive",
+    "pickup_fee": 30,
+    "dropoff_fee": 25,
+    "risk_level": "low",
+    "vip_probability": "high",
+    "airport_distance_hint": 43,
+    "notes": "Good for VIP, hotel and executive airport pickups."
+  },
+  {
+    "name": "Eros",
+    "aliases": ["eros"],
+    "zone_type": "executive",
+    "pickup_fee": 28,
+    "dropoff_fee": 24,
+    "risk_level": "low",
+    "vip_probability": "high",
+    "airport_distance_hint": 42,
+    "notes": "Executive and airport-support zone near Eros Airport."
+  },
+  {
+    "name": "Ludwigsdorf",
+    "aliases": ["ludwigsdorf"],
+    "zone_type": "executive",
+    "pickup_fee": 30,
+    "dropoff_fee": 25,
+    "risk_level": "low",
+    "vip_probability": "high",
+    "airport_distance_hint": 44,
+    "notes": "Popular for embassy and executive pickups."
+  },
+  {
+    "name": "Avis",
+    "aliases": ["avis"],
+    "zone_type": "executive_residential",
+    "pickup_fee": 28,
+    "dropoff_fee": 24,
+    "risk_level": "low",
+    "vip_probability": "medium",
+    "airport_distance_hint": 41,
+    "notes": "Suitable for airport and private residential pickups."
+  },
+  {
+    "name": "Olympia",
+    "aliases": ["olympia"],
+    "zone_type": "family_residential",
+    "pickup_fee": 22,
+    "dropoff_fee": 18,
+    "risk_level": "low",
+    "vip_probability": "medium",
+    "airport_distance_hint": 44,
+    "notes": "Family and airport route zone with reliable road access."
+  },
+  {
+    "name": "Suiderhof",
+    "aliases": ["suiderhof"],
+    "zone_type": "family_residential",
+    "pickup_fee": 22,
+    "dropoff_fee": 18,
+    "risk_level": "low",
+    "vip_probability": "medium",
+    "airport_distance_hint": 45,
+    "notes": "Good for family transport and airport departures."
+  },
+  {
+    "name": "Cimbebasia",
+    "aliases": ["cimbebasia"],
+    "zone_type": "family_residential",
+    "pickup_fee": 18,
+    "dropoff_fee": 18,
+    "risk_level": "low",
+    "vip_probability": "low",
+    "airport_distance_hint": 46,
+    "notes": "Residential area, school and family movement are common."
+  },
+  {
+    "name": "Prosperita",
+    "aliases": ["prosperita"],
+    "zone_type": "industrial_business",
+    "pickup_fee": 24,
+    "dropoff_fee": 22,
+    "risk_level": "medium",
+    "vip_probability": "low",
+    "airport_distance_hint": 47,
+    "notes": "Business and industrial movement zone with timing-sensitive pickups."
+  },
+  {
+    "name": "Grove Mall",
+    "aliases": ["grove mall", "the grove"],
+    "zone_type": "commercial_family",
+    "pickup_fee": 24,
+    "dropoff_fee": 20,
+    "risk_level": "medium",
+    "vip_probability": "medium",
+    "airport_distance_hint": 45,
+    "notes": "Busy retail pickup point, exact entrance helps dispatch."
+  },
+  {
+    "name": "Pioneers Park",
+    "aliases": ["pioneers park", "pioneerspark"],
+    "zone_type": "residential",
+    "pickup_fee": 18,
+    "dropoff_fee": 18,
+    "risk_level": "low",
+    "vip_probability": "low",
+    "airport_distance_hint": 46,
+    "notes": "Residential airport and town movement zone."
+  },
+  {
+    "name": "Hochland Park",
+    "aliases": ["hochland park", "hochlandpark"],
+    "zone_type": "residential",
+    "pickup_fee": 18,
+    "dropoff_fee": 18,
+    "risk_level": "low",
+    "vip_probability": "low",
+    "airport_distance_hint": 47,
+    "notes": "Residential pickup area, good for town and airport bookings."
+  },
+  {
+    "name": "Rocky Crest",
+    "aliases": ["rocky crest", "rockycrest"],
+    "zone_type": "residential",
+    "pickup_fee": 18,
+    "dropoff_fee": 18,
+    "risk_level": "medium",
+    "vip_probability": "low",
+    "airport_distance_hint": 48,
+    "notes": "Residential zone, confirm exact street and phone contact."
+  },
+  {
+    "name": "Dorado Park",
+    "aliases": ["dorado park", "doradopark"],
+    "zone_type": "residential",
+    "pickup_fee": 18,
+    "dropoff_fee": 18,
+    "risk_level": "low",
+    "vip_probability": "low",
+    "airport_distance_hint": 47,
+    "notes": "Common family and airport pickup area."
+  },
+  {
+    "name": "Hosea Kutako Airport",
+    "aliases": ["hosea kutako airport", "hosea kutako", "hkia", "hkia airport", "h k i a", "airport"],
+    "zone_type": "airport",
+    "pickup_fee": 0,
+    "dropoff_fee": 0,
+    "risk_level": "low",
+    "vip_probability": "high",
+    "airport_distance_hint": 0,
+    "fixed_airport_route": true,
+    "notes": "Primary international airport. Flight tracking and luggage details improve dispatch accuracy."
+  },
+  {
+    "name": "Eros Airport",
+    "aliases": ["eros airport", "eros airfield"],
+    "zone_type": "airport_local",
+    "pickup_fee": 10,
+    "dropoff_fee": 10,
+    "risk_level": "low",
+    "vip_probability": "medium",
+    "airport_distance_hint": 0,
+    "notes": "Local airport for short business and charter movement."
+  }
+]

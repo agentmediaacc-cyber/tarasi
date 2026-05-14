@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Book Tarasi | Premium Namibia Transport</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/tarasi_book_real.css') }}">
+</head>
+<body>
+
+<header class="topbar">
+  <a href="/" class="brand"><span>T</span><div><b>Tarasi</b><small>Premium booking</small></div></a>
+  <button class="menu" onclick="document.body.classList.toggle('open')">☰</button>
+  <nav>
+    <a href="/">Home</a>
+    <a href="/book">Book</a>
+    <a href="/routes">Routes</a>
+    <a href="/fleet">Fleet</a>
+    <a href="/tours">Tours</a>
+    <a href="/track">Track</a>
+    <a href="/support">Support</a>
+  </nav>
+</header>
+
+<main>
+
+<section class="book-hero">
+  <div>
+    <span class="kicker">Real booking workspace</span>
+    <h1>Book Premium Transport Across Namibia</h1>
+    <p>
+      Select real admin-created service packages, live routes and available fleet.
+      Prices come from Supabase. If admin has not set a price, Tarasi shows N$0.00.
+    </p>
+
+    <div class="stats">
+      <div><b>{{ packages_count }}</b><small>Packages</small></div>
+      <div><b>{{ routes_count }}</b><small>Routes</small></div>
+      <div><b>{{ fleet_count }}</b><small>Fleet</small></div>
+    </div>
+  </div>
+
+  <form class="booking-panel" method="post" action="/book">
+    <span class="panel-label">Start booking</span>
+    <h2>Trip details</h2>
+
+    <label>Service package
+      <select name="package_id">
+        <option value="">Choose package</option>
+        {% for package in packages %}
+        <option value="{{ package.id }}">{{ package.icon }} {{ package.name }} — N$ {{ "%.2f"|format(package.price) }}</option>
+        {% endfor %}
+      </select>
+    </label>
+
+    <label>Route
+      <select name="route_id">
+        <option value="">Choose route</option>
+        {% for route in routes %}
+        <option value="{{ route.id }}">{{ route.name }} — N$ {{ "%.2f"|format(route.price) }}</option>
+        {% endfor %}
+      </select>
+    </label>
+
+    <div class="two">
+      <label>Pickup
+        <input name="pickup" placeholder="Windhoek, HKIA, Swakopmund">
+      </label>
+      <label>Drop-off
+        <input name="dropoff" placeholder="Hotel, school, office, lodge">
+      </label>
+    </div>
+
+    <div class="two">
+      <label>Date
+        <input name="date" type="date">
+      </label>
+      <label>Time
+        <input name="time" type="time">
+      </label>
+    </div>
+
+    <div class="two">
+      <label>Passengers
+        <input name="passengers" type="number" min="1" value="1">
+      </label>
+      <label>Vehicle
+        <select name="vehicle_id">
+          <option value="">Auto match</option>
+          {% for vehicle in fleet %}
+          <option value="{{ vehicle.id }}">{{ vehicle.name }} — {{ vehicle.seats }} seats</option>
+          {% endfor %}
+        </select>
+      </label>
+    </div>
+
+    <label>Notes
+      <textarea name="notes" placeholder="Flight number, luggage, child seat, special request..."></textarea>
+    </label>
+
+    <button type="submit">Continue Booking</button>
+  </form>
+</section>
+
+<section class="section-head">
+  <span>Premium service packages</span>
+  <h2>Choose your transport experience</h2>
+</section>
+
+{% if packages %}
+<section class="package-grid">
+  {% for package in packages %}
+  <article class="package-card">
+    <div class="icon">{{ package.icon }}</div>
+    <span class="badge">{{ package.badge }}</span>
+    <h3>{{ package.name }}</h3>
+    <p>{{ package.description }}</p>
+
+    <div class="package-meta">
+      <div><b>N$ {{ "%.2f"|format(package.price) }}</b><small>Starting price</small></div>
+      <div><b>{{ package.duration }}</b><small>Duration</small></div>
+      <div><b>{{ package.best_for }}</b><small>Best for</small></div>
+    </div>
+
+    {% if package.price == 0 %}
+    <div class="setup-warning">Admin price required — currently showing N$0.00.</div>
+    {% endif %}
+
+    <a href="/book?package={{ package.id }}">Book package</a>
+  </article>
+  {% endfor %}
+</section>
+{% else %}
+<section class="empty">
+  <span>Setup required</span>
+  <h2>No active service packages found.</h2>
+  <p>Create packages in Supabase or admin dashboard. No fake packages are shown.</p>
+  <a href="/admin">Open Admin</a>
+</section>
+{% endif %}
+
+<section class="section-head">
+  <span>Route selection</span>
+  <h2>Book from real active routes</h2>
+</section>
+
+{% if routes %}
+<section class="route-strip">
+  {% for route in routes %}
+  <a class="route-mini" href="/book?route={{ route.id }}">
+    <b>{{ route.pickup }}</b>
+    <span>to {{ route.dropoff }}</span>
+    <small>{{ route.category }} · {{ route.vehicle }}</small>
+    <strong>N$ {{ "%.2f"|format(route.price) }}</strong>
+  </a>
+  {% endfor %}
+</section>
+{% endif %}
+
+<section class="section-head">
+  <span>Fleet matching</span>
+  <h2>Available premium vehicles</h2>
+</section>
+
+{% if fleet %}
+<section class="fleet-grid">
+  {% for vehicle in fleet %}
+  <article class="fleet-card">
+    <div class="vehicle-icon">🚐</div>
+    <h3>{{ vehicle.name }}</h3>
+    <p>{{ vehicle.vehicle_type }} · {{ vehicle.comfort }}</p>
+    <div class="vehicle-specs">
+      <span>{{ vehicle.seats }} seats</span>
+      <span>{{ vehicle.luggage }} luggage</span>
+      <span>N$ {{ "%.2f"|format(vehicle.price) }}</span>
+    </div>
+  </article>
+  {% endfor %}
+</section>
+{% endif %}
+
+<section class="mobile-sticky">
+  <a href="/book">Book Now</a>
+  <a href="/support">Support</a>
+</section>
+
+</main>
+
+<footer class="footer">
+  <h3>Tarasi</h3>
+  <p>Premium booking powered by real Supabase packages, routes and fleet.</p>
+</footer>
+
+</body>
+</html>

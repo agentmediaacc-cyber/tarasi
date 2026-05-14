@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Book Transport | Tarasi{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="section-head">
+    <span class="eyebrow">Tarasi bookings</span>
+    <h1>Select the transport service you need</h1>
+  </div>
+  <div class="live-service-grid">
+    {% for key, item in booking_types.items() %}
+    <article class="card service-card-live">
+      <div class="service-card-top">
+        <span class="service-icon">{{ item.icon }}</span>
+        <span class="card-tag">{{ item.route_type }}</span>
+      </div>
+      <h3>{{ item.title }}</h3>
+      <p>{{ item.tagline }}</p>
+      <a class="btn btn-primary booking-launch-link" href="{{ url_for('booking.book_form', booking_type=key) }}">{{ item.cta }}</a>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section">
+  <div class="grid">
+    <article class="panel">
+      <h3>Route highlights</h3>
+      <ul class="list-clean">
+        {% for route in routes %}
+        <li>{{ route.route }} • {{ route.base_price }}</li>
+        {% else %}
+        <li>No route data available yet.</li>
+        {% endfor %}
+      </ul>
+    </article>
+    <article class="panel">
+      <h3>Fleet options</h3>
+      <ul class="list-clean">
+        {% for car in cars %}
+        <li>{{ car.name }} • {{ car.seats }} seats • {{ car.price }}</li>
+        {% else %}
+        <li>No fleet data available yet.</li>
+        {% endfor %}
+      </ul>
+    </article>
+  </div>
+</section>
+{% endblock %}

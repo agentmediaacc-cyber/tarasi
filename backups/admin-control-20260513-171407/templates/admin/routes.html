@@ -1,0 +1,33 @@
+{% extends "admin/base.html" %}
+{% block title %}Routes & Pricing | Tarasi{% endblock %}
+{% block admin_page %}
+<section class="admin-subhero">
+  <div>
+    <span class="admin-kicker">Routes & pricing</span>
+    <h1>Route catalog and fare control view</h1>
+  </div>
+</section>
+
+<section class="admin-panel">
+  <div class="admin-table-wrap">
+    <table class="admin-table">
+      <thead><tr><th>Pickup</th><th>Drop-off</th><th>Base price</th><th>Extra passenger</th><th>Vehicle type</th><th>Category</th><th>State</th></tr></thead>
+      <tbody>
+        {% for route in routes %}
+        <tr>
+          <td>{{ route.pickup }}</td>
+          <td>{{ route.dropoff }}</td>
+          <td>{{ route.base_price or "Unavailable" }}</td>
+          <td>{{ route.extra_passenger_price or "Unavailable" }}</td>
+          <td>{{ route.vehicle_type or "Unavailable" }}</td>
+          <td>{{ route.route_category or "Unavailable" }}</td>
+          <td><span class="status-badge">{% if route.active %}Active{% else %}Inactive{% endif %}</span></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7"><div class="admin-empty">No real route/pricing rows are available from the connected backend.</div></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

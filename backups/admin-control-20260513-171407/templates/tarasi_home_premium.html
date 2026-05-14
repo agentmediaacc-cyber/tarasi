@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Tarasi | Premium Namibia Transport</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/tarasi_home_premium.css') }}">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="/" class="logo">
+      <span class="logo-mark">T</span>
+      <span>Tarasi <small>Premium Namibia transport</small></span>
+    </a>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/book">Book</a>
+      <a href="/routes">Routes</a>
+      <a href="/fleet">Fleet</a>
+      <a href="/tours">Tours</a>
+      <a href="/track">Track</a>
+      <a href="/support">Support</a>
+      <a href="/login">Login</a>
+      <a class="nav-btn" href="/book">Book Now</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div>
+      <span class="badge">🇳🇦 Premium Namibia mobility</span>
+      <h1>Move Across Namibia in Premium Comfort.</h1>
+      <p>
+        Airport transfers, city rides, school transport, executive VIP movement,
+        long-distance routes and curated desert, coast and safari journeys.
+      </p>
+      <div class="hero-actions">
+        <a href="/book" class="btn btn-gold">Book Journey</a>
+        <a href="/routes" class="btn btn-white">Explore Routes</a>
+      </div>
+      <div class="trust">
+        <span>Verified drivers</span>
+        <span>Airport-ready</span>
+        <span>Tour-friendly</span>
+        <span>Mobile-first</span>
+      </div>
+    </div>
+
+    <form class="booking-card" action="/book" method="get">
+      <h3>Quick booking</h3>
+      <p data-live>Where are you going?</p>
+      <div class="form-grid">
+        <div class="field field-full">
+          <label>Pickup</label>
+          <input name="pickup" value="Wanaheda" placeholder="Pickup location">
+        </div>
+        <div class="field field-full">
+          <label>Drop-off</label>
+          <input name="dropoff" value="Hosea Kutako Airport" placeholder="Drop-off location">
+        </div>
+        <div class="field">
+          <label>Date</label>
+          <input name="date" type="date">
+        </div>
+        <div class="field">
+          <label>Passengers</label>
+          <select name="passengers">
+            <option>1</option><option>2</option><option>3</option><option selected>4</option>
+            <option>5</option><option>6+</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn start-btn" type="submit">Start Booking</button>
+
+      <div class="stats">
+        <div class="stat"><b>24/7</b><span>Support</span></div>
+        <div class="stat"><b>14</b><span>Regions</span></div>
+        <div class="stat"><b>VIP</b><span>Options</span></div>
+      </div>
+    </form>
+  </div>
+</header>
+
+<section class="section">
+  <div class="section-head">
+    <div>
+      <div class="kicker">Book services</div>
+      <h2>Premium movement for every Namibian journey</h2>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card"><div class="icon">✈</div><h3>Airport</h3><p>Reliable Hosea Kutako Airport transfers with meet-and-greet options.</p></div>
+    <div class="card"><div class="icon">★</div><h3>VIP</h3><p>Executive private hire for business leaders, guests and special trips.</p></div>
+    <div class="card"><div class="icon">💼</div><h3>Business</h3><p>Corporate staff mobility, monthly accounts and scheduled movement.</p></div>
+    <div class="card"><div class="icon">🏜</div><h3>Tours</h3><p>Safari, dunes, coast and lodge transfer coordination.</p></div>
+    <div class="card"><div class="icon">🎒</div><h3>School</h3><p>Safe recurring transport for learners and families.</p></div>
+    <div class="card"><div class="icon">🛣</div><h3>Long-distance</h3><p>Inter-city premium routes across Namibia.</p></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="routes">
+    <div class="section-head">
+      <div>
+        <div class="kicker">Live route board</div>
+        <h2>Current premium movement</h2>
+        <p>Real route previews for airport, coast, safari and desert transfers.</p>
+      </div>
+      <a class="btn btn-gold" href="/routes">View all routes</a>
+    </div>
+
+    <div class="route-row"><strong>Windhoek to Hosea Kutako Airport</strong><span>Airport transfer</span><span class="status">On Time</span><span class="price">N$ 850</span></div>
+    <div class="route-row"><strong>Windhoek to Swakopmund</strong><span>Tourist route</span><span class="status">On Time</span><span class="price">N$ 950</span></div>
+    <div class="route-row"><strong>Windhoek to Etosha</strong><span>Safari route</span><span class="status">On Time</span><span class="price">N$ 1800</span></div>
+    <div class="route-row"><strong>Windhoek to Sossusvlei</strong><span>Desert route</span><span class="status">On Time</span><span class="price">N$ 1650</span></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head">
+    <div>
+      <div class="kicker">Namibia experience</div>
+      <h2>Desert. Coast. Safari. City.</h2>
+    </div>
+  </div>
+
+  <div class="experience">
+    <div class="exp" style="background-image:url('https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?auto=format&fit=crop&w=900&q=80')">
+      <div><h3>Sossusvlei</h3><p>Sunrise dune transfers, lodge pickups and premium desert journeys.</p></div>
+    </div>
+    <div class="exp" style="background-image:url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=900&q=80')">
+      <div><h3>Swakopmund & Walvis Bay</h3><p>Atlantic coastal travel, harbour movement and hotel transfers.</p></div>
+    </div>
+    <div class="exp" style="background-image:url('https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&w=900&q=80')">
+      <div><h3>Etosha</h3><p>Safari shuttle coordination for camps, lodges and families.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head">
+    <div>
+      <div class="kicker">Premium fleet</div>
+      <h2>Vehicles matched to your journey</h2>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card fleet-card">
+      <img src="https://images.unsplash.com/photo-1542362567-b07e54358753?auto=format&fit=crop&w=900&q=80">
+      <h3>Toyota Quantum</h3>
+      <p>Shuttle Van • 14 seats</p>
+      <div class="tags"><span>A/C</span><span>10 bags</span><span>Premium</span><span>USB</span></div>
+    </div>
+    <div class="card fleet-card">
+      <img src="https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?auto=format&fit=crop&w=900&q=80">
+      <h3>Executive SUV</h3>
+      <p>SUV • 6 seats</p>
+      <div class="tags"><span>A/C</span><span>5 bags</span><span>VIP</span><span>USB</span></div>
+    </div>
+    <div class="card fleet-card">
+      <img src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=900&q=80">
+      <h3>Minibus</h3>
+      <p>Group Transport • 22 seats</p>
+      <div class="tags"><span>A/C</span><span>16 bags</span><span>Tour</span><span>Safe</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="business">
+    <div>
+      <div class="kicker">Business access</div>
+      <h2>Built for airport arrivals, corporate mobility and private VIP travel.</h2>
+      <p>
+        Tarasi combines fast booking, reliable route coordination, premium fleet matching
+        and human support for families, companies, tourists and executive travellers.
+      </p>
+      <a class="btn btn-gold" href="/support">Request Business Access</a>
+    </div>
+    <div class="business-box">
+      <h3>Why customers choose Tarasi</h3>
+      <p>✓ Airport-ready drivers</p>
+      <p>✓ Verified fleet options</p>
+      <p>✓ Route pricing previews</p>
+      <p>✓ WhatsApp-friendly support</p>
+      <p>✓ Namibia-wide transport vision</p>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div>
+      <h2>Tarasi</h2>
+      <p>Premium Namibia transport, airport transfer and tour booking with clean mobile-first support.</p>
+    </div>
+    <div><h3>Explore</h3><p><a href="/book">Book</a></p><p><a href="/routes">Routes</a></p><p><a href="/fleet">Fleet</a></p></div>
+    <div><h3>Travel</h3><p><a href="/tours">Tours</a></p><p><a href="/track">Track booking</a></p><p><a href="/support">Help center</a></p></div>
+    <div><h3>Business</h3><p>Airport transfers</p><p>Corporate mobility</p><p>VIP private hire</p></div>
+  </div>
+</footer>
+
+<div class="mobile-bottom">
+  <a href="/book">Book Tarasi Journey</a>
+</div>
+
+<script src="{{ url_for('static', filename='js/tarasi_home_premium.js') }}"></script>
+
+{% include 'partials/tarasi_floating_bot.html' %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tarasi_floating_bot.css') }}">
+<script src="{{ url_for('static', filename='js/tarasi_floating_bot.js') }}"></script>
+
+</body>
+</html>

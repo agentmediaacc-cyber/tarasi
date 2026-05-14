@@ -1,24 +1,111 @@
-{% extends "base.html" %}
-{% block title %}Driver Dashboard | Tarasi{% endblock %}
+{% extends "driver/base.html" %}
 {% block content %}
-<section class="hero-grid">
-  <article class="hero-card">
-    <span class="eyebrow">Driver shell</span>
-    <h1>Driver mobile dashboard</h1>
-    <p>Assigned trips, route status updates and customer contact actions optimized for a phone screen.</p>
-    <div class="pill-row">
-      <span class="pill">{{ driver.full_name }}</span>
-      <span class="pill">{{ driver.vehicle_name or "Vehicle pending" }}</span>
-      <span class="pill">{{ driver.status }}</span>
+<section class="driver-hero">
+    <div class="driver-welcome">
+        <h1>Hi, {{ driver.full_name.split(' ')[0] }}</h1>
+        <p>{{ driver.vehicle_name }} · {{ driver.service_type }}</p>
     </div>
-  </article>
-  <aside class="panel">
-    <h3>Trip counts</h3>
-    <ul class="list-clean">
-      <li>Total trips: {{ bookings|length }}</li>
-      <li>Assigned or active: {{ assigned|length }}</li>
-    </ul>
-    <a class="btn btn-primary btn-block" href="{{ url_for('driver.trips') }}">Open trip list</a>
-  </aside>
+    <form action="{{ url_for('driver.update_status') }}" method="post" class="status-toggle-form">
+        <input type="hidden" name="status" value="{% if status == 'Online' %}Offline{% else %}Online{% endif %}">
+        <button type="submit" class="status-toggle-btn {% if status == 'Online' %}is-online{% endif %}">
+            {% if status == 'Online' %}GO OFFLINE{% else %}GO ONLINE{% endif %}
+        </button>
+    </form>
+</section>
+
+{% if new_requests %}
+<section class="driver-section">
+    <h2 class="section-title">New Requests ({{ new_requests|length }})</h2>
+    {% for request in new_requests %}
+    <div class="trip-card new-request">
+        <div class="trip-card-head">
+            <span class="service-tag">{{ request.booking_type|title }}</span>
+            <span class="trip-fare">{{ request.estimated_price }}</span>
+        </div>
+        <div class="trip-route">
+            <div class="route-point pickup">
+                <span class="dot"></span>
+                <p>{{ request.pickup_location }}</p>
+            </div>
+            <div class="route-point dropoff">
+                <span class="dot"></span>
+                <p>{{ request.dropoff_location }}</p>
+            </div>
+        </div>
+        <div class="trip-actions">
+            <form action="{{ url_for('driver.trip_action', reference=request.reference, action='accept') }}" method="post">
+                <button type="submit" class="btn-accept">ACCEPT</button>
+            </form>
+            <form action="{{ url_for('driver.trip_action', reference=request.reference, action='reject') }}" method="post">
+                <button type="submit" class="btn-reject">REJECT</button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+</section>
+{% endif %}
+
+<section class="driver-section">
+    <h2 class="section-title">Active Trips</h2>
+    {% for trip in active_trips %}
+    <div class="trip-card">
+        <div class="trip-card-head">
+            <span class="trip-ref">{{ trip.reference }}</span>
+            <span class="status-badge">{{ trip.status }}</span>
+        </div>
+        <div class="customer-info">
+            <strong>{{ trip.customer_name }}</strong>
+            <a href="tel:{{ trip.phone }}" class="call-btn">📞 Call</a>
+        </div>
+        <div class="trip-route">
+            <p><strong>From:</strong> {{ trip.pickup_location }}</p>
+            <p><strong>To:</strong> {{ trip.dropoff_location }}</p>
+        </div>
+        <div class="trip-workflow">
+            {% if trip.status == 'Driver assigned' %}
+            <form action="{{ url_for('driver.trip_action', reference=trip.reference, action='start') }}" method="post">
+                <button type="submit" class="btn-primary">START TO PICKUP</button>
+            </form>
+            {% elif trip.status == 'On the way' %}
+            <div class="workflow-group">
+                <a href="{{ url_for('driver.navigate', reference=trip.reference) }}" class="btn-nav">🧭 NAVIGATE</a>
+                <form action="{{ url_for('driver.trip_action', reference=trip.reference, action='arrived-pickup') }}" method="post">
+                    <button type="submit" class="btn-primary">ARRIVED</button>
+                </form>
+            </div>
+            {% elif trip.status == 'Arrived' %}
+            <form action="{{ url_for('driver.trip_action', reference=trip.reference, action='picked-up') }}" method="post">
+                <button type="submit" class="btn-primary">PASSENGER PICKED UP</button>
+            </form>
+            {% elif trip.status == 'Picked up' %}
+            <div class="workflow-group">
+                <a href="{{ url_for('driver.navigate', reference=trip.reference) }}" class="btn-nav">🧭 NAVIGATE</a>
+                <form action="{{ url_for('driver.trip_action', reference=trip.reference, action='complete') }}" method="post">
+                    <button type="submit" class="btn-success">COMPLETE TRIP</button>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <p>No active trips. Go online to receive new requests.</p>
+    </div>
+    {% endfor %}
+</section>
+
+<section class="driver-stats-grid">
+    <div class="stat-card">
+        <span>Trips Today</span>
+        <strong>{{ completed_count }}</strong>
+    </div>
+    <div class="stat-card">
+        <span>Total Trips</span>
+        <strong>{{ total_trips }}</strong>
+    </div>
+    <div class="stat-card">
+        <span>Rating</span>
+        <strong>⭐ {{ driver.rating }}</strong>
+    </div>
 </section>
 {% endblock %}

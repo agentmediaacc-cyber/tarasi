@@ -1,0 +1,102 @@
+{% extends "driver/base.html" %}
+{% block title %}Navigating to {{ trip.reference }} | Tarasi{% endblock %}
+{% block content %}
+<section class="nav-container">
+    <div class="nav-header">
+        <span class="nav-kicker">{% if trip.status == 'On the way' %}Navigating to Pickup{% else %}Navigating to Dropoff{% endif %}</span>
+        <h2>{{ trip.pickup_location if trip.status == 'On the way' else trip.dropoff_location }}</h2>
+    </div>
+
+    <div class="nav-map-container" id="driver-map">
+        <!-- Map would be initialized here -->
+        <div class="map-placeholder">
+            <p>Live Navigation Interface</p>
+            <div class="nav-telemetry">
+                <div class="tel-item">
+                    <span>Distance</span>
+                    <strong id="nav-distance">-- km</strong>
+                </div>
+                <div class="tel-item">
+                    <span>ETA</span>
+                    <strong id="nav-eta">-- min</strong>
+                </div>
+                <div class="tel-item">
+                    <span>Speed</span>
+                    <strong id="nav-speed">0 km/h</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="nav-instructions">
+        <div class="instruction-box">
+            <span class="icon">↗️</span>
+            <p id="nav-text">Getting GPS location...</p>
+        </div>
+    </div>
+
+    <div class="nav-footer-actions">
+        <a href="https://www.google.com/maps/dir/?api=1&destination={{ trip.pickup_location if trip.status == 'On the way' else trip.dropoff_location }}&travelmode=driving" target="_blank" class="btn-external gmaps">
+            OPEN IN GOOGLE MAPS
+        </a>
+        <a href="{{ url_for('driver.dashboard') }}" class="btn-back">BACK TO DASHBOARD</a>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // Voice prompts initialization
+        const speak = (text) => {
+            if ('speechSynthesis' in window) {
+                const msg = new SpeechSynthesisUtterance(text);
+                msg.rate = 0.9;
+                window.speechSynthesis.speak(msg);
+            }
+        };
+
+        const status = "{{ trip.status }}";
+        if (status === "On the way") {
+            speak("Proceed to pickup location");
+        } else if (status === "Picked up") {
+            speak("Proceed to dropoff location");
+        }
+
+        // GPS Telemetry
+        if ("geolocation" in navigator) {
+            navigator.geolocation.watchPosition((pos) => {
+                const lat = pos.coords.latitude;
+                const lng = pos.coords.longitude;
+                const speed = pos.coords.speed ? Math.round(pos.coords.speed * 3.6) : 0; // m/s to km/h
+                
+                document.getElementById("nav-speed").textContent = `${speed} km/h`;
+                
+                if (speed > 80) {
+                    document.getElementById("nav-speed").style.color = "red";
+                } else {
+                    document.getElementById("nav-speed").style.color = "inherit";
+                }
+
+                // Send to backend
+                fetch("{{ url_for('driver.location_update') }}", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        lat: lat,
+                        lng: lng,
+                        speed: speed,
+                        booking_id: "{{ trip.reference }}"
+                    })
+                });
+            }, (err) => {
+                console.error("GPS Error", err);
+            }, {
+                enableHighAccuracy: true,
+                maximumAge: 10000,
+                timeout: 5000
+            });
+        }
+    });
+</script>
+{% endblock %}

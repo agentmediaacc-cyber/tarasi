@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Tarasi Assistant</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/tarasi_bot.css') }}">
+</head>
+<body>
+  <main class="bot-shell">
+    <section class="bot-hero">
+      <div>
+        <span class="badge">Tarasi Smart Assistant</span>
+        <h1>Premium transport help, quotes and invoices.</h1>
+        <p>
+          Ask about airport transfers, town pickups, VIP transport, school transport,
+          tours, long-distance routes or request a trackable quotation.
+        </p>
+      </div>
+      <div class="company-card">
+        <b>{{ company.name }}</b>
+        <span>TIN: {{ company.tin }}</span>
+        <span>Reg No: {{ company.reg_no }}</span>
+        <span>{{ company.email }}</span>
+      </div>
+    </section>
+
+    <section class="chat-card">
+      <div class="chat-head">
+        <div>
+          <b>Tarasi Bot</b>
+          <span>Online • Quote-ready</span>
+        </div>
+        <a href="/support">Human support</a>
+      </div>
+
+      <div id="chat" class="chat">
+        <div class="msg bot">
+          Hello 👋 Welcome to Tarasi. I can help you check prices, choose a service, and create a premium quotation.
+          Please tell me your pickup, drop-off, date, passengers and vehicle type.
+        </div>
+      </div>
+
+      <div class="suggestions" id="suggestions">
+        <button>Windhoek to Hosea Kutako Airport for 4 passengers</button>
+        <button>Create a quotation</button>
+        <button>VIP airport pickup</button>
+        <button>Town pickup price</button>
+      </div>
+
+      <form id="quoteForm" class="quote-form">
+        <input name="client_name" placeholder="Client full name">
+        <input name="phone" placeholder="Phone / WhatsApp">
+        <input name="email" placeholder="Email optional">
+        <input name="pickup" placeholder="Pickup location">
+        <input name="dropoff" placeholder="Drop-off location">
+        <input name="travel_date" type="date">
+        <select name="vehicle">
+          <option value="sedan">Sedan</option>
+          <option value="suv">SUV</option>
+          <option value="quantum">Toyota Quantum</option>
+          <option value="minibus">Minibus</option>
+          <option value="vip">VIP Executive</option>
+        </select>
+        <input name="passengers" type="number" min="1" value="1">
+        <textarea name="notes" placeholder="Special request / flight number / waiting time"></textarea>
+        <button type="submit">Create Premium Quote PDF</button>
+      </form>
+
+      <form id="chatForm" class="chat-input">
+        <input id="message" placeholder="Type your request here...">
+        <button>Send</button>
+      </form>
+    </section>
+  </main>
+
+<script src="{{ url_for('static', filename='js/tarasi_bot.js') }}"></script>
+</body>
+</html>

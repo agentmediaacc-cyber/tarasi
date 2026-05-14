@@ -2123,3 +2123,58 @@ textarea:focus-visible {
     margin-top: 0;
   }
 }
+
+/* REAL QUICK BOOKING */
+.real-quick-book{
+  max-width:1120px;margin:24px auto;padding:18px;
+  background:#fffdf7;border:1px solid #eadfca;border-radius:28px;
+  box-shadow:0 20px 55px rgba(22,38,30,.12);color:#10231f
+}
+.real-quick-book h2{margin:0 0 8px;font-size:28px;color:#173d33}
+.real-quick-book p{margin:0 0 16px;color:#66756d}
+.rqb-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.rqb-field label{display:block;font-size:12px;font-weight:800;color:#49655a;margin:0 0 6px}
+.rqb-field input,.rqb-field select,.rqb-field textarea{
+  width:100%;border:1px solid #d8cdb8;border-radius:16px;padding:14px 15px;
+  font-size:15px;background:#fff;color:#10231f;outline:none
+}
+.rqb-field input:focus,.rqb-field select:focus,.rqb-field textarea:focus{border-color:#b88b2d;box-shadow:0 0 0 4px rgba(184,139,45,.12)}
+.rqb-full{grid-column:1/-1}
+.rqb-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.rqb-btn{border:0;border-radius:16px;padding:14px 18px;font-weight:900;cursor:pointer}
+.rqb-btn.primary{background:#c99a2e;color:#111}
+.rqb-btn.dark{background:#173d33;color:white}
+.rqb-btn.ghost{background:#eef5ef;color:#173d33}
+.rqb-result{display:none;margin-top:16px;padding:16px;border-radius:22px;background:#f7fbf8;border:1px solid #dbeadd}
+.rqb-result.show{display:block}
+.rqb-price{font-size:34px;font-weight:950;color:#173d33}
+.rqb-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}
+.rqb-stat{background:white;border-radius:16px;padding:12px;border:1px solid #e7eadf}
+.rqb-stat span{display:block;font-size:12px;color:#6b756f}.rqb-stat b{font-size:16px}
+.rqb-note{font-size:13px;color:#5d6a62}
+.rqb-loading{opacity:.65;pointer-events:none}
+@media(max-width:780px){.rqb-grid{grid-template-columns:1fr}.rqb-stats{grid-template-columns:1fr}.real-quick-book{margin:14px;border-radius:22px}}
+.hero-quick-book{margin-top:24px!important}
+.rqb-field small{display:block;margin-top:6px;color:#557064;font-size:12px}
+
+/* TARASI REAL STREET QUICK BOOK */
+.tarasi-qb-wrap{max-width:1180px;margin:28px auto;padding:22px;background:#fffdf7;border:1px solid #eadfca;border-radius:30px;box-shadow:0 20px 55px rgba(20,40,30,.13);color:#10231f}
+.tarasi-qb-head{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;margin-bottom:16px}
+.tarasi-qb-head h2{margin:0;font-size:30px;color:#153d33}.tarasi-qb-head p{margin:6px 0 0;color:#63736b}
+.tarasi-qb-badge{background:#e9f6ef;color:#10613f;padding:9px 12px;border-radius:999px;font-weight:900;font-size:12px;white-space:nowrap}
+.tarasi-qb-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.tarasi-qb-field{position:relative}.tarasi-qb-field label{display:block;margin-bottom:6px;font-size:12px;font-weight:900;color:#49655a}
+.tarasi-qb-field input,.tarasi-qb-field select,.tarasi-qb-field textarea{width:100%;padding:14px 15px;border:1px solid #d7c9b2;border-radius:16px;background:#fff;color:#10231f;font-size:15px;outline:none}
+.tarasi-qb-field input:focus,.tarasi-qb-field select:focus,.tarasi-qb-field textarea:focus{border-color:#bf8f2c;box-shadow:0 0 0 4px rgba(191,143,44,.13)}
+.tarasi-qb-full{grid-column:1/-1}.tarasi-qb-status{display:block;margin-top:6px;font-size:12px;color:#62736b;min-height:16px}
+.tarasi-qb-results{position:absolute;z-index:50;left:0;right:0;top:76px;background:#fff;border:1px solid #e3d8c6;border-radius:16px;box-shadow:0 18px 45px rgba(0,0,0,.16);overflow:hidden;display:none;max-height:260px;overflow-y:auto}
+.tarasi-qb-results.show{display:block}.tarasi-qb-option{padding:12px 13px;cursor:pointer;border-bottom:1px solid #f0eadf}
+.tarasi-qb-option:hover{background:#f8f2e6}.tarasi-qb-option b{display:block;color:#143b31}.tarasi-qb-option span{font-size:12px;color:#6c786f}
+.tarasi-qb-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:15px}.tarasi-qb-btn{border:0;border-radius:16px;padding:14px 18px;font-weight:950;cursor:pointer}
+.tarasi-qb-btn.gold{background:#c99a2e;color:#111}.tarasi-qb-btn.green{background:#17483c;color:white}.tarasi-qb-btn.light{background:#edf5ef;color:#17483c}
+.tarasi-qb-result{display:none;margin-top:16px;padding:18px;border-radius:24px;background:#f7fbf8;border:1px solid #dcebdd}.tarasi-qb-result.show{display:block}
+.tarasi-qb-price{font-size:36px;font-weight:1000;color:#153d33}.tarasi-qb-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:13px 0}
+.tarasi-qb-stat{background:white;border:1px solid #e6ebdf;border-radius:16px;padding:12px}.tarasi-qb-stat span{display:block;font-size:12px;color:#69766f}.tarasi-qb-stat b{font-size:16px;color:#10231f}
+.tarasi-qb-note{font-size:13px;color:#5d6d64;margin-top:8px}.tarasi-qb-loading{opacity:.68;pointer-events:none}
+.tarasi-qb-recent{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.tarasi-qb-chip{border:1px solid #ddcfb8;background:#fff;border-radius:999px;padding:8px 11px;font-size:12px;cursor:pointer;color:#173d33}
+@media(max-width:820px){.tarasi-qb-head{display:block}.tarasi-qb-grid{grid-template-columns:1fr}.tarasi-qb-stats{grid-template-columns:1fr 1fr}.tarasi-qb-wrap{margin:16px 12px;border-radius:24px}}

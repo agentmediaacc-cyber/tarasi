@@ -1,0 +1,37 @@
+{
+  "stages": [
+    "greeting",
+    "understanding_request",
+    "collecting_pickup",
+    "collecting_dropoff",
+    "collecting_date_time",
+    "collecting_passengers",
+    "collecting_vehicle",
+    "pricing_ready",
+    "quote_ready",
+    "booking_ready",
+    "payment_support",
+    "invoice_support",
+    "tracking_support",
+    "emergency_support",
+    "tourism_guide",
+    "human_support_needed"
+  ],
+  "fuzzy_synonyms": {
+    "airport": ["airport", "hikia", "hkia", "hosea", "kutako", "airpot"],
+    "invoice": ["invoice", "invos", "invioce", "receipt", "bill"],
+    "payment": ["paid", "payd", "eft", "proof", "pop", "bank payment"],
+    "driver late": ["driver late", "no driver", "driver never came", "waiting driver", "my drivr late"],
+    "lost item": ["lost bag", "forgot bag", "left phone", "missing luggage", "lost my lagage"],
+    "tracking": ["track", "where is my booking", "where is driver", "wer is my booking"],
+    "quote": ["quote", "quotation", "estimate", "price paper"],
+    "booking": ["book", "reserve", "confirm trip"]
+  },
+  "tone_rules": [
+    "Greet first.",
+    "Answer only the current need.",
+    "Ask one next best question.",
+    "Keep replies short, calm and human.",
+    "Do not expose internal labels or debug text."
+  ]
+}

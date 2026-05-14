@@ -1,0 +1,407 @@
+.tarasi-bot-widget {
+  --bot-ink: #0d2b28;
+  --bot-sand: #f6edd9;
+  --bot-gold: #c89a2b;
+  --bot-cream: #fffaf0;
+  --bot-mist: #edf6f1;
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 99999;
+  font-family: "Sora", system-ui, sans-serif;
+}
+
+.tarasi-bot-bubble {
+  width: 68px;
+  height: 68px;
+  border: 0;
+  border-radius: 24px;
+  cursor: pointer;
+  color: #fff;
+  font-size: 28px;
+  background: linear-gradient(145deg, #062a24, #0d4d45 55%, #c89a2b);
+  box-shadow: 0 22px 60px rgba(6, 42, 36, 0.35);
+  position: relative;
+}
+
+.bot-pulse {
+  position: absolute;
+  inset: -7px;
+  border-radius: 28px;
+  border: 2px solid rgba(200, 154, 43, 0.55);
+  animation: tarasiPulse 1.8s infinite;
+}
+
+@keyframes tarasiPulse {
+  0% { transform: scale(0.9); opacity: 0.9; }
+  100% { transform: scale(1.25); opacity: 0; }
+}
+
+.tarasi-bot-panel {
+  position: absolute;
+  right: 0;
+  bottom: 82px;
+  width: min(410px, calc(100vw - 26px));
+  height: 590px;
+  max-height: calc(100vh - 120px);
+  background: linear-gradient(180deg, #fffdf8, #f9f2e2);
+  border: 1px solid rgba(200, 154, 43, 0.26);
+  border-radius: 32px;
+  overflow: hidden;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.28);
+  display: none;
+}
+
+.tarasi-bot-panel.open {
+  display: flex;
+  flex-direction: column;
+}
+
+.bot-panel-head {
+  padding: 20px 18px;
+  background: linear-gradient(135deg, #062a24, #0d4038);
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 2px solid var(--bot-gold);
+}
+
+.bot-head-icon {
+  font-size: 24px;
+  background: rgba(255, 255, 255, 0.1);
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  border: 1px solid rgba(200, 154, 43, 0.4);
+}
+
+.bot-head-info {
+  flex: 1;
+}
+
+.bot-head-info b {
+  font-size: 16px;
+  display: block;
+  letter-spacing: -0.2px;
+}
+
+.bot-status-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 3px;
+}
+
+.online-dot {
+  width: 8px;
+  height: 8px;
+  background: #4caf50;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #4caf50;
+  animation: dotPulse 2s infinite;
+}
+
+@keyframes dotPulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.4; }
+  100% { opacity: 1; }
+}
+
+.bot-mode-badge {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  background: var(--bot-gold);
+  color: #062a24;
+  border-radius: 20px;
+  margin-right: 8px;
+}
+
+.bot-panel-head #tarasiBotClose {
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.14);
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bot-typing-indicator {
+  padding: 12px 16px;
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.bot-typing-indicator span {
+  width: 6px;
+  height: 6px;
+  background: var(--bot-gold);
+  border-radius: 50%;
+  animation: typing 1s infinite ease-in-out;
+}
+
+.bot-typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+.bot-typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typing {
+  0%, 100% { transform: translateY(0); opacity: 0.4; }
+  50% { transform: translateY(-4px); opacity: 1; }
+}
+
+.bot-panel-messages {
+  flex: 1;
+  overflow: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background:
+    radial-gradient(circle at top right, rgba(200, 154, 43, 0.14), transparent 30%),
+    linear-gradient(180deg, #fffdf8, #fff6e7);
+}
+
+.tarasi-msg {
+  max-width: 88%;
+  padding: 13px 14px;
+  border-radius: 18px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.tarasi-msg.bot {
+  align-self: flex-start;
+  background: var(--bot-mist);
+  border: 1px solid #d7ecdd;
+  color: var(--bot-ink);
+}
+
+.tarasi-msg.user {
+  align-self: flex-end;
+  background: linear-gradient(135deg, #083a33, #0f5a50);
+  color: white;
+}
+
+.tarasi-msg-ticket {
+  margin-top: 10px;
+  display: inline-flex;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(200, 154, 43, 0.16);
+  color: #7a5700;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.tarasi-estimate-card {
+  margin: 4px 16px 10px;
+  padding: 14px;
+  border-radius: 22px;
+  border: 1px solid rgba(200, 154, 43, 0.28);
+  background: linear-gradient(180deg, rgba(255, 250, 240, 0.98), rgba(246, 237, 217, 0.98));
+  color: var(--bot-ink);
+  box-shadow: 0 12px 28px rgba(13, 43, 40, 0.08);
+}
+
+.tarasi-estimate-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.tarasi-estimate-head span {
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: rgba(200, 154, 43, 0.14);
+  color: #7a5700;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.tarasi-estimate-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.tarasi-estimate-grid span {
+  display: block;
+  margin-bottom: 4px;
+  color: #667671;
+  font-size: 11px;
+}
+
+.tarasi-estimate-grid strong {
+  display: block;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.tarasi-estimate-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.tarasi-estimate-actions button {
+  border: 0;
+  border-radius: 999px;
+  padding: 8px 12px;
+  background: #0d4038;
+  color: white;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.tarasi-bank-inline {
+  display: grid;
+  gap: 4px;
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(12, 64, 56, 0.08);
+  color: var(--bot-ink);
+}
+
+.tarasi-bank-inline span {
+  font-size: 12px;
+  color: #5b655f;
+}
+
+.bot-panel-suggestions {
+  padding: 10px 12px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  border-top: 1px solid #efe3c8;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.bot-panel-suggestions button,
+.bot-feedback-actions button {
+  border: 0;
+  border-radius: 999px;
+  background: #fff1cc;
+  color: #5a420f;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.bot-panel-feedback {
+  padding: 10px 12px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 12px;
+  color: #54625e;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.bot-feedback-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.bot-panel-form {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  padding: 12px;
+  background: white;
+  border-top: 1px solid #efe3c8;
+}
+
+.bot-panel-form input {
+  border: 1px solid #e2d3b5;
+  border-radius: 16px;
+  padding: 12px;
+  outline: none;
+  font-weight: 600;
+}
+
+.bot-panel-form button {
+  border: 0;
+  border-radius: 16px;
+  padding: 0 15px;
+  background: linear-gradient(135deg, #063b34, #c89a2b);
+  color: white;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.tarasi-address-result {
+  margin: 4px 16px 10px;
+  padding: 12px;
+  border-radius: 16px;
+  border: 1px solid #c89a2b44;
+  background: white;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.tarasi-address-result:hover {
+  background: #fff8e1;
+}
+
+.tarasi-address-result strong {
+  display: block;
+  font-size: 13px;
+  color: #062a24;
+}
+
+.tarasi-address-result span {
+  font-size: 11px;
+  color: #666;
+}
+
+.tarasi-quote-download {
+  display: block;
+  margin-top: 10px;
+  padding: 10px;
+  text-align: center;
+  background: #c89a2b;
+  color: white !important;
+  text-decoration: none;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 12px;
+}
+  .tarasi-bot-widget {
+    right: 12px;
+    bottom: 86px;
+  }
+
+  .tarasi-bot-bubble {
+    width: 62px;
+    height: 62px;
+  }
+
+  .tarasi-bot-panel {
+    right: -4px;
+    bottom: 76px;
+    height: 540px;
+  }
+
+  .bot-panel-feedback {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

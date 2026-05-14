@@ -1,0 +1,70 @@
+{% extends "profile/superapp_base.html" %}
+{% block title %}Notifications | Tarasi{% endblock %}
+
+{% block superapp_header %}
+<section class="subpage-hero glass-card">
+  <div>
+    <span class="hero-kicker">Notifications</span>
+    <h1>Live updates and account signals</h1>
+    <p>Booking changes, premium tips, safety reminders and support responses now sit in a denser app-style feed.</p>
+  </div>
+  <div class="subpage-highlight">
+    <strong>{{ user_notifications|length }}</strong>
+    <span>Total notices</span>
+  </div>
+</section>
+{% endblock %}
+
+{% block superapp_content %}
+<section class="dashboard-module-grid">
+  <article class="module-card wide-card">
+    <div class="module-heading">
+      <div>
+        <span class="module-kicker">Inbox</span>
+        <h2>Personal updates</h2>
+      </div>
+      <a href="{{ url_for('profile.mark_all_as_read') }}" class="btn-text">Mark all as read</a>
+    </div>
+    <div class="feed-list">
+      {% for note in user_notifications %}
+      <div class="feed-item feed-item-rich {% if note.status == 'unread' %}unread-note{% endif %}">
+        <div class="feed-item-top">
+          <span class="type-tag">{{ note.type|replace('_', ' ')|title }}</span>
+          <small>{{ note.created_at[:10] }} {{ note.created_at[11:16] }}</small>
+        </div>
+        <strong>{{ note.title }}</strong>
+        <p>{{ note.message }}</p>
+        <div class="feed-item-actions">
+          {% if note.action_url %}
+          <a href="{{ note.action_url }}" class="cat-cta">View details →</a>
+          {% endif %}
+          {% if note.status == 'unread' %}
+          <a href="{{ url_for('profile.mark_read', id=note.id) }}" class="btn-text">Mark read</a>
+          {% endif %}
+        </div>
+      </div>
+      {% else %}
+      <div class="empty-premium-block">
+        <h3>Inbox is empty</h3>
+        <p>You have no personal notifications at the moment.</p>
+      </div>
+      {% endfor %}
+    </div>
+  </article>
+
+  <article class="module-card">
+    <div class="module-heading">
+      <div>
+        <span class="module-kicker">Support summary</span>
+        <h2>Ticket visibility</h2>
+      </div>
+    </div>
+    <div class="analytics-grid">
+      <div><strong>{{ dashboard.support_summary.total }}</strong><span>Total tickets</span></div>
+      <div><strong>{{ dashboard.support_summary.open }}</strong><span>Open</span></div>
+      <div><strong>{{ dashboard.support_summary.resolved }}</strong><span>Resolved</span></div>
+      <div><strong>{{ dashboard.stats.active }}</strong><span>Live trips</span></div>
+    </div>
+  </article>
+</section>
+{% endblock %}

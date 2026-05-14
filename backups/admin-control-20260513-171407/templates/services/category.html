@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}{{ category.title }} | Tarasi{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="section-head">
+    <span class="eyebrow">{{ category.title }}</span>
+    <h1>{{ category.title }}</h1>
+    <p>{{ category.description }}</p>
+  </div>
+  <div class="cards-grid">
+    {% for item in items %}
+    <article class="card">
+      <h3>{{ item.title }}</h3>
+      <p>{{ item.subtitle }}</p>
+      <div class="service-meta">{{ item.meta }}</div>
+    </article>
+    {% else %}
+    <div class="empty-state">{{ empty_state_message }}</div>
+    {% endfor %}
+  </div>
+  <section class="section">
+    <a class="btn btn-primary" href="{{ category.cta }}">Continue</a>
+  </section>
+</section>
+{% endblock %}

@@ -1,0 +1,185 @@
+{% extends "admin/base.html" %}
+{% block title %}Invoice & Quotation Studio | Tarasi{% endblock %}
+{% block admin_page %}
+
+<section class="invoice-studio-hero">
+  <div>
+    <span class="invoice-kicker">Tarasi Shuttle Operations</span>
+    <h1>Create invoice or quotation</h1>
+    <p>Create premium invoices for paid/confirmed services or quotations for customer enquiries.</p>
+  </div>
+  <div class="invoice-hero-badges">
+    <span>Invoice</span>
+    <span>Quotation</span>
+    <span>PDF Ready</span>
+  </div>
+</section>
+
+<form class="invoice-studio-form" method="post">
+  <section class="invoice-section-card">
+    <div class="invoice-section-head">
+      <h2>Document type</h2>
+      <p>Choose whether this is a final invoice or a quotation.</p>
+    </div>
+
+    <div class="invoice-grid-2">
+      <label>
+        Document type
+        <select name="document_type" required>
+          <option value="Invoice">Invoice</option>
+          <option value="Quotation">Quotation</option>
+        </select>
+      </label>
+
+      <label>
+        Payment status
+        <select name="payment_status">
+          <option>Pending</option>
+          <option>Paid</option>
+          <option>Partially Paid</option>
+          <option>Quotation Only</option>
+        </select>
+      </label>
+    </div>
+  </section>
+
+  <section class="invoice-section-card">
+    <div class="invoice-section-head">
+      <h2>Customer details</h2>
+      <p>Client and billing information.</p>
+    </div>
+
+    <div class="invoice-grid-2">
+      <label>Client full name
+        <input name="client_name" required placeholder="Full customer name">
+      </label>
+
+      <label>Contact number
+        <input name="contact_number" required placeholder="+264...">
+      </label>
+
+      <label>Email address
+        <input name="email" type="email" placeholder="client@email.com">
+      </label>
+
+      <label>Passenger count
+        <input name="passengers" type="number" min="1" value="1">
+      </label>
+    </div>
+  </section>
+
+  <section class="invoice-section-card">
+    <div class="invoice-section-head">
+      <h2>Service details</h2>
+      <p>Admin can enter full trip details or keep it as a service-only document.</p>
+    </div>
+
+    <div class="invoice-grid-2">
+      <label>
+        Detail mode
+        <select name="detail_mode">
+          <option value="Full Trip Details">Full Trip Details</option>
+          <option value="Service Only">Service Only</option>
+        </select>
+      </label>
+
+      <label>
+        Service type
+        <select name="service_type">
+          <option>Airport Transfer</option>
+          <option>Executive VIP Transfer</option>
+          <option>Business Transport</option>
+          <option>Tourist Shuttle</option>
+          <option>School Transport</option>
+          <option>Monthly Transport</option>
+          <option>Private Hire</option>
+          <option>Custom Shuttle Service</option>
+        </select>
+      </label>
+
+      <label>Vehicle type
+        <select name="vehicle_type">
+          <option>Sedan</option>
+          <option>SUV</option>
+          <option>Luxury SUV</option>
+          <option>Minibus</option>
+          <option>Executive Van</option>
+          <option>To be confirmed</option>
+        </select>
+      </label>
+
+      <label>Service description
+        <input name="service_description" placeholder="Example: Windhoek airport transfer for 3 passengers">
+      </label>
+
+      <label>Pickup location
+        <input name="pickup" placeholder="Pickup point">
+      </label>
+
+      <label>Drop-off location
+        <input name="dropoff" placeholder="Destination">
+      </label>
+
+      <label>Pickup date
+        <input name="service_date" type="date">
+      </label>
+
+      <label>Pickup time
+        <input name="service_time" type="time">
+      </label>
+    </div>
+  </section>
+
+  <section class="invoice-section-card">
+    <div class="invoice-section-head">
+      <h2>Billing</h2>
+      <p>Amount, discount, VAT and notes.</p>
+    </div>
+
+    <div class="invoice-grid-2">
+      <label>Base amount (NAD)
+        <input name="amount" type="number" step="0.01" required placeholder="850.00">
+      </label>
+
+      <label>Discount %
+        <input name="discount" type="number" step="0.01" value="0">
+      </label>
+
+      <label>VAT %
+        <input name="vat" type="number" step="0.01" value="15">
+      </label>
+
+      <label>Prepared by
+        <input name="prepared_by" value="Tarasi Admin">
+      </label>
+
+      <label class="full-width">Notes / Instructions
+        <textarea name="notes" rows="4" placeholder="Payment terms, airport terminal, customer notes, quote validity, VIP instructions..."></textarea>
+      </label>
+    </div>
+  </section>
+
+  <section class="invoice-section-card company-prefill-box">
+    <div class="invoice-section-head">
+      <h2>Company details auto-filled</h2>
+      <p>These details appear automatically on every invoice and quotation.</p>
+    </div>
+
+    <div class="company-prefill-grid">
+      <div><strong>Legal Name</strong><span>Tarasi Shuttle and Transfer Services CC</span></div>
+      <div><strong>TIN</strong><span>15733730-011</span></div>
+      <div><strong>Reg No</strong><span>CC/2025/11107</span></div>
+      <div><strong>Address</strong><span>P.O. Box 60216, Windhoek</span></div>
+      <div><strong>Bank</strong><span>First National Bank (FNB)</span></div>
+      <div><strong>Account Name</strong><span>Tarasi Shuttle and Transfer Services CC</span></div>
+      <div><strong>Account Number</strong><span>64289981259</span></div>
+      <div><strong>Branch</strong><span>Maerua Mall · Code: 282273</span></div>
+    </div>
+  </section>
+
+  <div class="invoice-submit-bar">
+    <button type="submit">Generate Document</button>
+  </div>
+</form>
+
+{% endblock %}

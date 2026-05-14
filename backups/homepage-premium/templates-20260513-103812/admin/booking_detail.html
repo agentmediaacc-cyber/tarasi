@@ -1,0 +1,85 @@
+{% extends "admin/base.html" %}
+{% block title %}Booking Detail | Tarasi{% endblock %}
+{% block admin_page %}
+{% if not_found %}
+<section class="admin-panel"><div class="admin-empty">Booking not found in the connected backend.</div></section>
+{% else %}
+<section class="admin-hero compact">
+  <div>
+    <span class="admin-kicker">Booking detail</span>
+    <h1>{{ booking.reference }}</h1>
+    <p>{{ booking.full_name }} · {{ booking.booking_type|replace('-', ' ')|title }} · {{ booking.pickup }} to {{ booking.dropoff }}</p>
+  </div>
+  <div class="admin-hero-stack">
+    <div class="admin-hero-card"><span>Status</span><strong>{{ booking.status }}</strong></div>
+    <div class="admin-hero-card"><span>Amount</span><strong>{{ booking.amount or "Unavailable" }}</strong></div>
+  </div>
+</section>
+
+<section class="admin-grid-2">
+  <article class="admin-panel">
+    <div class="admin-panel-head"><div><span class="admin-kicker">Booking controls</span><h2>Status workflow</h2></div></div>
+    <form method="post" action="{{ url_for('admin.update_status', reference=booking.reference) }}" class="admin-form-grid">
+      <label>Status
+        <select name="status">
+          {% for status in ['Booking received', 'Confirmed', 'Driver assigned', 'On the way', 'Arrived', 'Picked up', 'Completed', 'Cancellation requested', 'Cancelled'] %}
+          <option value="{{ status }}" {% if booking.status == status %}selected{% endif %}>{{ status }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <button class="admin-btn gold" type="submit">Update status</button>
+    </form>
+
+    <form method="post" action="{{ url_for('admin.assign_driver', reference=booking.reference) }}" class="admin-form-grid">
+      <label>Assign driver
+        <select name="driver_id">
+          <option value="">Select driver</option>
+          {% for driver in drivers %}
+          <option value="{{ driver.driver_id or driver.email }}" {% if booking.driver_id and booking.driver_id == (driver.driver_id or driver.email) %}selected{% endif %}>{{ driver.full_name }}{% if driver.vehicle_name or driver.assigned_vehicle_name %} · {{ driver.vehicle_name or driver.assigned_vehicle_name }}{% endif %}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <button class="admin-btn" type="submit">{{ "Reassign driver" if booking.driver_name else "Assign driver" }}</button>
+    </form>
+
+    <form method="post" action="{{ url_for('admin.add_note', reference=booking.reference) }}" class="admin-form-grid">
+      <label>Admin note
+        <textarea name="note" rows="5" placeholder="Add dispatch, payment or customer handling notes">{{ booking.admin_note }}</textarea>
+      </label>
+      <button class="admin-btn" type="submit">Save admin note</button>
+    </form>
+  </article>
+
+  <article class="admin-panel">
+    <div class="admin-panel-head"><div><span class="admin-kicker">Actions</span><h2>Quick handling</h2></div></div>
+    <div class="admin-stack-list">
+      <a class="admin-action-link" href="{{ url_for('track.track_detail', reference=booking.reference) }}">View tracking</a>
+      <a class="admin-action-link" href="{{ url_for('admin.assign_driver', reference=booking.reference) }}">Open assign driver</a>
+      <a class="admin-action-link" href="tel:{{ booking.phone }}">Call customer</a>
+      <a class="admin-action-link" href="https://wa.me/{{ booking.phone|replace('+','') }}" target="_blank" rel="noreferrer">WhatsApp customer</a>
+      {% if booking.status_key == 'cancellation_requested' %}
+      <form method="post" action="{{ url_for('admin.approve_cancellation', reference=booking.reference) }}">
+        <button class="admin-btn danger" type="submit">Approve cancellation</button>
+      </form>
+      <form method="post" action="{{ url_for('admin.reject_cancellation', reference=booking.reference) }}">
+        <button class="admin-btn" type="submit">Reject cancellation</button>
+      </form>
+      {% endif %}
+    </div>
+  </article>
+  <article class="admin-panel span-full">
+    <div class="admin-panel-head"><div><span class="admin-kicker">Booking context</span><h2>Operational notes</h2></div></div>
+    <div class="admin-detail-grid">
+      <div><strong>Customer phone</strong><span>{{ booking.phone or "Unavailable" }}</span></div>
+      <div><strong>Email</strong><span>{{ booking.email or "Unavailable" }}</span></div>
+      <div><strong>Requested driver</strong><span>{{ booking.driver_name or "Unassigned" }}</span></div>
+      <div><strong>Driver phone</strong><span>{{ booking.driver_phone or "Unavailable" }}</span></div>
+      <div><strong>Vehicle</strong><span>{{ booking.vehicle_name or "Unassigned" }}</span></div>
+      <div><strong>Booking PIN</strong><span>{{ booking.booking_pin or "Generated after assignment" }}</span></div>
+      <div><strong>Change request</strong><span>{{ booking.request_change_note or "None" }}</span></div>
+      <div><strong>Cancel request</strong><span>{{ booking.cancel_request_note or "None" }}</span></div>
+    </div>
+  </article>
+</section>
+{% endif %}
+{% endblock %}

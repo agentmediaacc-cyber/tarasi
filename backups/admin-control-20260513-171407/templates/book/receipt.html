@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Receipt {{ booking.receipt_number or booking.reference }} | Tarasi{% endblock %}
+{% block head %}
+<style>
+  .receipt-box { max-width: 600px; margin: auto; padding: 40px; border-radius: 20px; background: white; box-shadow: 0 10px 30px rgba(0,0,0,0.05); color: #333; text-align: center; }
+  .receipt-check { width: 80px; height: 80px; background: #f0fff4; color: #276749; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px; margin: 0 auto 20px; }
+  .receipt-amount { font-size: 3rem; font-weight: 800; margin-bottom: 10px; }
+  .receipt-meta { font-size: 0.9rem; color: #777; margin-bottom: 30px; }
+  .receipt-table { width: 100%; border-collapse: collapse; text-align: left; margin-bottom: 30px; }
+  .receipt-table td { padding: 12px 0; border-bottom: 1px dashed #eee; }
+  .receipt-table td:last-child { text-align: right; font-weight: 600; }
+  @media print { .site-header, .site-footer, .btn, .sticky-mobile-cta, .floating-support-shell { display: none !important; } }
+</style>
+{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="receipt-box">
+    <div class="receipt-check">✓</div>
+    <h1>Payment Received</h1>
+    <div class="receipt-amount">N${{ booking.amount }}</div>
+    <div class="receipt-meta">Receipt #{{ booking.receipt_number or 'RCP-' ~ booking.reference }}</div>
+
+    <table class="receipt-table">
+      <tbody>
+        <tr><td>Reference</td><td>{{ booking.reference }}</td></tr>
+        <tr><td>Date Paid</td><td>{{ booking.paid_at[:10] }}</td></tr>
+        <tr><td>Method</td><td>{{ booking.payment_method }}</td></tr>
+        <tr><td>Route</td><td>{{ booking.pickup }} to {{ booking.dropoff }}</td></tr>
+        <tr><td>Customer</td><td>{{ booking.full_name }}</td></tr>
+      </tbody>
+    </table>
+
+    <p>Thank you for choosing Tarasi Premium Namibia. Your trip is confirmed and paid.</p>
+
+    <div class="cta-row" style="justify-content: center; margin-top: 30px;">
+      <button class="btn btn-primary" onclick="window.print()">Download PDF</button>
+      <a class="btn btn-secondary" href="{{ url_for('track.track_detail', reference=booking.reference) }}">Track Trip</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

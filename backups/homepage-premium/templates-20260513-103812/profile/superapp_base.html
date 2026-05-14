@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% block body_class %}profile-app-page{% endblock %}
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile_mega.css') }}">
+{% endblock %}
+{% block content %}
+<section class="superapp-shell">
+  <div class="superapp-glow superapp-glow-a"></div>
+  <div class="superapp-glow superapp-glow-b"></div>
+
+  <header class="superapp-topbar">
+    <div class="topbar-brand">
+      <button class="superapp-hamburger" type="button" aria-label="Open profile navigation" aria-expanded="false" aria-controls="profile-drawer" data-profile-drawer-open>
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <a class="topbar-logo" href="{{ url_for('profile.profile') }}">
+        <span class="logo-mark">T</span>
+        <span>
+          <strong>Tarasi One</strong>
+          <small>Premium mobility dashboard</small>
+        </span>
+      </a>
+    </div>
+
+    <div class="topbar-center">
+      <div class="topbar-chip">Namibia luxury transport</div>
+      <div class="topbar-chip live">{% if dashboard.active_ride %}Ride live{% else %}Ready to book{% endif %}</div>
+    </div>
+
+    <div class="topbar-actions">
+      <a class="topbar-action" href="{{ url_for('track.track_index') }}">Track Ride</a>
+      <a class="topbar-action accent" href="{{ url_for('booking.book_index') }}">Book Again</a>
+    </div>
+  </header>
+
+  <div class="superapp-drawer-backdrop" data-profile-drawer-backdrop hidden></div>
+  <aside class="superapp-drawer" id="profile-drawer" data-profile-drawer aria-hidden="true">
+    <div class="drawer-header">
+      <div class="drawer-user">
+        <div class="drawer-avatar">{{ dashboard.profile.full_name[:1] if dashboard.profile.full_name else "T" }}</div>
+        <div>
+          <strong>{{ dashboard.profile.full_name }}</strong>
+          <span>{{ dashboard.profile.level }} member</span>
+        </div>
+      </div>
+      <button class="drawer-dismiss" type="button" aria-label="Close profile navigation" data-profile-drawer-close>×</button>
+    </div>
+
+    <nav class="drawer-nav" aria-label="Profile navigation">
+      {% for item in dashboard.app_navigation.primary %}
+      <a class="{% if active_tab == item.id %}is-active{% endif %}" href="{{ url_for(item.endpoint) }}">
+        <span>{{ item.icon }}</span>
+        <span>{{ item.label }}</span>
+      </a>
+      {% endfor %}
+    </nav>
+
+    <div class="drawer-divider"></div>
+
+    <nav class="drawer-nav drawer-nav-secondary" aria-label="Profile secondary navigation">
+      {% for item in dashboard.app_navigation.secondary %}
+      <a class="{% if active_tab == item.id %}is-active{% endif %}" href="{{ url_for(item.endpoint) }}">
+        <span>{{ item.icon }}</span>
+        <span>{{ item.label }}</span>
+      </a>
+      {% endfor %}
+    </nav>
+  </aside>
+
+  <div class="superapp-layout">
+    <aside class="superapp-sidebar">
+      <div class="sidebar-profile glass-card">
+        <div class="sidebar-avatar">{{ dashboard.profile.full_name[:1] if dashboard.profile.full_name else "T" }}</div>
+        <div>
+          <p class="sidebar-kicker">Tarasi One</p>
+          <h2>{{ dashboard.profile.full_name }}</h2>
+          <p>{{ dashboard.profile.town }}, {{ dashboard.profile.region }}</p>
+        </div>
+        <div class="sidebar-level">{{ dashboard.profile.level }}</div>
+      </div>
+
+      <nav class="sidebar-nav glass-card" aria-label="Desktop profile navigation">
+        {% for item in dashboard.app_navigation.primary %}
+        <a class="{% if active_tab == item.id %}is-active{% endif %}" href="{{ url_for(item.endpoint) }}">
+          <span>{{ item.icon }}</span>
+          <span>{{ item.label }}</span>
+        </a>
+        {% endfor %}
+      </nav>
+
+      <nav class="sidebar-nav glass-card" aria-label="Desktop profile shortcuts">
+        {% for item in dashboard.app_navigation.secondary %}
+        <a class="{% if active_tab == item.id %}is-active{% endif %}" href="{{ url_for(item.endpoint) }}">
+          <span>{{ item.icon }}</span>
+          <span>{{ item.label }}</span>
+        </a>
+        {% endfor %}
+      </nav>
+
+      <div class="sidebar-summary glass-card">
+        <p class="sidebar-kicker">Profile completion</p>
+        <strong>{{ dashboard.profile_completion.percent }}%</strong>
+        <span>{{ dashboard.profile_completion.completed }}/{{ dashboard.profile_completion.total }} essentials complete</span>
+      </div>
+    </aside>
+
+    <main class="superapp-main">
+      {% block superapp_header %}{% endblock %}
+      {% block superapp_content %}{% endblock %}
+    </main>
+  </div>
+
+  <div class="floating-action-stack">
+    {% for action in dashboard.app_navigation.quick_actions %}
+    <a class="floating-action {% if loop.first %}is-primary{% endif %}" href="{{ url_for(action.endpoint) }}">
+      <span>{{ action.icon }}</span>
+      <span>{{ action.label }}</span>
+    </a>
+    {% endfor %}
+  </div>
+
+  <a class="floating-support-superapp" href="{{ url_for('support.support_page') }}" aria-label="Open premium support">SOS</a>
+
+  <nav class="superapp-bottom-nav" aria-label="Profile mobile navigation">
+    {% for item in dashboard.app_navigation.mobile %}
+    <a class="{% if active_tab == item.id %}is-active{% endif %}" href="{{ url_for(item.endpoint) }}">
+      <strong>{{ item.icon }}</strong>
+      <span>{{ item.label }}</span>
+    </a>
+    {% endfor %}
+  </nav>
+</section>
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('static', filename='js/profile_mega.js') }}" defer></script>
+{% endblock %}

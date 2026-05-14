@@ -15,7 +15,7 @@
       {% for row in audit_logs %}
       <span>{{ row.timestamp }} · {{ row.user }} · {{ row.action }}</span>
       {% else %}
-      <div class="admin-empty">No real audit log rows are available.</div>
+      <div class="admin-empty-state"><p>No records yet.</p></div>
       {% endfor %}
     </div>
   </article>
@@ -25,7 +25,7 @@
       {% for user in admin_users %}
       <span>{{ user.email or user.full_name or "Admin user" }} · {{ user.role or "Role unavailable" }}</span>
       {% else %}
-      <div class="admin-empty">No real admin-user rows are available.</div>
+      <div class="admin-empty-state"><p>No records yet.</p></div>
       {% endfor %}
     </div>
   </article>

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Support | Tarasi{% endblock %}
+{% block content %}
+<section class="hero-grid">
+  <article class="hero-card">
+    <span class="eyebrow">Support</span>
+    <h1>Support, complaints and emergency transport</h1>
+    <p>Tarasi support covers WhatsApp help, complaints, lost items and partnership enquiries.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="https://wa.me/264811234567" target="_blank" rel="noreferrer">WhatsApp</a>
+      <a class="btn btn-secondary" href="tel:+264811234567">Call</a>
+    </div>
+  </article>
+  <aside class="panel">
+    <h3>Support request</h3>
+    <form method="post" class="field-grid">
+      <div class="field"><label for="full_name">Full name</label><input id="full_name" name="full_name" required></div>
+      <div class="field"><label for="phone">Phone</label><input id="phone" name="phone" required></div>
+      <div class="field"><label for="email">Email</label><input id="email" name="email" type="email"></div>
+      <div class="field"><label for="issue_type">Issue type</label><select id="issue_type" name="issue_type"><option>Emergency transport request</option><option>Complaint form</option><option>Lost item form</option><option>Partnership enquiry</option></select></div>
+      <div class="field"><label for="priority">Priority</label><select id="priority" name="priority"><option>High</option><option selected>Medium</option><option>Low</option></select></div>
+      <div class="field"><label for="message">Message</label><textarea id="message" name="message" required></textarea></div>
+      <button class="btn btn-primary btn-block" type="submit">Send request</button>
+    </form>
+  </aside>
+</section>
+
+<section class="section">
+  <div class="cards-grid">
+    {% for ticket in tickets %}
+    <article class="card">
+      <span class="status-chip">{{ ticket.status }}</span>
+      <h3>{{ ticket.issue_type or ticket.subject }}</h3>
+      <p>{{ ticket.full_name or "Customer" }} • {{ ticket.phone or "No phone" }}</p>
+    </article>
+    {% else %}
+    <div class="empty-state">No recent support requests yet.</div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

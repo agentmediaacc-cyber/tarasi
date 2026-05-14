@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="partner-auth">
+  <div class="partner-auth-card">
+    <p class="eyebrow">Partner company access</p>
+    <h1>Login to Partner Portal</h1>
+    <p>For shuttle companies approved or invited by Tarasi.</p>
+    <form method="POST" class="partner-form">
+      <label>Email<input type="email" name="email" required></label>
+      <label>Temporary PIN<input type="password" name="pin" required></label>
+      <button>Login</button>
+    </form>
+    <a href="{{ url_for('partner.register') }}">Apply as partner company</a>
+  </div>
+</section>
+{% endblock %}

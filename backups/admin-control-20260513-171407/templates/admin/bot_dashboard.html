@@ -1,0 +1,287 @@
+{% extends "admin/base.html" %}
+{% block title %}Tarasi Bot OS | Admin{% endblock %}
+{% block admin_page %}
+<section class="admin-hero">
+  <div>
+    <span class="admin-kicker">Tarasi Assistant OS</span>
+    <h1>Premium Namibia travel bot control</h1>
+    <p>Monitor conversation quality, support escalation, client mood and ticket pressure from one assistant dashboard.</p>
+  </div>
+  <div class="admin-hero-stack">
+    <div class="admin-hero-card">
+      <span>Total conversations</span>
+      <strong>{{ summary.total_conversations }}</strong>
+    </div>
+    <div class="admin-hero-card">
+      <span>Quote requests</span>
+      <strong>{{ summary.quote_count }}</strong>
+    </div>
+    <div class="admin-hero-card">
+      <span>Open tickets</span>
+      <strong>{{ summary.open_tickets }}</strong>
+    </div>
+  </div>
+</section>
+
+<section class="admin-metric-grid">
+  <article class="admin-metric-card tone-default">
+    <span>Emergency tickets</span>
+    <strong>{{ summary.emergency_tickets }}</strong>
+  </article>
+  <article class="admin-metric-card tone-default">
+    <span>Recent reviews</span>
+    <strong>{{ summary.recent_reviews|length }}</strong>
+  </article>
+  <article class="admin-metric-card tone-default">
+    <span>Recent conversations</span>
+    <strong>{{ summary.recent_conversations|length }}</strong>
+  </article>
+  <article class="admin-metric-card tone-default">
+    <span>Bot status</span>
+    <strong>Premium live</strong>
+  </article>
+</section>
+
+<section class="admin-grid-2">
+  <article class="admin-panel">
+    <div class="admin-panel-head">
+      <div>
+        <span class="admin-kicker">AI provider</span>
+        <h2>Concierge rewrite layer</h2>
+      </div>
+      <button class="admin-btn-small" onclick="testAIStatus()">Test AI</button>
+    </div>
+    <div class="admin-stack-list" id="aiStatusList">
+      <div class="admin-stack-row">
+        <div>
+          <strong>{{ ai_status.provider or "template" }}</strong>
+          <p>Model: {{ ai_status.model or "n/a" }}</p>
+        </div>
+        <span class="status-badge {{ 'active' if ai_status.available else 'inactive' }}">
+          {{ "Available" if ai_status.available else "Offline" }}
+        </span>
+      </div>
+      <div class="admin-stack-row">
+        <div>
+          <strong>Mode</strong>
+          <p>{{ "AI Enabled" if not ai_status.fallback else "Template Fallback" }}</p>
+        </div>
+        <span>{{ ai_status.response_time_ms or 0 }}ms</span>
+      </div>
+      <div class="admin-stack-row">
+        <div>
+          <strong>Last check</strong>
+          <p id="lastAiCheck">Updated via dashboard</p>
+        </div>
+        <span>{{ "Safe" if ai_status.available else "Error" }}</span>
+      </div>
+      <div class="admin-stack-row">
+        <div>
+          <strong>Last AI error</strong>
+          <p>{{ ai_status.last_error or "None" }}</p>
+        </div>
+        <span>{{ "Review" if ai_status.last_error else "OK" }}</span>
+      </div>
+    </div>
+  </article>
+
+  <script>
+    async function testAIStatus() {
+      const btn = event.target;
+      btn.disabled = true;
+      btn.textContent = "Checking...";
+      try {
+        const res = await fetch("/api/bot/ai-status?force=true");
+        const data = await res.json();
+        location.reload(); // Quickest way to update all cards
+      } catch (err) {
+        alert("Failed to check AI status");
+        btn.disabled = false;
+        btn.textContent = "Test AI";
+      }
+    }
+  </script>
+
+  <article class="admin-panel">
+    <div class="admin-panel-head">
+      <div>
+        <span class="admin-kicker">Knowledge</span>
+        <h2>AI Brain & Facts</h2>
+      </div>
+      <a href="{{ url_for('admin.bot_knowledge') }}" class="admin-btn-small">Manage Knowledge</a>
+    </div>
+    <div class="admin-stack-list">
+      <div class="admin-stack-row">
+        <div>
+          <strong>Active Facts</strong>
+          <p>Admin-set knowledge items</p>
+        </div>
+        <span>{{ summary.knowledge_count or 0 }} items</span>
+      </div>
+      <div class="admin-stack-row">
+        <div>
+          <strong>AI Mode</strong>
+          <p>Replies rewritten by provider</p>
+        </div>
+        <span>{{ summary.ai_conversations }} conversations</span>
+      </div>
+      <div class="admin-stack-row">
+        <div>
+          <strong>Template Fallback</strong>
+          <p>Safe deterministic replies used</p>
+        </div>
+        <span>{{ summary.template_conversations }} conversations</span>
+      </div>
+      <div class="admin-stack-row">
+        <div>
+          <strong>Support Queue</strong>
+          <p>Clients waiting for takeover</p>
+        </div>
+        <span class="{{ 'status-badge waiting' if summary.live_support_waiting > 0 else '' }}">
+          {{ summary.live_support_waiting or 0 }} waiting
+        </span>
+      </div>
+    </div>
+  </article>
+</section>
+
+<section class="admin-grid-2">
+  <article class="admin-panel">
+    <div class="admin-panel-head">
+      <div>
+        <span class="admin-kicker">Recent conversations</span>
+        <h2>Client mood and intent</h2>
+      </div>
+    </div>
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Session</th>
+            <th>Stage</th>
+            <th>Client mood</th>
+            <th>Detected intent</th>
+            <th>Last topic</th>
+            <th>Last user message</th>
+            <th>Last bot reply</th>
+            <th>Refs</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in summary.recent_conversations %}
+          <tr>
+            <td>{{ row.session_id }}</td>
+            <td>{{ row.stage or "greeting" }}</td>
+            <td>{{ row.last_mood or "neutral" }}</td>
+            <td>{{ row.last_intent or "general_support" }}</td>
+            <td>{{ row.last_topic or "general" }}</td>
+            <td>{{ row.last_user_message or "No messages yet" }}</td>
+            <td>{{ row.last_bot_reply or "No reply yet" }}</td>
+            <td>
+              {% if row.ticket_number %}Ticket {{ row.ticket_number }}{% endif %}
+              {% if row.quote_number %}{% if row.ticket_number %}<br>{% endif %}Quote {{ row.quote_number }}{% endif %}
+              {% if row.booking_number %}{% if row.ticket_number or row.quote_number %}<br>{% endif %}Booking {{ row.booking_number }}{% endif %}
+              {% if not row.ticket_number and not row.quote_number and not row.booking_number %}No refs{% endif %}
+            </td>
+            <td>{{ row.status or "open" }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="8"><div class="admin-empty">No bot conversations yet.</div></td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </article>
+
+  <article class="admin-panel">
+    <div class="admin-panel-head">
+      <div>
+        <span class="admin-kicker">Support pressure</span>
+        <h2>Recent tickets</h2>
+      </div>
+    </div>
+    <div class="admin-stack-list">
+      {% for ticket in summary.recent_tickets %}
+      <div class="admin-stack-row">
+        <div>
+          <strong>{{ ticket.ticket_number }}</strong>
+          <p>{{ ticket.ticket_type }} • {{ ticket.subject }}</p>
+          <p>Admin note placeholder</p>
+        </div>
+        <span>{{ ticket.status }}</span>
+      </div>
+      {% else %}
+      <div class="admin-empty">No bot tickets yet.</div>
+      {% endfor %}
+    </div>
+  </article>
+</section>
+
+<section class="admin-grid-2">
+  <article class="admin-panel">
+    <div class="admin-panel-head">
+      <div>
+        <span class="admin-kicker">Client reviews</span>
+        <h2>Bot quality feedback</h2>
+      </div>
+    </div>
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Rating</th>
+            <th>Sentiment</th>
+            <th>Review</th>
+            <th>Created</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in summary.recent_reviews %}
+          <tr>
+            <td>{{ row.rating }}</td>
+            <td>{{ row.sentiment }}</td>
+            <td>{{ row.review_text }}</td>
+            <td>{{ row.created_at }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="4"><div class="admin-empty">No bot reviews yet.</div></td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </article>
+
+  <article class="admin-panel">
+    <div class="admin-panel-head">
+      <div>
+        <span class="admin-kicker">Operations notes</span>
+        <h2>Premium admin guide</h2>
+      </div>
+    </div>
+    <div class="admin-stack-list">
+      <div class="admin-stack-row">
+        <div>
+          <strong>Pricing rule</strong>
+          <p>Airport pricing replies must present an estimate, never a flat final price.</p>
+        </div>
+        <span>Active</span>
+      </div>
+      <div class="admin-stack-row">
+        <div>
+          <strong>Emergency support</strong>
+          <p>Lost items, complaints, payment issues and medical concerns create tickets immediately.</p>
+        </div>
+        <span>Active</span>
+      </div>
+      <div class="admin-stack-row">
+        <div>
+          <strong>Memory</strong>
+          <p>The bot stores route preferences, tourist interests, pickup patterns and complaint history.</p>
+        </div>
+        <span>Active</span>
+      </div>
+    </div>
+  </article>
+</section>
+{% endblock %}

@@ -1,3 +1,4 @@
+from services.tarasi_map_service import reverse_geocode
 from __future__ import annotations
 
 from flask import Blueprint, jsonify, request, session
@@ -9,6 +10,16 @@ from api.profile_api import profile_snapshot
 from services.db_service import get_db_status, fetch_rows
 from services.driver_service import current_driver_from_session, update_driver_location
 from services.homepage_service import get_featured_fleet, get_featured_tours, get_featured_transport_routes, homepage_has_live_data
+from services.tarasi_pricing_engine import (
+    assign_best_driver,
+    create_invoice_for_booking,
+    create_payment_proof,
+    get_bank_details,
+    get_booking_by_number as get_pricing_booking_by_number,
+    get_invoice_by_booking_number,
+    get_payment_by_booking_number,
+    update_payment_status,
+)
 
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
@@ -40,6 +51,14 @@ def api_bookings():
 @api_bp.route("/bookings/<reference>")
 def api_booking_detail(reference: str):
     booking = booking_snapshot(reference)
+    if not booking:
+        booking = get_pricing_booking_by_number(reference)
+        if booking:
+            booking["reference"] = booking.get("booking_number")
+            payment = get_payment_by_booking_number(reference)
+            invoice = get_invoice_by_booking_number(reference)
+            booking["payment"] = payment
+            booking["invoice"] = invoice
     return jsonify(booking or {"error": "not_found"}), (200 if booking else 404)
 
 
@@ -132,3 +151,85 @@ def api_notification_read(id: str):
     from services.notification_service import mark_notification_read
     mark_notification_read(id)
     return jsonify({"ok": True})
+
+
+@api_bp.route("/bookings/<booking_number>/payment-proof", methods=["POST"])
+def api_booking_payment_proof(booking_number: str):
+    payload = request.get_json(silent=True) or {}
+    payment = create_payment_proof(
+        booking_number,
+        proof_url=str(payload.get("proof_url", "")).strip(),
+        proof_text=str(payload.get("proof_text", "")).strip(),
+    )
+    if not payment:
+        return jsonify({"ok": False, "error": "booking_not_found"}), 404
+    return jsonify({"ok": True, "payment_reference": payment["payment_reference"], "payment": payment})
+
+
+@api_bp.route("/bookings/<booking_number>/invoice", methods=["POST"])
+def api_booking_create_invoice(booking_number: str):
+    invoice = create_invoice_for_booking(booking_number, base_url=request.host_url.rstrip("/"))
+    if not invoice:
+        return jsonify({"ok": False, "error": "booking_not_found"}), 404
+    return jsonify(
+        {
+            "ok": True,
+            "invoice_number": invoice["invoice_number"],
+            "invoice_url": f"/booking/{booking_number}/invoice",
+            "invoice": invoice,
+        }
+    )
+
+
+@api_bp.route("/bookings/<booking_number>/invoice")
+def api_booking_get_invoice(booking_number: str):
+    invoice = get_invoice_by_booking_number(booking_number)
+    if not invoice:
+        return jsonify({"ok": False, "error": "invoice_not_found"}), 404
+    return jsonify({"ok": True, "invoice": invoice, "invoice_url": f"/booking/{booking_number}/invoice"})
+
+
+@api_bp.route("/bookings/<booking_number>/assign-driver", methods=["POST"])
+def api_booking_assign_driver(booking_number: str):
+    booking = assign_best_driver(booking_number)
+    if not booking:
+        return jsonify({"ok": False, "error": "no_driver_available"}), 404
+    return jsonify({"ok": True, "booking": booking})
+
+
+@api_bp.route("/admin/bookings/<booking_number>/payment/approve", methods=["POST"])
+def api_admin_booking_payment_approve(booking_number: str):
+    payment = update_payment_status(booking_number, "approved", "Approved from admin pricing dashboard.")
+    if not payment:
+        return jsonify({"ok": False, "error": "payment_not_found"}), 404
+    return jsonify({"ok": True, "payment": payment})
+
+
+@api_bp.route("/admin/bookings/<booking_number>/payment/reject", methods=["POST"])
+def api_admin_booking_payment_reject(booking_number: str):
+    payload = request.get_json(silent=True) or {}
+    payment = update_payment_status(
+        booking_number,
+        "rejected",
+        str(payload.get("admin_notes", "Rejected from admin pricing dashboard.")).strip(),
+    )
+    if not payment:
+        return jsonify({"ok": False, "error": "payment_not_found"}), 404
+    return jsonify({"ok": True, "payment": payment})
+
+
+@api_bp.route("/map/reverse", methods=["POST"])
+@api_bp.route("/api/map/reverse", methods=["POST"])
+def api_map_reverse():
+    try:
+        data = request.get_json(silent=True) or request.form.to_dict() or {}
+        lat = float(data.get("lat") or data.get("latitude") or 0)
+        lng = float(data.get("lng") or data.get("lon") or data.get("longitude") or 0)
+        if not lat or not lng:
+            return jsonify({"ok": False, "message": "Missing latitude/longitude"}), 400
+        place = reverse_geocode(lat, lng)
+        if not place:
+            return jsonify({"ok": False, "message": "Location could not be confirmed"}), 200
+        return jsonify({"ok": True, "result": place, "place": place})
+    except Exception as exc:
+        return jsonify({"ok": False, "message": str(exc)}), 200

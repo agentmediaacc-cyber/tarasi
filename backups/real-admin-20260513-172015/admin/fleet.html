@@ -1,0 +1,31 @@
+{% extends "admin/base.html" %}
+{% block title %}Fleet | Tarasi{% endblock %}
+{% block admin_page %}
+<section class="admin-subhero">
+  <div>
+    <span class="admin-kicker">Fleet</span>
+    <h1>Vehicles, maintenance and assignment status</h1>
+  </div>
+</section>
+
+<section class="admin-card-grid">
+  {% for vehicle in fleet %}
+  <article class="admin-data-card">
+    <h3>{{ vehicle.name }}</h3>
+    <p>{{ vehicle.vehicle_type }}</p>
+    <div class="admin-data-pairs">
+      <span>Seats <strong>{{ vehicle.seats or "Unavailable" }}</strong></span>
+      <span>Luggage <strong>{{ vehicle.luggage or "Unavailable" }}</strong></span>
+      <span>Status <strong>{{ vehicle.status }}</strong></span>
+      <span>Driver <strong>{{ vehicle.assigned_driver or "Unassigned" }}</strong></span>
+      <span>Maintenance <strong>{{ vehicle.maintenance_status or "Unavailable" }}</strong></span>
+      <span>Service date <strong>{{ vehicle.service_date or "Unavailable" }}</strong></span>
+      <span>Insurance <strong>{{ vehicle.insurance_expiry or "Unavailable" }}</strong></span>
+      <span>Roadworthy <strong>{{ vehicle.roadworthy_expiry or "Unavailable" }}</strong></span>
+    </div>
+  </article>
+  {% else %}
+  <div class="admin-empty">No real fleet rows are available from the connected backend.</div>
+  {% endfor %}
+</section>
+{% endblock %}

@@ -1,0 +1,100 @@
+{% extends "profile/superapp_base.html" %}
+{% block title %}Trips | Tarasi{% endblock %}
+
+{% block superapp_header %}
+<section class="subpage-hero glass-card">
+  <div>
+    <span class="hero-kicker">Trips</span>
+    <h1>Bookings and travel history</h1>
+    <p>Every confirmed, active, completed and cancellation-requested trip stays in one premium command view.</p>
+  </div>
+  <div class="subpage-highlight">
+    <strong>{{ bookings|length }}</strong>
+    <span>Trips in this view</span>
+  </div>
+</section>
+{% endblock %}
+
+{% block superapp_content %}
+<section class="dashboard-module-grid">
+  <article class="module-card wide-card">
+    <div class="filter-pill-row">
+      <a class="{% if status_filter == 'all' %}is-active{% endif %}" href="{{ url_for('profile.account_bookings', status='all') }}">All</a>
+      <a class="{% if status_filter == 'active' %}is-active{% endif %}" href="{{ url_for('profile.account_bookings', status='active') }}">Active</a>
+      <a class="{% if status_filter == 'completed' %}is-active{% endif %}" href="{{ url_for('profile.account_bookings', status='completed') }}">Completed</a>
+      <a class="{% if status_filter == 'cancellation_requested' %}is-active{% endif %}" href="{{ url_for('profile.account_bookings', status='cancellation_requested') }}">Cancellation requested</a>
+      <a class="{% if status_filter == 'cancelled' %}is-active{% endif %}" href="{{ url_for('profile.account_bookings', status='cancelled') }}">Cancelled</a>
+    </div>
+
+    <div class="trip-history-list">
+      {% for booking in bookings %}
+      <article class="trip-history-card">
+        <div class="trip-history-top">
+          <div>
+            <span class="status-chip">{{ booking.status }}</span>
+            <h3>{{ booking.reference }}</h3>
+            <p>{{ booking.pickup }} to {{ booking.dropoff }}</p>
+          </div>
+          <div class="trip-history-meta">
+            <strong>{{ booking.amount or "Quote pending" }}</strong>
+            <span>{{ booking.date or "Date TBD" }} · {{ booking.time or "Time TBD" }}</span>
+          </div>
+        </div>
+        <div class="trip-history-bottom">
+          <div class="meta-stack">
+            <span>{{ booking.booking_type|replace('-', ' ')|title }}</span>
+            <span>{{ booking.passengers }} passenger{% if booking.passengers|string != "1" %}s{% endif %}</span>
+            <span>{{ booking.preferred_vehicle or "Tarasi premium fleet" }}</span>
+          </div>
+          <div class="trip-history-actions">
+            <a class="premium-btn glass" href="{{ url_for('profile.account_booking_detail', reference=booking.reference) }}">View</a>
+            <a class="premium-btn glass" href="{{ url_for('track.track_detail', reference=booking.reference) }}">Track</a>
+            <a class="premium-btn gold" href="{{ url_for('booking.book_index') }}">Rebook</a>
+          </div>
+        </div>
+      </article>
+      {% else %}
+      <div class="empty-premium-block">
+        <h3>No trips found for this filter</h3>
+        <p>Switch filters or launch a new booking to start your premium trip history.</p>
+      </div>
+      {% endfor %}
+    </div>
+  </article>
+
+  <article class="module-card">
+    <div class="module-heading">
+      <div>
+        <span class="module-kicker">Spending summary</span>
+        <h2>Travel spend</h2>
+      </div>
+    </div>
+    <div class="analytics-grid">
+      <div><strong>{{ dashboard.spending_summary.total }}</strong><span>Total spend</span></div>
+      <div><strong>{{ dashboard.spending_summary.completed }}</strong><span>Completed trips</span></div>
+      <div><strong>{{ dashboard.spending_summary.average }}</strong><span>Average ride</span></div>
+      <div><strong>{{ dashboard.spending_summary.premium_share }}</strong><span>Premium mix</span></div>
+    </div>
+  </article>
+
+  <article class="module-card">
+    <div class="module-heading">
+      <div>
+        <span class="module-kicker">Favorite routes</span>
+        <h2>Most used journeys</h2>
+      </div>
+    </div>
+    <div class="stack-list">
+      {% for route in dashboard.favorite_routes %}
+      <div class="stack-row">
+        <div>
+          <strong>{{ route.label }}</strong>
+          <p>Repeated route in your profile</p>
+        </div>
+        <span>{{ route.count }}x</span>
+      </div>
+      {% endfor %}
+    </div>
+  </article>
+</section>
+{% endblock %}

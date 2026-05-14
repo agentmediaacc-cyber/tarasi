@@ -1,0 +1,94 @@
+{% extends "admin/base.html" %}
+{% block title %}Payments | Tarasi{% endblock %}
+{% block admin_page %}
+<section class="admin-subhero">
+  <div>
+    <span class="admin-kicker">Payments</span>
+    <h1>Payment operations, refunds, wallets, coupons and invoices</h1>
+  </div>
+  <a class="admin-btn gold" href="{{ url_for('admin.payments', format='csv') }}">Export CSV</a>
+</section>
+
+<section class="admin-panel">
+  <div class="admin-table-wrap">
+    <table class="admin-table">
+      <thead><tr><th>Reference</th><th>Customer</th><th>Method</th><th>Proof</th><th>Amount</th><th>Status</th><th>Actions</th></tr></thead>
+      <tbody>
+        {% for payment in payments %}
+        <tr>
+          <td><a href="{{ url_for('admin.booking_detail', reference=payment.reference) }}">{{ payment.reference or "-" }}</a></td>
+          <td>{{ payment.customer }}</td>
+          <td>{{ payment.method or "Unavailable" }}</td>
+          <td>
+            {% if payment.proof %}
+            <a href="/{{ payment.proof }}" target="_blank">View POP</a>
+            {% else %}
+            -
+            {% endif %}
+          </td>
+          <td>{{ payment.amount or "Unavailable" }}</td>
+          <td><span class="status-badge" data-status="{{ payment.status|lower }}">{{ payment.status }}</span></td>
+          <td>
+            {% if payment.status == 'Pending' %}
+            <div class="admin-inline-actions">
+              <form method="post" action="{{ url_for('admin.verify_payment', reference=payment.reference) }}">
+                <button type="submit" class="admin-action-link" style="background:none; border:none; color:var(--admin-teal); cursor:pointer;">Verify</button>
+              </form>
+              <form method="post" action="{{ url_for('admin.reject_payment', reference=payment.reference) }}">
+                <button type="submit" class="admin-action-link" style="background:none; border:none; color:var(--admin-sunset); cursor:pointer;">Reject</button>
+              </form>
+            </div>
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6"><div class="admin-empty">No real payment rows are available from the connected backend.</div></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="admin-grid-2">
+  <article id="refunds" class="admin-panel">
+    <div class="admin-panel-head"><div><span class="admin-kicker">Refunds</span><h2>Refund queue</h2></div></div>
+    <div class="admin-condensed-list">
+      {% for refund in refunds %}
+      <span>{{ refund.reference or "-" }} · {{ refund.amount or "Unavailable" }} · {{ refund.status }}</span>
+      {% else %}
+      <div class="admin-empty">No real refund rows are available.</div>
+      {% endfor %}
+    </div>
+  </article>
+  <article id="wallets" class="admin-panel">
+    <div class="admin-panel-head"><div><span class="admin-kicker">Wallets</span><h2>Wallet ledger</h2></div></div>
+    <div class="admin-condensed-list">
+      {% for wallet in wallets %}
+      <span>{{ wallet.reference or wallet.email or "Wallet row" }}</span>
+      {% else %}
+      <div class="admin-empty">No real wallet rows are available.</div>
+      {% endfor %}
+    </div>
+  </article>
+  <article id="coupons" class="admin-panel">
+    <div class="admin-panel-head"><div><span class="admin-kicker">Coupons</span><h2>Coupon inventory</h2></div></div>
+    <div class="admin-condensed-list">
+      {% for coupon in coupons %}
+      <span>{{ coupon.code or coupon.name or "Coupon row" }}</span>
+      {% else %}
+      <div class="admin-empty">No real coupon rows are available.</div>
+      {% endfor %}
+    </div>
+  </article>
+  <article id="invoices" class="admin-panel">
+    <div class="admin-panel-head"><div><span class="admin-kicker">Invoices</span><h2>Invoice list</h2></div></div>
+    <div class="admin-condensed-list">
+      {% for invoice in invoices %}
+      <span>{{ invoice.invoice_no }} · {{ invoice.client }} · {{ invoice.amount }}</span>
+      {% else %}
+      <div class="admin-empty">No real invoice rows are available.</div>
+      {% endfor %}
+    </div>
+  </article>
+</section>
+{% endblock %}

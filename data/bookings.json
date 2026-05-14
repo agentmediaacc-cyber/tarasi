@@ -50,7 +50,17 @@
       "driver_lng": 17.0675,
       "last_location_at": "2026-05-12T13:01:26"
     },
-    "updated_at": "2026-05-12T13:01:26.312835"
+    "updated_at": "2026-05-12T13:01:26.312835",
+    "payment_status": "Unpaid",
+    "payment_method": "Cash",
+    "payment_reference": "",
+    "paid_at": "",
+    "invoice_number": "",
+    "receipt_number": "",
+    "refund_status": "",
+    "proof_of_payment": "",
+    "vendor_id": "",
+    "vendor_name": "Tarasi Chauffeur"
   },
   {
     "name": "Jane Smith",
@@ -80,7 +90,17 @@
     "last_location_at": "",
     "booking_pin": "",
     "metadata": {},
-    "special_fields": {}
+    "special_fields": {},
+    "payment_status": "Unpaid",
+    "payment_method": "Cash",
+    "payment_reference": "",
+    "paid_at": "",
+    "invoice_number": "",
+    "receipt_number": "",
+    "refund_status": "",
+    "proof_of_payment": "",
+    "vendor_id": "",
+    "vendor_name": "Tarasi Chauffeur"
   },
   {
     "name": "tjandja kasera",
@@ -110,7 +130,17 @@
     "last_location_at": "",
     "booking_pin": "",
     "metadata": {},
-    "special_fields": {}
+    "special_fields": {},
+    "payment_status": "Unpaid",
+    "payment_method": "Cash",
+    "payment_reference": "",
+    "paid_at": "",
+    "invoice_number": "",
+    "receipt_number": "",
+    "refund_status": "",
+    "proof_of_payment": "",
+    "vendor_id": "",
+    "vendor_name": "Tarasi Chauffeur"
   },
   {
     "name": "ggghgf jhjkkk",
@@ -140,7 +170,17 @@
     "last_location_at": "",
     "booking_pin": "",
     "metadata": {},
-    "special_fields": {}
+    "special_fields": {},
+    "payment_status": "Unpaid",
+    "payment_method": "Cash",
+    "payment_reference": "",
+    "paid_at": "",
+    "invoice_number": "",
+    "receipt_number": "",
+    "refund_status": "",
+    "proof_of_payment": "",
+    "vendor_id": "",
+    "vendor_name": "Tarasi Chauffeur"
   },
   {
     "reference": "TAR-2026-0001",
@@ -198,6 +238,15 @@
       "driver_lng": 17.0675,
       "last_location_at": "2026-05-12T13:01:26"
     },
-    "updated_at": "2026-05-12T13:01:26.323290"
+    "updated_at": "2026-05-12T13:01:26.323290",
+    "payment_method": "Cash",
+    "payment_reference": "",
+    "paid_at": "",
+    "invoice_number": "",
+    "receipt_number": "",
+    "refund_status": "",
+    "proof_of_payment": "",
+    "vendor_id": "",
+    "vendor_name": "Tarasi Chauffeur"
   }
 ]

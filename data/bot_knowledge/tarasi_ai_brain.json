@@ -1,0 +1,269 @@
+{
+  "brand": {
+    "name": "Tarasi Shuttle and Transfer Services CC",
+    "tone": "premium, warm, human, short, Namibia-local",
+    "mission": "Premium Namibia travel operating system for transfers, dispatch, tourism support and urgent client care."
+  },
+  "reply_rules": [
+    "Greet warmly.",
+    "Answer first.",
+    "Ask only the next needed question.",
+    "Keep replies short.",
+    "Never dump random information.",
+    "Use Namibia-local wording.",
+    "Explain price as an estimate, not a final price.",
+    "Always offer the next action.",
+    "For emergency or complaint, apologize and create a ticket immediately."
+  ],
+  "intent_keywords": {
+    "price_enquiry": ["fees", "price", "cost", "how much", "charges", "rate", "pricing"],
+    "quote_request": ["quote", "quotation", "create quote", "create quotation"],
+    "invoice_request": ["invoice", "tax invoice", "billing", "payment receipt", "invos", "invioce", "receipt", "bill"],
+    "airport_transfer": ["airport", "hosea kutako", "eros airport", "flight pickup", "airport transfer", "hkia", "hikia", "airpot", "hosea"],
+    "town_pickup": ["town pickup", "pickup in town", "city ride", "from town"],
+    "vip_transfer": ["vip", "executive", "luxury", "private hire", "premium transport"],
+    "school_transport": ["school transport", "learner transport", "school pickup"],
+    "tour_enquiry": ["tour", "travel", "explore", "first time in namibia", "safari", "holiday", "swakopmund", "sossusvlei", "etosha"],
+    "tracking_request": ["track", "track my booking", "where is my driver", "booking status", "where is my booking", "where is driver", "wer is my booking"],
+    "late_driver": ["driver never came", "late driver", "driver is late", "my driver never came", "my drivr late", "no driver", "waiting driver"],
+    "breakdown": ["breakdown", "car broke down", "vehicle problem"],
+    "lost_item": ["lost my bag", "left my bag", "lost item", "forgot my phone", "missing luggage", "lost bag", "left phone", "lost my lagage"],
+    "airport_delay": ["airport delay", "flight delayed", "my flight is delayed", "landing late"],
+    "wrong_pickup": ["wrong pickup", "wrong address", "picked up the wrong person"],
+    "medical_concern": ["medical concern", "medical emergency", "not feeling well", "need urgent help"],
+    "driver_complaint": ["driver complaint", "complain", "driver rude", "bad driver", "report driver"],
+    "payment_banking_request": ["payment", "banking", "bank details", "proof of payment", "pay now", "eft", "paid", "payd", "proof", "pop", "bank payment"],
+    "general_support": ["help", "support", "talk to support"]
+  },
+  "tourist_personalities": {
+    "first_time_tourist": ["first time in namibia", "first time tourist", "first time visitor"],
+    "backpacker": ["backpacker", "budget traveller", "hostel"],
+    "luxury_traveller": ["luxury traveller", "five star", "vip", "executive", "premium hotel"],
+    "family_traveller": ["family", "kids", "children", "baby seat"],
+    "business_traveller": ["business", "meeting", "conference", "corporate"],
+    "local_resident": ["i stay in windhoek", "local resident", "resident"]
+  },
+  "mood_detection": {
+    "angry_client": ["angry", "upset", "terrible", "unacceptable", "never came", "bad service"],
+    "confused_client": ["confused", "not sure", "i don't understand", "how does it work"],
+    "stressed_client": ["stressed", "urgent", "hurry", "panic", "running late"],
+    "excited_client": ["excited", "can't wait", "amazing", "great", "wow"],
+    "tired_traveller": ["tired", "long flight", "exhausted", "jet lag"],
+    "neutral": []
+  },
+  "zone_aliases": {
+    "klein_windhoek": ["klein windhoek", "ludwigsdorf", "eros", "avis"],
+    "windhoek_cbd": ["windhoek", "cbd", "wernhil", "ausspannplatz", "maerua mall"],
+    "swakopmund": ["swakopmund", "langstrand"],
+    "walvis_bay": ["walvis bay", "lagoon", "pelican point"],
+    "sossusvlei": ["sossusvlei", "sesriem", "deadvlei", "dune 45"],
+    "etosha": ["etosha", "okaukuejo", "namutoni", "halali"],
+    "hosea_kutako_airport": ["hosea kutako", "henties airport", "hkir", "airport", "hkia", "hikia", "hosea", "kutako", "airpot"]
+  },
+  "hotels": [
+    {
+      "name": "Hilton Windhoek",
+      "city": "Windhoek",
+      "type": "business luxury hotel",
+      "nearby_airport": "Hosea Kutako International Airport",
+      "pickup_difficulty": "medium",
+      "vip_level": "high",
+      "pickup_advice": "Pickup is usually smooth through the main entrance, but event traffic can slow access.",
+      "bot_reply": "Hilton Windhoek is a strong option for business and executive guests. Tarasi can coordinate clean hotel-to-airport or city transfers."
+    },
+    {
+      "name": "Avani Windhoek Hotel & Casino",
+      "city": "Windhoek",
+      "type": "city hotel",
+      "nearby_airport": "Hosea Kutako International Airport",
+      "pickup_difficulty": "medium",
+      "vip_level": "high",
+      "pickup_advice": "CBD traffic and casino access can affect timing, so confirmed pickup time helps.",
+      "bot_reply": "Avani is one of Windhoek's central hotel pickups. Tarasi can arrange direct airport or city transport with confirmed timing."
+    },
+    {
+      "name": "The Weinberg Windhoek",
+      "city": "Windhoek",
+      "type": "executive boutique hotel",
+      "nearby_airport": "Hosea Kutako International Airport",
+      "pickup_difficulty": "easy",
+      "vip_level": "very_high",
+      "pickup_advice": "The Weinberg area is popular for executive and VIP pickups, with smooth access for premium sedan and SUV transfers.",
+      "bot_reply": "The Weinberg is a premium executive pickup point in Klein Windhoek. Tarasi usually recommends premium sedan or SUV service there."
+    },
+    {
+      "name": "Strand Hotel Swakopmund",
+      "city": "Swakopmund",
+      "type": "coastal luxury hotel",
+      "nearby_airport": "Walvis Bay Airport",
+      "pickup_difficulty": "easy",
+      "vip_level": "very_high",
+      "pickup_advice": "Hotel access is straightforward, but coastal fog can affect airport transfer timing.",
+      "bot_reply": "Strand Hotel is one of the premium coastal pickups in Swakopmund. Tarasi can coordinate beach hotel, airport and activity transfers from there."
+    }
+  ],
+  "restaurants": [
+    {
+      "name": "Joe’s Beerhouse",
+      "city": "Windhoek",
+      "category": "tourist dining spot",
+      "best_for": "Namibian game meat, local atmosphere and first-time visitors",
+      "transport_advice": "Best with hotel pickup and return transfer, especially in the evening.",
+      "bot_reply": "Joe's Beerhouse is one of Windhoek's famous tourist restaurants, known for local character and game meat."
+    },
+    {
+      "name": "The Tug Restaurant",
+      "city": "Swakopmund",
+      "category": "seafood spot",
+      "best_for": "sunset meals, seafood and coastal dining",
+      "transport_advice": "A good option for hotel transfer in Swakopmund or Walvis Bay, especially for dinner return trips.",
+      "bot_reply": "The Tug is one of the coastal seafood favourites, popular for sunset views and a premium Swakopmund dining stop."
+    },
+    {
+      "name": "Business lunch spots",
+      "city": "Windhoek",
+      "category": "business lunch",
+      "best_for": "meetings, executives and client hosting",
+      "transport_advice": "CBD and Klein Windhoek pickups work best with confirmed entry point and meeting time.",
+      "bot_reply": "For business lunch movement, Tarasi can coordinate executive hotel and office pickups in CBD or Klein Windhoek."
+    },
+    {
+      "name": "Seafood spots",
+      "city": "Swakopmund",
+      "category": "seafood",
+      "best_for": "holiday dining, couples and tourists",
+      "transport_advice": "Coastal return transport is helpful at night because fog can affect visibility.",
+      "bot_reply": "Swakopmund and Walvis Bay seafood spots work well with direct hotel transfer, especially for visitors unfamiliar with the coast."
+    },
+    {
+      "name": "Nightlife spots",
+      "city": "Windhoek",
+      "category": "nightlife",
+      "best_for": "evening plans, social groups and tourists",
+      "transport_advice": "Late-night trips should use a confirmed driver and shared trip details.",
+      "bot_reply": "Tarasi can help with nightlife transport in Windhoek, with confirmed pickup and safer return planning."
+    },
+    {
+      "name": "Tourist dining spots",
+      "city": "Namibia",
+      "category": "tourist dining",
+      "best_for": "first-time tourists and local food experiences",
+      "transport_advice": "Tourist dining transfers work best with hotel pickup and return coordination.",
+      "bot_reply": "Tarasi can help visitors reach popular tourist dining spots across Windhoek and the coast."
+    }
+  ],
+  "tourism_destinations": [
+    {
+      "name": "Sossusvlei",
+      "aliases": ["Sesriem", "Deadvlei", "Dune 45"],
+      "history": "Sossusvlei sits in the Namib Desert, one of the world's oldest deserts, and is shaped by ancient dune systems and dry clay pans.",
+      "culture": "It reflects Namibia's desert identity, remote travel culture and lodge-based safari rhythm.",
+      "why_people_like_it": "red dunes, sunrise photography, Deadvlei and dramatic desert silence",
+      "best_months": "April to October",
+      "road_condition": "long-distance with tar and gravel sections",
+      "weather_warning": "Midday heat is intense, and early departures are best for comfort and photography.",
+      "photography_spots": ["Deadvlei", "Dune 45", "Sesriem Canyon"],
+      "nearby_hotels": ["Desert Quiver Camp", "Sossusvlei Lodge"],
+      "nearby_restaurants": ["Sesriem lodge dining"],
+      "upsell_suggestions": ["Sunrise departure", "SUV/private shuttle", "Sesriem stop", "Private desert transfer"]
+    },
+    {
+      "name": "Etosha",
+      "aliases": ["Okaukuejo", "Namutoni", "Halali"],
+      "history": "Etosha National Park developed around the Etosha Pan and became one of Southern Africa's major wildlife destinations.",
+      "culture": "It combines conservation travel, safari lodge culture and seasonal wildlife migration viewing.",
+      "why_people_like_it": "elephants, lions, waterholes and dry-season wildlife viewing",
+      "best_months": "May to October",
+      "road_condition": "long highway drive with park gravel roads inside",
+      "weather_warning": "Dry season is best for wildlife, but water and fuel planning matter on long legs.",
+      "photography_spots": ["Okaukuejo waterhole", "Namutoni", "Halali"],
+      "nearby_hotels": ["Okaukuejo Camp", "Namutoni Camp", "Halali Camp"],
+      "nearby_restaurants": ["Okaukuejo camp restaurant"],
+      "upsell_suggestions": ["SUV/Quantum", "Dry season safari", "Okaukuejo", "Private wildlife transfer"]
+    },
+    {
+      "name": "Swakopmund",
+      "aliases": ["The coast"],
+      "history": "Swakopmund grew from a colonial port town into Namibia's best-known coastal tourism base.",
+      "culture": "It blends beach life, adventure tourism, German architecture and weekend holiday travel.",
+      "why_people_like_it": "cool coast weather, activities, seafood and holiday atmosphere",
+      "best_months": "All year, especially September to April",
+      "road_condition": "good tar road from Windhoek",
+      "weather_warning": "Fog can slow coastal and airport travel, especially in the mornings.",
+      "photography_spots": ["Mole promenade", "Jetty area", "Beachfront"],
+      "nearby_hotels": ["Strand Hotel Swakopmund"],
+      "nearby_restaurants": ["The Tug Restaurant"],
+      "upsell_suggestions": ["Walvis Bay", "Sandwich Harbour", "Dolphin cruise", "Quad biking", "Beach hotels", "Airport transfer"]
+    },
+    {
+      "name": "Walvis Bay",
+      "aliases": ["Lagoon", "Pelican Point"],
+      "history": "Walvis Bay is Namibia's major harbour gateway and a key base for lagoon and marine tourism.",
+      "culture": "It is known for harbour life, coastal business movement and marine activities.",
+      "why_people_like_it": "lagoon views, flamingos, Sandwich Harbour and dolphin cruises",
+      "best_months": "All year",
+      "road_condition": "good tar roads with coastal weather considerations",
+      "weather_warning": "Fog and wind can delay departures or activity timing.",
+      "photography_spots": ["Walvis Bay Lagoon", "Dune belt", "Harbour front"],
+      "nearby_hotels": ["Lagoon-facing hotels"],
+      "nearby_restaurants": ["Walvis Bay seafood spots"],
+      "upsell_suggestions": ["Dolphin cruise", "Sandwich Harbour", "Airport transfer", "Coastal combo trip"]
+    },
+    {
+      "name": "Windhoek",
+      "aliases": ["Capital", "City"],
+      "history": "Windhoek is Namibia's capital city and the main gateway for business, tourism and airport movement.",
+      "culture": "It mixes business travel, local city life, embassies, malls and hotel transport.",
+      "why_people_like_it": "easy access to hotels, restaurants, shopping and onward travel",
+      "best_months": "All year",
+      "road_condition": "city roads with traffic variations by time of day",
+      "weather_warning": "Peak traffic can affect exact pickup timing in CBD and school zones.",
+      "photography_spots": ["Independence Avenue", "Christuskirche area", "City viewpoints"],
+      "nearby_hotels": ["Hilton Windhoek", "Avani Windhoek Hotel & Casino", "The Weinberg Windhoek"],
+      "nearby_restaurants": ["Joe’s Beerhouse", "Business lunch spots"],
+      "upsell_suggestions": ["Airport transfer", "VIP transfer", "Town pickup", "Restaurant transfer"]
+    },
+    {
+      "name": "Sandwich Harbour",
+      "aliases": ["Sandwich"],
+      "history": "Sandwich Harbour is part of Namibia's iconic dune-meets-ocean landscape south of Walvis Bay.",
+      "culture": "It is tied to adventure tourism, guided 4x4 excursions and coastal dune driving.",
+      "why_people_like_it": "dramatic dunes meeting the Atlantic and premium guided adventure feel",
+      "best_months": "All year with weather check",
+      "road_condition": "sand route requiring specialized 4x4 access",
+      "weather_warning": "Tides, fog and wind matter, so departure times should stay flexible.",
+      "photography_spots": ["Dune edge", "Ocean meeting point", "Viewpoints south of Walvis Bay"],
+      "nearby_hotels": ["Swakopmund beach hotels"],
+      "nearby_restaurants": ["Coastal seafood spots"],
+      "upsell_suggestions": ["4x4 excursion", "Walvis Bay", "Dolphin cruise", "Private coastal transport"]
+    },
+    {
+      "name": "Damaraland",
+      "aliases": ["Twyfelfontein"],
+      "history": "Damaraland is one of Namibia's oldest cultural and geological landscapes, known for desert-adapted wildlife and rock art.",
+      "culture": "It reflects heritage travel, remote lodge touring and rugged self-drive or guided safari movement.",
+      "why_people_like_it": "open landscapes, desert elephants and heritage rock art",
+      "best_months": "May to October",
+      "road_condition": "mixed tar and gravel with long remote legs",
+      "weather_warning": "Fuel, water and early departure planning are important on this route.",
+      "photography_spots": ["Twyfelfontein", "Burnt Mountain", "Desert elephant routes"],
+      "nearby_hotels": ["Damaraland lodges"],
+      "nearby_restaurants": ["Lodge dining"],
+      "upsell_suggestions": ["SUV/Quantum", "Private guide route", "Heritage stopovers", "Overnight lodge transfer"]
+    },
+    {
+      "name": "Lüderitz",
+      "aliases": ["Luderitz"],
+      "history": "Lüderitz is a historic Atlantic town with colonial-era architecture and strong ties to Namibia's southern coast history.",
+      "culture": "It combines coastal heritage, remote road travel and access to Kolmanskop.",
+      "why_people_like_it": "historic architecture, Atlantic views and ghost-town photography",
+      "best_months": "March to October",
+      "road_condition": "long tar route with strong crosswinds in places",
+      "weather_warning": "Southern winds can be strong, so travel timing should stay flexible.",
+      "photography_spots": ["Kolmanskop", "Waterfront", "Historic town streets"],
+      "nearby_hotels": ["Lüderitz town hotels"],
+      "nearby_restaurants": ["Local seafood spots"],
+      "upsell_suggestions": ["Kolmanskop stop", "Private coastal transfer", "Southern Namibia route", "Airport coordination"]
+    }
+  ]
+}

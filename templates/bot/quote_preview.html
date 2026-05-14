@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Tarasi Quote Preview</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/tarasi_bot.css') }}">
+</head>
+<body>
+  <main class="preview-shell">
+    {% if quote %}
+      <section class="preview-card">
+        <span class="badge">Trackable Tarasi Quotation</span>
+        <h1>{{ reference }}</h1>
+        <p>Status: <b>{{ quote.status }}</b></p>
+        <p>Client: <b>{{ quote.client_name }}</b></p>
+        <p>Route: <b>{{ quote.pickup }}</b> to <b>{{ quote.dropoff }}</b></p>
+        <p>Vehicle: <b>{{ quote.vehicle }}</b></p>
+        <p>Total: <b>N$ {{ quote.estimated_price }}</b></p>
+        <p>Expires: <b>{{ quote.expires }}</b></p>
+        <a class="download" href="{{ quote.pdf_url }}">Download PDF</a>
+      </section>
+    {% else %}
+      <section class="preview-card">
+        <h1>Quote not found</h1>
+        <p>The reference {{ reference }} could not be found or has expired.</p>
+      </section>
+    {% endif %}
+  </main>
+</body>
+</html>

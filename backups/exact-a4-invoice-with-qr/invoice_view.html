@@ -1,0 +1,190 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ invoice.document_type }} {{ invoice.invoice_code }} | Tarasi{% endblock %}
+
+{% block admin_page %}
+<section class="invoice-toolbar no-print">
+  <a href="{{ url_for('admin.create_invoice') }}">Create another document</a>
+  <button onclick="window.print()">Print / Save PDF</button>
+</section>
+
+<section class="tarasi-premium-doc">
+  <div class="doc-watermark"></div>
+
+  <div class="doc-inner">
+    <section class="doc-top">
+      <div class="doc-brand">
+        <img class="doc-logo" src="{{ url_for('static', filename='img/branding/tarasi-logo.jpeg') }}" alt="Tarasi Logo">
+        <div class="doc-company">
+          <h1>Tarasi Shuttle and<br>Transfer Services CC</h1>
+          <p><b>TIN:</b> 15733730-011 &nbsp; | &nbsp; <b>Reg No:</b> CC/2025/11107</p>
+          <p>P.O. Box 60216, Windhoek</p>
+        </div>
+      </div>
+
+      <div></div>
+
+      <aside class="doc-status-card">
+        <div class="doc-status-title">{{ invoice.document_type }}</div>
+        <div class="doc-code">{{ invoice.invoice_code }}</div>
+
+        <div class="doc-status-row">
+          <i>▣</i>
+          <div><b>Date Issued</b>{{ invoice.date_issued }}</div>
+        </div>
+
+        <div class="doc-status-row">
+          <i>◷</i>
+          <div><b>Issue Time</b>{{ invoice.issue_time }}</div>
+        </div>
+
+        <div class="doc-status-row">
+          <i>◇</i>
+          <div>
+            <b>Status</b>
+            {% if invoice.payment_status == "PAID" %}
+              <span class="paid-pill">PAID</span>
+            {% else %}
+              <span class="unpaid-pill">{{ invoice.payment_status }}</span>
+            {% endif %}
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="doc-section-grid">
+      <div class="doc-card">
+        <div class="doc-card-title">♙ Bill To</div>
+        <div class="doc-card-body">
+          <h3>{{ invoice.client_name }}</h3>
+          <p>{{ invoice.contact_number }}</p>
+          <p>{{ invoice.email }}</p>
+        </div>
+      </div>
+
+      <div class="doc-card">
+        <div class="doc-card-title">♧ Service Details</div>
+        <div class="doc-card-body service-grid">
+          <div>
+            <p class="service-line"><b>Service Type</b> : {{ invoice.service_type }}</p>
+            <p class="service-line"><b>Vehicle Type</b> : {{ invoice.vehicle_type }}</p>
+            <p class="service-line"><b>Passengers</b> : {{ invoice.passengers }}</p>
+            <p class="service-line"><b>Detail Mode</b> : {{ invoice.detail_mode }}</p>
+          </div>
+
+          <div class="service-right">
+            <div class="location-item">
+              <i>⌖</i>
+              <div><b>Pickup</b><br>{{ invoice.pickup }}</div>
+            </div>
+
+            <div class="location-item">
+              <i>⌖</i>
+              <div><b>Drop-off</b><br>{{ invoice.dropoff }}</div>
+            </div>
+
+            <div class="location-item">
+              <i>▣</i>
+              <div><b>Date</b><br>{{ invoice.service_date }}</div>
+            </div>
+
+            <div class="location-item">
+              <i>◷</i>
+              <div><b>Time</b><br>{{ invoice.service_time }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <table class="doc-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Description</th>
+          <th>Vehicle</th>
+          <th>Passengers</th>
+          <th>Unit Price (NAD)</th>
+          <th>Amount (NAD)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>
+            {{ invoice.service_type }}
+            <em>{{ invoice.pickup }} to {{ invoice.dropoff }}</em>
+          </td>
+          <td>{{ invoice.vehicle_type }}</td>
+          <td>{{ invoice.passengers }}</td>
+          <td>{{ "%.2f"|format(invoice.amount) }}</td>
+          <td>{{ "%.2f"|format(invoice.amount) }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <section class="doc-bottom-grid">
+      <div class="doc-card">
+        <div class="doc-card-title">▦ Banking Details</div>
+        <div class="doc-card-body">
+          <div class="bank-detail-row"><b>Bank:</b><span>First National Bank (FNB)</span></div>
+          <div class="bank-detail-row"><b>Account Name:</b><span>Tarasi Shuttle and Transfer Services CC</span></div>
+          <div class="bank-detail-row"><b>Account Number:</b><span>64289981259</span></div>
+          <div class="bank-detail-row"><b>Branch:</b><span>Maerua Mall (Code: 282273)</span></div>
+          <div class="bank-detail-row"><b>Reference:</b><span class="ref-pill">{{ invoice.invoice_code }}</span></div>
+        </div>
+      </div>
+
+      <div class="doc-card">
+        <div class="doc-card-title">Summary</div>
+        <div class="doc-card-body" style="padding:0;">
+          <div class="summary-row"><span>Subtotal</span><strong>N$ {{ "%.2f"|format(invoice.amount) }}</strong></div>
+          <div class="summary-row"><span>Discount</span><strong>N$ {{ "%.2f"|format(invoice.discount) }}</strong></div>
+          <div class="summary-row"><span>VAT ({{ invoice.vat_percent }}%)</span><strong>N$ {{ "%.2f"|format(invoice.vat_amount) }}</strong></div>
+          <div class="summary-total"><span>TOTAL DUE</span><strong>N$ {{ "%.2f"|format(invoice.final_total) }}</strong></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="notes-box">
+      <h3>▤ Notes / Instructions</h3>
+      <p style="white-space:pre-line;">{{ invoice.notes }}</p>
+    </section>
+
+    <section class="doc-thanks">
+      <span></span>
+      <div>
+        <div class="doc-shield">✓</div>
+        <p>Safe. Reliable. Professional.</p>
+      </div>
+      <span></span>
+    </section>
+
+    <div class="doc-created">
+      This {{ invoice.document_type|lower }} was created from Tarasi Shuttle Operations<br>
+      with unique code: <b>{{ invoice.invoice_code }}</b><br>
+      Prepared by: {{ invoice.prepared_by }}
+    </div>
+
+    <footer class="doc-footer">
+      <div>
+        <h3>Premium Transport</h3>
+        <p class="gold">Airport Transfers · VIP Services</p>
+        <p class="gold">Corporate · Tours · Shuttles</p>
+      </div>
+
+      <div class="footer-emblem">T</div>
+
+      <div>
+        <p>☎ +264 81 416 7042</p>
+        <p>✉ tarasishuttle@gmail.com</p>
+        <p>⌖ P.O. Box 60216, Windhoek</p>
+      </div>
+
+      <div class="qr-box">
+        <div class="qr-fake"></div>
+        SCAN TO PAY
+      </div>
+    </footer>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends "profile/superapp_base.html" %}
+{% block title %}Trip Detail | Tarasi{% endblock %}
+
+{% block superapp_header %}
+<section class="subpage-hero glass-card">
+  {% if not_found %}
+  <div>
+    <span class="hero-kicker">Trip detail</span>
+    <h1>Booking not found</h1>
+    <p>This trip is not available for the current signed-in account.</p>
+  </div>
+  {% else %}
+  <div>
+    <span class="hero-kicker">Trip detail</span>
+    <h1>{{ booking.reference }}</h1>
+    <p>{{ booking.pickup }} to {{ booking.dropoff }} · {{ booking.status }}</p>
+  </div>
+  <div class="subpage-highlight">
+    <strong>{{ booking.amount or "Quote pending" }}</strong>
+    <span>{{ booking.date or "Date TBD" }} {{ booking.time or "" }}</span>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}
+
+{% block superapp_content %}
+{% if not_found %}
+<section class="dashboard-module-grid">
+  <article class="module-card wide-card">
+    <div class="empty-premium-block">
+      <h3>Trip not found</h3>
+      <p>Return to your bookings list and open a valid trip reference.</p>
+    </div>
+  </article>
+</section>
+{% else %}
+<section class="dashboard-module-grid">
+  <article class="module-card wide-card">
+    <div class="module-heading">
+      <div>
+        <span class="module-kicker">Journey</span>
+        <h2>{{ booking.route_summary }}</h2>
+      </div>
+    </div>
+    <div class="analytics-grid">
+      <div><strong>{{ booking.status }}</strong><span>Status</span></div>
+      <div><strong>{{ booking.driver_name or "Pending" }}</strong><span>Driver</span></div>
+      <div><strong>{{ booking.vehicle_name or "Pending" }}</strong><span>Vehicle</span></div>
+      <div><strong>{{ booking.booking_pin or "Pending" }}</strong><span>Ride PIN</span></div>
+    </div>
+    <div class="trip-history-actions">
+      <a class="premium-btn gold" href="{{ url_for('track.track_detail', reference=booking.reference) }}">Track ride</a>
+      <a class="premium-btn glass" href="tel:{{ booking.driver_phone or booking.phone }}">Call</a>
+      <a class="premium-btn glass" href="{{ url_for('support.support_page') }}">Emergency support</a>
+    </div>
+  </article>
+
+  <article class="module-card">
+    <div class="module-heading">
+      <div>
+        <span class="module-kicker">Driver</span>
+        <h2>Assigned driver card</h2>
+      </div>
+    </div>
+    <div class="stack-list">
+      <div class="stack-row"><strong>Name</strong><span>{{ booking.driver_name or "Awaiting dispatch" }}</span></div>
+      <div class="stack-row"><strong>Phone</strong><span>{{ booking.driver_phone or "Available after assignment" }}</span></div>
+      <div class="stack-row"><strong>Vehicle</strong><span>{{ booking.vehicle_name or "Vehicle pending" }}</span></div>
+      <div class="stack-row"><strong>Location</strong><span>{{ booking.last_location_at or "Live location not shared yet" }}</span></div>
+    </div>
+  </article>
+</section>
+{% endif %}
+{% endblock %}

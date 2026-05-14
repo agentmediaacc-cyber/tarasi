@@ -1,0 +1,113 @@
+{% extends "admin/base.html" %}
+{% block title %}Chat Room {{ chat.chat_number }} | Admin{% endblock %}
+{% block admin_page %}
+<section class="admin-hero">
+  <div>
+    <span class="admin-kicker">Chat Room: {{ chat.chat_number }}</span>
+    <h1>Supporting {{ chat.user_name or "Guest" }}</h1>
+    <p>Reason: {{ chat.handoff_reason }}</p>
+  </div>
+  <div class="admin-hero-actions">
+    {% if chat.status == 'waiting' %}
+    <form action="{{ url_for('admin.admin_join_support_chat', chat_number=chat.chat_number) }}" method="POST" style="display:inline;">
+      <button class="admin-btn-primary">Join Chat</button>
+    </form>
+    {% endif %}
+    <form action="{{ url_for('admin.admin_close_support_chat', chat_number=chat.chat_number) }}" method="POST" style="display:inline;">
+      <button class="admin-btn-secondary">Close Chat</button>
+    </form>
+    <form action="{{ url_for('admin.admin_release_support_to_bot', chat_number=chat.chat_number) }}" method="POST" style="display:inline;">
+      <button class="admin-btn-small">Release to Bot</button>
+    </form>
+  </div>
+</section>
+
+<div class="admin-grid-2">
+  <article class="admin-panel chat-container">
+    <div class="admin-panel-head">
+      <h2>Conversation History</h2>
+    </div>
+    <div class="admin-chat-messages" id="chatMessages" style="height: 400px; overflow-y: auto; padding: 1rem; background: #f9f9f9; border-radius: 8px;">
+      {% for msg in messages %}
+      <div class="admin-chat-msg {{ msg.sender_type }}" style="margin-bottom: 1rem; padding: 0.5rem 1rem; border-radius: 8px; max-width: 80%; {{ 'background: #e1f5fe; align-self: flex-start;' if msg.sender_type == 'user' else 'background: #f1f1f1; align-self: center; font-style: italic;' if msg.sender_type == 'system' else 'background: #c8e6c9; align-self: flex-end; margin-left: auto;' }}">
+        <strong>{{ msg.sender_name or msg.sender_type.title() }}:</strong>
+        <p style="margin: 0.2rem 0;">{{ msg.message }}</p>
+        <small style="color: #666; font-size: 0.7rem;">{{ msg.created_at }}</small>
+      </div>
+      {% endfor %}
+    </div>
+    
+    {% if chat.status != 'closed' %}
+    <div class="admin-chat-input" style="margin-top: 1rem;">
+      <form id="adminChatForm" onsubmit="sendAdminMessage(event)">
+        <textarea name="message" id="adminMsgInput" placeholder="Type your reply here..." required style="width: 100%; height: 80px; padding: 0.5rem; border-radius: 8px; border: 1px solid #ddd;"></textarea>
+        <button type="submit" class="admin-btn-primary" style="margin-top: 0.5rem; width: 100%;">Send Message</button>
+      </form>
+    </div>
+    {% endif %}
+  </article>
+
+  <article class="admin-panel">
+    <div class="admin-panel-head">
+      <h2>Client Details</h2>
+    </div>
+    <div class="admin-stack-list">
+      <div class="admin-stack-row">
+        <div><strong>Name</strong><p>{{ chat.user_name or "Guest" }}</p></div>
+      </div>
+      <div class="admin-stack-row">
+        <div><strong>Phone</strong><p>{{ chat.user_phone or "None" }}</p></div>
+      </div>
+      <div class="admin-stack-row">
+        <div><strong>Session ID</strong><p>{{ chat.session_id }}</p></div>
+      </div>
+      {% if chat.conversation_id %}
+      <div class="admin-stack-row">
+        <div><strong>Bot Conversation</strong><p>{{ chat.conversation_id }}</p></div>
+      </div>
+      {% endif %}
+      <div class="admin-stack-row">
+        <div><strong>Status</strong><p>{{ chat.status.title() }}</p></div>
+      </div>
+    </div>
+  </article>
+</div>
+
+<script>
+  const chatMessages = document.getElementById('chatMessages');
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+
+  async function sendAdminMessage(event) {
+    event.preventDefault();
+    const input = document.getElementById('adminMsgInput');
+    const message = input.value;
+    if (!message) return;
+
+    try {
+      const res = await fetch("{{ url_for('admin.admin_post_support_message', chat_number=chat.chat_number) }}", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: message })
+      });
+      const data = await res.json();
+      if (data.ok) {
+        input.value = '';
+        // Reload to show message (simple for now)
+        location.reload();
+      }
+    } catch (e) {
+      alert("Failed to send message");
+    }
+  }
+
+  // Poll for new messages every 5 seconds
+  {% if chat.status != 'closed' %}
+  setInterval(() => {
+    // Only reload if user is not typing? Or just reload.
+    if (!document.activeElement || document.activeElement.id !== 'adminMsgInput') {
+       location.reload();
+    }
+  }, 5000);
+  {% endif %}
+</script>
+{% endblock %}

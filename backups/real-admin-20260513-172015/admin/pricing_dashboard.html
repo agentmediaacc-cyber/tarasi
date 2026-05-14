@@ -1,0 +1,151 @@
+{% extends "admin/base.html" %}
+{% block title %}Pricing OS | Tarasi{% endblock %}
+{% block admin_page %}
+<section class="admin-hero">
+  <div>
+    <span class="admin-kicker">Pricing OS</span>
+    <h1>Ride-hailing pricing and booking control</h1>
+    <p>Monitor latest quotes, payout protection, commission coverage, confidence levels and shuttle booking conversion.</p>
+  </div>
+  <div class="admin-hero-stack">
+    <div class="admin-hero-card">
+      <span>Total quotes</span>
+      <strong>{{ pricing_metrics.total_quotes }}</strong>
+    </div>
+    <div class="admin-hero-card">
+      <span>Total bookings</span>
+      <strong>{{ pricing_metrics.total_bookings }}</strong>
+    </div>
+    <div class="admin-hero-card">
+      <span>Estimated profit</span>
+      <strong>{{ pricing_metrics.estimated_profit }}</strong>
+    </div>
+  </div>
+</section>
+
+<section class="admin-metric-grid">
+  <article class="admin-metric-card tone-default">
+    <span>Confidence mix</span>
+    <strong>{{ pricing_metrics.confidence_mix }}</strong>
+  </article>
+  <article class="admin-metric-card tone-default">
+    <span>Latest quotes</span>
+    <strong>{{ quotes|length }}</strong>
+  </article>
+  <article class="admin-metric-card tone-default">
+    <span>Latest bookings</span>
+    <strong>{{ pricing_bookings|length }}</strong>
+  </article>
+  <article class="admin-metric-card tone-default">
+    <span>Pricing mode</span>
+    <strong>Premium live</strong>
+  </article>
+</section>
+
+<section class="admin-grid-2">
+  <article class="admin-panel">
+    <div class="admin-panel-head">
+      <div>
+        <span class="admin-kicker">Latest quotes</span>
+        <h2>Price and payout view</h2>
+      </div>
+    </div>
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Quote</th>
+            <th>Route</th>
+            <th>Zone</th>
+            <th>Price</th>
+            <th>Driver payout</th>
+            <th>Commission</th>
+            <th>Profit</th>
+            <th>Confidence</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in quotes %}
+          <tr>
+            <td>{{ row.quote_number }}</td>
+            <td>{{ row.route }}</td>
+            <td>{{ row.pickup_zone }} to {{ row.dropoff_zone }}</td>
+            <td>N${{ "%.2f"|format(row.final_price|float) if row.final_price is not none else "0.00" }}</td>
+            <td>N${{ "%.2f"|format(row.driver_payout|float) if row.driver_payout is not none else "0.00" }}</td>
+            <td>N${{ "%.2f"|format(row.tarasi_commission|float) if row.tarasi_commission is not none else "0.00" }}</td>
+            <td>N${{ "%.2f"|format(row.estimated_profit|float) if row.estimated_profit is not none else "0.00" }}</td>
+            <td>{{ row.price_confidence }}</td>
+            <td>{{ row.status }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="9"><div class="admin-empty">No pricing quotes yet.</div></td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </article>
+
+  <article class="admin-panel">
+    <div class="admin-panel-head">
+      <div>
+        <span class="admin-kicker">Pricing bookings</span>
+        <h2>Conversion and payment state</h2>
+      </div>
+    </div>
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Booking</th>
+            <th>Route</th>
+            <th>Zone</th>
+            <th>Vehicle</th>
+            <th>Price</th>
+            <th>Confidence</th>
+            <th>Status</th>
+            <th>Payment</th>
+            <th>Proof</th>
+            <th>Invoice</th>
+            <th>Assigned driver</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in pricing_bookings %}
+          <tr>
+            <td>{{ row.booking_number }}</td>
+            <td>{{ row.route }}</td>
+            <td>{{ row.pickup_zone }} to {{ row.dropoff_zone }}</td>
+            <td>{{ row.vehicle_type|upper }}</td>
+            <td>N${{ "%.2f"|format(row.final_price|float) if row.final_price is not none else "0.00" }}</td>
+            <td>{{ row.price_confidence or "n/a" }}</td>
+            <td>{{ row.status }}</td>
+            <td>{{ row.payment_status }}</td>
+            <td>{{ row.proof_url or "No proof yet" }}</td>
+            <td>{{ row.invoice_number or "Not created" }}</td>
+            <td>{{ row.assigned_driver_name or "Pending" }}</td>
+            <td>
+              <form method="post" action="{{ url_for('admin.pricing_create_invoice', booking_number=row.booking_number) }}">
+                <button class="admin-action-link" type="submit">Create invoice</button>
+              </form>
+              <form method="post" action="{{ url_for('admin.pricing_assign_driver', booking_number=row.booking_number) }}">
+                <button class="admin-action-link" type="submit">Assign driver</button>
+              </form>
+              <form method="post" action="{{ url_for('admin.pricing_approve_payment', booking_number=row.booking_number) }}">
+                <button class="admin-action-link" type="submit">Approve payment</button>
+              </form>
+              <form method="post" action="{{ url_for('admin.pricing_reject_payment', booking_number=row.booking_number) }}">
+                <button class="admin-action-link" type="submit">Reject payment</button>
+              </form>
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="12"><div class="admin-empty">No pricing bookings yet.</div></td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </article>
+</section>
+{% endblock %}

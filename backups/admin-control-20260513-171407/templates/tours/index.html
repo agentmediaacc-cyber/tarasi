@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Tours | Tarasi{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="section-head">
+    <span class="eyebrow">Tours</span>
+    <h1>Tarasi tour movements</h1>
+    <p>Only real tours from the platform database are shown here.</p>
+  </div>
+  <div class="cards-grid cards-grid-live">
+    {% for tour in tours %}
+    <article class="card tour-live-card tour-theme-{{ tour.theme }}">
+      <span class="card-tag">Tour</span>
+      <h3>{{ tour.title }}</h3>
+      <p>{{ tour.subtitle }}</p>
+      <div class="meta">{{ tour.meta }}</div>
+      <a class="btn btn-primary" href="{{ url_for('tour.tour_detail', slug=tour.slug) }}">View details</a>
+    </article>
+    {% else %}
+    <div class="empty-state">{{ empty_state_message }}</div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

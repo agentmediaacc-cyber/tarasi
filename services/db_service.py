@@ -17,15 +17,45 @@ from .supabase_service import get_supabase_config
 
 
 TABLE_ALIASES = {
-    "profiles": ["profiles", "tarasi_profiles", "tarasi_users"],
+    "profiles": ["profiles", "tarasi_profiles", "tarasi_users", "bookme_users"],
     "bookings": ["bookings", "tarasi_bookings"],
     "routes": ["routes", "tarasi_routes"],
-    "fleet": ["fleet", "vehicles", "tarasi_fleet"],
-    "vehicles": ["vehicles", "fleet", "tarasi_fleet"],
+    "fleet": ["fleet", "vehicles", "tarasi_fleet", "vehicles_new"],
+    "vehicles": ["vehicles", "fleet", "tarasi_fleet", "vehicles_new"],
     "tours": ["tours", "tarasi_tours"],
     "support_tickets": ["support_tickets", "tarasi_support_tickets"],
     "drivers": ["drivers", "tarasi_drivers"],
-    "payments": ["payments", "tarasi_payments"],
+    "payments": ["payments", "tarasi_payments", "tarasi_booking_payments"],
+    "invoices": ["invoices", "tarasi_invoices", "tarasi_booking_invoices"],
+    "quotes": ["quotes", "tarasi_quotes", "tarasi_booking_quotes"],
+    "audit_logs": ["audit_logs", "admin_audit_logs", "tarasi_audit_logs"],
+    "admin_users": ["admin_users", "tarasi_admin_users"],
+    "admin_roles": ["admin_roles", "tarasi_admin_roles"],
+    "pricing_zones": ["pricing_zones", "tarasi_pricing_zones"],
+    "pricing_rules": ["pricing_rules", "tarasi_pricing_rules"],
+    "vehicle_types": ["vehicle_types", "tarasi_vehicle_types"],
+    "fleet_groups": ["fleet_groups", "tarasi_fleet_groups"],
+    "bot_conversations": ["bot_conversations", "tarasi_bot_conversations"],
+    "bot_messages": ["bot_messages", "tarasi_bot_messages"],
+    "refunds": ["refunds", "tarasi_refunds"],
+    "coupons": ["coupons", "tarasi_coupons"],
+    "marketing_banners": ["marketing_banners", "tarasi_marketing_banners"],
+    "notifications": ["notifications", "tarasi_notifications"],
+    "homepage_content": ["homepage_content", "tarasi_homepage_content"],
+    "driver_documents": ["driver_documents", "tarasi_driver_documents"],
+    "vehicle_documents": ["vehicle_documents", "tarasi_vehicle_documents"],
+    "live_trip_events": ["live_trip_events", "tarasi_live_trip_events"],
+    "live_driver_locations": ["live_driver_locations", "tarasi_live_driver_locations"],
+    "surge_rules": ["surge_rules", "tarasi_surge_rules"],
+    "corporate_accounts": ["corporate_accounts", "tarasi_corporate_accounts"],
+    "bot_training_data": ["bot_training_data", "tarasi_bot_training_data"],
+    "bot_faq": ["bot_faq", "tarasi_bot_faq"],
+    "bot_route_knowledge": ["bot_route_knowledge", "tarasi_bot_route_knowledge"],
+    "bot_failed_replies": ["bot_failed_replies", "tarasi_bot_failed_replies"],
+    "driver_payouts": ["driver_payouts", "tarasi_driver_payouts"],
+    "security_logs": ["security_logs", "tarasi_security_logs"],
+    "admin_sessions": ["admin_sessions", "tarasi_admin_sessions"],
+    "support_assignments": ["support_assignments", "tarasi_support_assignments"],
 }
 DEV_JSON_TABLES = {
     "bookings": "bookings.json",
@@ -37,8 +67,17 @@ DEV_JSON_TABLES = {
     "drivers": "drivers_profiles.json",
     "profiles": "users.json",
     "payments": "payments.json",
+    "audit_logs": "audit_log.json",
+    "notifications": "notifications.json",
+    "coupons": "campaigns.json",
+    "live_trip_events": "live_trips.json",
+    "live_driver_locations": "driver_status.json",
 }
-EXPECTED_TABLES = ["profiles", "bookings", "routes", "fleet", "tours", "drivers", "support_tickets"]
+EXPECTED_TABLES = [
+    "profiles", "bookings", "routes", "fleet", "tours", "drivers", 
+    "support_tickets", "payments", "invoices", "audit_logs", 
+    "live_trip_events", "live_driver_locations", "surge_rules"
+]
 _TABLE_CACHE: dict[str, str] = {}
 
 
@@ -263,7 +302,7 @@ def get_db_status() -> dict[str, Any]:
         }
 
 
-def fetch_rows(table: str, filters: dict[str, Any] | None = None, limit: int | None = None) -> list[dict[str, Any]]:
+def fetch_rows(table: str, filters: dict[str, Any] | None = None, limit: int | None = None, order_by: str = "created_at desc nulls last") -> list[dict[str, Any]]:
     mode = get_database_mode()
     normalized_filters = _normalize_filters(filters)
 
@@ -279,7 +318,10 @@ def fetch_rows(table: str, filters: dict[str, Any] | None = None, limit: int | N
         query = sql.SQL("select * from {}").format(sql.Identifier(actual_table))
         if where_parts:
             query += sql.SQL(" where ") + sql.SQL(" and ").join(where_parts)
-        query += sql.SQL(" order by created_at desc nulls last")
+        
+        # Safe ordering
+        query += sql.SQL(" order by ") + sql.SQL(order_by)
+        
         if limit:
             query += sql.SQL(" limit %s")
             values.append(limit)
@@ -314,7 +356,74 @@ def fetch_rows(table: str, filters: dict[str, Any] | None = None, limit: int | N
         row for row in rows
         if all(str(row.get(key, "")) == str(value) for key, value in normalized_filters.items())
     ]
+    # Simple JSON sort simulation if created_at exists
+    if filtered and "created_at" in filtered[0]:
+        filtered.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+        
     return filtered[:limit] if limit else filtered
+
+
+def count_rows(table: str, filters: dict[str, Any] | None = None) -> int:
+    mode = get_database_mode()
+    normalized_filters = _normalize_filters(filters)
+
+    if mode == "neon":
+        actual_table = resolve_table_name(table)
+        if not actual_table:
+            return 0
+        where_parts = []
+        values: list[Any] = []
+        for key, value in normalized_filters.items():
+            where_parts.append(sql.SQL("{} = %s").format(sql.Identifier(key)))
+            values.append(value)
+        query = sql.SQL("select count(*) from {}").format(sql.Identifier(actual_table))
+        if where_parts:
+            query += sql.SQL(" where ") + sql.SQL(" and ").join(where_parts)
+        try:
+            with closing(get_postgres_connection()) as conn:
+                with conn.cursor() as cursor:
+                    cursor.execute(query, tuple(values))
+                    result = cursor.fetchone()
+                    return result[0] if result else 0
+        except Exception:
+            return 0
+
+    if mode == "supabase":
+        actual_table = _candidates(table)[0]
+        params = {"select": "count", "head": "true"}
+        for key, value in normalized_filters.items():
+            params[key] = f"eq.{value}"
+        try:
+            client = get_supabase_client(use_service_role=True)
+            request_headers = {
+                "apikey": client["key"],
+                "Authorization": f"Bearer {client['key']}",
+                "Prefer": "count=exact"
+            }
+            request = Request(
+                f"{client['url']}/rest/v1/{actual_table}?{urlencode(params)}",
+                headers=request_headers,
+                method="GET",
+            )
+            with urlopen(request, timeout=10) as response:
+                content_range = response.headers.get("Content-Range", "")
+                if "/" in content_range:
+                    return int(content_range.split("/")[-1])
+                return 0
+        except Exception:
+            return 0
+
+    file_name = _json_table_name(table)
+    if not file_name:
+        return 0
+    rows = load_json(file_name, [])
+    if not isinstance(rows, list):
+        return 0
+    filtered = [
+        row for row in rows
+        if all(str(row.get(key, "")) == str(value) for key, value in normalized_filters.items())
+    ]
+    return len(filtered)
 
 
 def insert_row(table: str, payload: dict[str, Any]) -> dict[str, Any] | None:

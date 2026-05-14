@@ -10,42 +10,112 @@
 
 <section class="admin-grid-2">
   <article class="admin-panel">
-    <div class="admin-panel-head"><div><span class="admin-kicker">Routes content</span><h2>Homepage route sources</h2></div></div>
-    <div class="admin-condensed-list">
-      {% for route in routes %}
-      <span>{{ route.route_label }} · {{ route.base_price or "Unavailable" }}</span>
-      {% else %}
-      <div class="admin-empty">No real route content rows are available.</div>
-      {% endfor %}
+    <div class="admin-panel-head">
+      <div>
+        <span class="admin-kicker">Visual Identity</span>
+        <h2>Homepage hero & banner</h2>
+      </div>
     </div>
+    <form method="post" action="{{ url_for('admin.content_homepage_save') }}" class="admin-form-grid">
+      <input type="hidden" name="section_name" value="hero_section">
+      <label>
+        <span>Hero title</span>
+        <input type="text" name="hero_title" value="{{ hero_section.get('hero_title', '') }}" placeholder="Main headline">
+      </label>
+      <label>
+        <span>Hero subtitle</span>
+        <textarea name="hero_subtitle" rows="2" placeholder="Supportive subheadline text...">{{ hero_section.get('hero_subtitle', '') }}</textarea>
+      </label>
+      <label>
+        <span>Banner announcement</span>
+        <input type="text" name="banner_text" value="{{ hero_section.get('banner_text', '') }}" placeholder="Top banner text">
+      </label>
+      <div style="margin-top: 1rem; display: flex; justify-content: flex-end;">
+        <button type="submit" class="admin-btn gold">Update Hero Content</button>
+      </div>
+    </form>
   </article>
+
   <article class="admin-panel">
-    <div class="admin-panel-head"><div><span class="admin-kicker">Fleet content</span><h2>Homepage fleet sources</h2></div></div>
-    <div class="admin-condensed-list">
-      {% for vehicle in fleet %}
-      <span>{{ vehicle.name }} · {{ vehicle.vehicle_type }}</span>
-      {% else %}
-      <div class="admin-empty">No real fleet content rows are available.</div>
-      {% endfor %}
+    <div class="admin-panel-head">
+      <div>
+        <span class="admin-kicker">Promotions</span>
+        <h2>Service highlights</h2>
+      </div>
     </div>
+    <form method="post" action="{{ url_for('admin.content_homepage_save') }}" class="admin-form-grid">
+      <input type="hidden" name="section_name" value="promotions">
+      <label>
+        <span>Airport offer highlight</span>
+        <input type="text" name="airport_offer" value="{{ promotions.get('airport_offer', '') }}" placeholder="e.g. Fixed HKIA Rates">
+      </label>
+      <label>
+        <span>Tour highlight</span>
+        <input type="text" name="tour_highlight" value="{{ promotions.get('tour_highlight', '') }}" placeholder="e.g. Explore Etosha">
+      </label>
+      <label>
+        <span>Business announcement</span>
+        <textarea name="announcement" rows="3" placeholder="Latest news or business updates...">{{ promotions.get('announcement', '') }}</textarea>
+      </label>
+      <label>
+        <span>Service cards</span>
+        <textarea name="service_cards" rows="3" placeholder="Airport Transfer | VIP Service | School Transport">{{ promotions.get('service_cards', '') }}</textarea>
+      </label>
+      <label>
+        <span>Route highlights</span>
+        <textarea name="route_highlights" rows="3" placeholder="Windhoek - HKIA | Windhoek - Swakopmund">{{ promotions.get('route_highlights', '') }}</textarea>
+      </label>
+      <label>
+        <span>Tour highlights</span>
+        <textarea name="tour_highlights" rows="3" placeholder="Etosha | Sossusvlei | Walvis Bay">{{ promotions.get('tour_highlights', '') }}</textarea>
+      </label>
+      <div style="margin-top: 1rem; display: flex; justify-content: flex-end;">
+        <button type="submit" class="admin-btn gold">Update Promotions</button>
+      </div>
+    </form>
   </article>
+
   <article class="admin-panel">
-    <div class="admin-panel-head"><div><span class="admin-kicker">Tours content</span><h2>Homepage tour sources</h2></div></div>
-    <div class="admin-condensed-list">
-      {% for tour in tours %}
-      <span>{{ tour.title }} · {{ tour.price or "Unavailable" }}</span>
-      {% else %}
-      <div class="admin-empty">No real tour content rows are available.</div>
-      {% endfor %}
+    <div class="admin-panel-head">
+      <div>
+        <span class="admin-kicker">Active sources</span>
+        <h2>Data-driven collections</h2>
+      </div>
+    </div>
+    <div class="admin-stack-list">
+      <div class="admin-stack-row">
+        <div><strong>Routes catalog</strong><p>{{ routes|length }} live routes displayed</p></div>
+        <a href="{{ url_for('admin.routes_catalog') }}" class="admin-mini-btn">Manage</a>
+      </div>
+      <div class="admin-stack-row">
+        <div><strong>Active fleet</strong><p>{{ fleet|length }} vehicles listed on home</p></div>
+        <a href="{{ url_for('admin.fleet') }}" class="admin-mini-btn">Manage</a>
+      </div>
+      <div class="admin-stack-row">
+        <div><strong>Tour packages</strong><p>{{ tours|length }} tours highlighted</p></div>
+        <a href="{{ url_for('admin.tours') }}" class="admin-mini-btn">Manage</a>
+      </div>
     </div>
   </article>
+
   <article id="notifications" class="admin-panel">
-    <div class="admin-panel-head"><div><span class="admin-kicker">Notifications</span><h2>Admin notification feed</h2></div></div>
+    <div class="admin-panel-head">
+      <div>
+        <span class="admin-kicker">Global Alerts</span>
+        <h2>System notifications</h2>
+      </div>
+    </div>
     <div class="admin-condensed-list">
       {% for note in notifications %}
-      <span>{{ note.title or note.message or "Notification row" }}</span>
+      <div class="admin-stack-row">
+        <div><strong>{{ note.title or "System Notification" }}</strong><p>{{ note.message }}</p></div>
+        <span>{{ note.status or "active" }}</span>
+      </div>
       {% else %}
-      <div class="admin-empty">No real notification rows are available.</div>
+      <div class="admin-empty-state">
+        <p>No records yet.</p>
+        <a class="admin-btn gold" href="{{ url_for('admin.content') }}">Refresh content</a>
+      </div>
       {% endfor %}
     </div>
   </article>

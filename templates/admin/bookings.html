@@ -1,9 +1,8 @@
 {% extends "admin/base.html" %}
 {% block title %}Bookings Control | Tarasi{% endblock %}
 {% block admin_page %}
-<div style="margin: 0 0 18px; display:flex; gap:12px; flex-wrap:wrap;">
-  <a href="{{ url_for('admin.create_invoice') }}"
-     style="background:#0f766e;color:white;padding:14px 18px;border-radius:999px;font-weight:900;text-decoration:none;box-shadow:0 12px 30px rgba(15,118,110,.25);">
+<div class="admin-page-actions">
+  <a href="{{ url_for('admin.create_invoice') }}" class="admin-btn gold">
     ▥ Create Invoice
   </a>
 </div>
@@ -51,7 +50,14 @@
           </td>
         </tr>
         {% else %}
-        <tr><td colspan="8"><div class="admin-empty">No bookings are available in this filter.</div></td></tr>
+        <tr>
+          <td colspan="8">
+            <div class="admin-empty-state">
+              <p>No records yet.</p>
+              <a class="admin-btn gold" href="{{ url_for('booking.book_index') }}">Create booking</a>
+            </div>
+          </td>
+        </tr>
         {% endfor %}
       </tbody>
     </table>
@@ -71,7 +77,10 @@
         <span>{{ booking.status }}</span>
       </div>
       {% else %}
-      <div class="admin-empty">No active trip rows available from the connected backend.</div>
+      <div class="admin-empty-state">
+        <p>No records yet.</p>
+        <a class="admin-btn gold" href="{{ url_for('admin.bookings', status='all') }}">View all bookings</a>
+      </div>
       {% endfor %}
     </div>
   </article>
@@ -88,7 +97,10 @@
         <span>{{ driver.availability }}</span>
       </div>
       {% else %}
-      <div class="admin-empty">No driver rows available for booking assignment.</div>
+      <div class="admin-empty-state">
+        <p>No records yet.</p>
+        <a class="admin-btn gold" href="{{ url_for('admin.drivers') }}">Manage drivers</a>
+      </div>
       {% endfor %}
     </div>
   </article>

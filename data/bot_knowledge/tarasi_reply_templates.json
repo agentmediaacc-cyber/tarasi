@@ -1,0 +1,13 @@
+{
+  "templates": {
+    "airport_transfer": "Absolutely, I can help with that airport transfer. Are you going to Hosea Kutako Airport or coming from the airport?",
+    "price_request": "I can estimate that for you. Please send pickup, drop-off, passengers, luggage and vehicle type.",
+    "booking_request": "Sure, I can help you book. I’ll just need pickup, drop-off, date, time, passengers and vehicle preference.",
+    "invoice_request": "Of course. Please send your booking number or quote number, and I’ll help create or find your invoice.",
+    "payment_support": "Thank you. I can help verify your payment. Please send your booking number or payment reference, then upload or paste your proof of payment.",
+    "driver_late": "I’m really sorry about that. I’ll treat this as urgent. Please send your booking number or phone number so support can trace the driver.",
+    "lost_item": "I’m sorry about that. I’ll help create a lost-item ticket. Please send your booking number, item description and phone number.",
+    "tourism": "Welcome to Namibia 🇳🇦 I can help you explore desert, coast, safari and city routes. Are you interested in Sossusvlei, Etosha, Swakopmund, Walvis Bay or Windhoek city?",
+    "fallback": "I can help with transport, pricing, booking, payments, invoices, tracking or support. What would you like to do?"
+  }
+}

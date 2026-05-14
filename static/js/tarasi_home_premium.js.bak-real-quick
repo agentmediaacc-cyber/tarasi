@@ -1,0 +1,169 @@
+const live = [
+  "Live route estimate ready for Windhoek pickups",
+  "Airport pricing uses current Tarasi zone rules",
+  "Quick quote checks map distance before pricing",
+  "Windhoek suburb matching is active",
+  "Premium route estimate available in seconds"
+];
+
+let i = 0;
+setInterval(() => {
+  const el = document.querySelector("[data-live]");
+  if (el) {
+    el.textContent = live[i % live.length];
+    i += 1;
+  }
+}, 2600);
+
+(function () {
+  const form = document.querySelector("[data-home-quote-form]");
+  if (!form) return;
+
+  const pickupInput = form.querySelector("[data-home-quote-pickup]");
+  const dropoffInput = form.querySelector("[data-home-quote-dropoff]");
+  const passengersInput = form.querySelector("[data-home-quote-passengers]");
+  const result = form.querySelector("[data-home-quote-result]");
+  const priceNode = form.querySelector("[data-home-quote-price]");
+  const distanceNode = form.querySelector("[data-home-quote-distance]");
+  const confidenceNode = form.querySelector("[data-home-quote-confidence]");
+
+  function money(value) {
+    return `N$${Number(value || 0).toFixed(2)}`;
+  }
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const pickup = pickupInput?.value?.trim() || "";
+    const dropoff = dropoffInput?.value?.trim() || "";
+    if (!pickup || !dropoff) {
+      window.location.href = `/book/once-off?pickup=${encodeURIComponent(pickup)}&dropoff=${encodeURIComponent(dropoff)}`;
+      return;
+    }
+    try {
+      const response = await fetch("/api/quote/estimate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          pickup_text: pickup,
+          dropoff_text: dropoff,
+          passengers: Number(passengersInput?.value || 1),
+          service_type: "town",
+          vehicle_type: "sedan",
+          save: false
+        })
+      });
+      const data = await response.json();
+      if (response.ok && data.final_price) {
+        if (result) result.hidden = false;
+        if (priceNode) priceNode.textContent = money(data.final_price);
+        if (distanceNode) distanceNode.textContent = `${Number(data.distance_km || 0).toFixed(1)} km`;
+        if (confidenceNode) confidenceNode.textContent = String(data.confidence || "low").toUpperCase();
+      }
+    } catch (_error) {
+      // Keep homepage flow moving even if the estimator is temporarily unavailable.
+    }
+    window.location.href = `/book/once-off?pickup=${encodeURIComponent(pickup)}&dropoff=${encodeURIComponent(dropoff)}&passengers=${encodeURIComponent(passengersInput?.value || "1")}`;
+  });
+})();
+
+window.TarasiRealQuickBook = (() => {
+  let lastQuote = null;
+
+  const $ = (id) => document.getElementById(id);
+  const val = (id) => ($(id)?.value || "").trim();
+
+  function payload(save=false){
+    return {
+      pickup_text: val("rqbPickup"),
+      dropoff_text: val("rqbDropoff"),
+      service_type: val("rqbService") || "once_off",
+      vehicle_type: val("rqbVehicle") || "sedan",
+      pickup_date: val("rqbDate"),
+      pickup_time: val("rqbTime"),
+      passengers: Number(val("rqbPeople") || 1),
+      luggage_count: Number(val("rqbLuggage") || 0),
+      notes: val("rqbNote"),
+      save
+    };
+  }
+
+  function validate(p){
+    if(!p.pickup_text){ alert("Please enter pickup street or place."); return false; }
+    if(!p.dropoff_text){ alert("Please enter drop-off street or place."); return false; }
+    return true;
+  }
+
+  async function estimate(save=false){
+    const box = $("realQuickBook");
+    const data = payload(save);
+    if(!validate(data)) return null;
+
+    box?.classList.add("rqb-loading");
+    try{
+      const res = await fetch("/api/quote/estimate", {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify(data)
+      });
+      const json = await res.json();
+      if(!res.ok || json.ok === false) throw new Error(json.message || "Could not estimate price");
+
+      lastQuote = json.quote || json;
+      show(lastQuote);
+      return lastQuote;
+    }catch(err){
+      alert(err.message || "Quote failed. Please try again.");
+      return null;
+    }finally{
+      box?.classList.remove("rqb-loading");
+    }
+  }
+
+  function show(q){
+    $("rqbResult")?.classList.add("show");
+    const price = q.final_price || q.amount || q.price || 0;
+    $("rqbPrice").textContent = `N$${Number(price).toFixed(2)}`;
+    $("rqbKm").textContent = `${Number(q.distance_km || 0).toFixed(2)} km`;
+    $("rqbEta").textContent = `${Number(q.duration_minutes || 0)} min`;
+    $("rqbConfidence").textContent = q.price_confidence || q.confidence || "medium";
+    $("rqbZones").textContent = `Pickup: ${q.pickup_zone || "not matched"} → Drop-off: ${q.dropoff_zone || "not matched"}`;
+    $("rqbQuoteNo").textContent = q.quote_number ? `Quote proof: ${q.quote_number}` : "Quote proof will be created when you proceed.";
+  }
+
+  async function book(){
+    const q = lastQuote || await estimate(true);
+    if(!q) return;
+
+    const data = payload(true);
+    const params = new URLSearchParams({
+      pickup: data.pickup_text,
+      dropoff: data.dropoff_text,
+      service_type: data.service_type,
+      vehicle_type: data.vehicle_type,
+      pickup_date: data.pickup_date,
+      pickup_time: data.pickup_time,
+      passengers: String(data.passengers),
+      luggage_count: String(data.luggage_count),
+      notes: data.notes,
+      quote_number: q.quote_number || "",
+      estimated_price: String(q.final_price || q.amount || "")
+    });
+
+    window.location.href = `/book/once-off?${params.toString()}`;
+  }
+
+  function clear(){
+    ["rqbPickup","rqbDropoff","rqbDate","rqbTime","rqbPeople","rqbLuggage","rqbNote"].forEach(id => {
+      const el = $(id); if(el) el.value = (id === "rqbPeople" ? "1" : id === "rqbLuggage" ? "0" : "");
+    });
+    $("rqbResult")?.classList.remove("show");
+    lastQuote = null;
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const d = $("rqbDate");
+    if(d && !d.value) d.value = new Date().toISOString().slice(0,10);
+  });
+
+  return {estimate, book, clear};
+})();

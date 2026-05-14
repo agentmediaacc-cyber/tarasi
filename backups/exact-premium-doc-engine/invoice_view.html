@@ -1,0 +1,128 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ invoice.document_type }} {{ invoice.invoice_code }} | Tarasi{% endblock %}
+{% block admin_page %}
+
+<section class="invoice-toolbar no-print">
+  <a href="{{ url_for('admin.create_invoice') }}">New Document</a>
+  <button onclick="window.print()">Download / Save PDF</button>
+  <a target="_blank" href="https://wa.me/?text={{ invoice.share_text|urlencode }}">Send WhatsApp</a>
+  {% if invoice.email %}
+  <a href="mailto:{{ invoice.email }}?subject={{ invoice.document_type }} {{ invoice.invoice_code }}&body={{ invoice.share_text|urlencode }}">Send Email</a>
+  {% endif %}
+</section>
+
+<section class="tarasi-pro-doc">
+  <img class="tarasi-doc-watermark" src="{{ url_for('static', filename='img/branding/tarasi-logo.jpeg') }}" alt="">
+
+  <div class="doc-wave-top"></div>
+
+  <header class="tarasi-doc-header">
+    <div class="doc-brand-left">
+      <img src="{{ url_for('static', filename='img/branding/tarasi-logo.jpeg') }}" alt="Tarasi Logo">
+      <div>
+        <h1>Tarasi Shuttle and<br>Transfer Services CC</h1>
+        <p>TIN: 15733730-011 &nbsp; | &nbsp; Reg No: CC/2025/11107</p>
+        <p>P.O. Box 60216, Windhoek</p>
+      </div>
+    </div>
+
+    <aside class="doc-meta-card">
+      <h2>{{ invoice.document_type|upper }}</h2>
+      <strong>{{ invoice.invoice_code }}</strong>
+      <div><span>Date Issued</span><p>{{ invoice.created_at }}</p></div>
+      <div><span>Status</span><p class="doc-status">{{ invoice.payment_status }}</p></div>
+    </aside>
+  </header>
+
+  <section class="doc-info-grid">
+    <div class="doc-card bill-card">
+      <h3>Bill To</h3>
+      <strong>{{ invoice.client_name }}</strong>
+      <p>{{ invoice.contact_number }}</p>
+      {% if invoice.email %}<p>{{ invoice.email }}</p>{% endif %}
+    </div>
+
+    <div class="doc-card service-card">
+      <h3>Service Details</h3>
+      <div class="service-lines">
+        <p><b>Service Type:</b> {{ invoice.service_type }}</p>
+        <p><b>Vehicle Type:</b> {{ invoice.vehicle_type }}</p>
+        <p><b>Passengers:</b> {{ invoice.passengers }}</p>
+        <p><b>Detail Mode:</b> {{ invoice.detail_mode }}</p>
+        {% if invoice.detail_mode == "Full Trip Details" %}
+        <p><b>Pickup:</b> {{ invoice.pickup }}</p>
+        <p><b>Drop-off:</b> {{ invoice.dropoff }}</p>
+        <p><b>Date/Time:</b> {{ invoice.service_date }} {{ invoice.service_time }}</p>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+
+  <table class="doc-items-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Description</th>
+        <th>Vehicle</th>
+        <th>Passengers</th>
+        <th>Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td><strong>{{ invoice.service_type }}</strong><br><small>{{ invoice.service_description }}</small></td>
+        <td>{{ invoice.vehicle_type }}</td>
+        <td>{{ invoice.passengers }}</td>
+        <td>N$ {{ "%.2f"|format(invoice.amount) }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <section class="doc-money-grid">
+    <div class="doc-bank">
+      <h3>Banking Details</h3>
+      <p><b>Bank:</b> First National Bank (FNB)</p>
+      <p><b>Account Name:</b> Tarasi Shuttle and Transfer Services CC</p>
+      <p><b>Account Number:</b> 64289981259</p>
+      <p><b>Branch:</b> Maerua Mall · Code: 282273</p>
+      <p><b>Reference:</b> <span>{{ invoice.invoice_code }}</span></p>
+    </div>
+
+    <div class="doc-summary">
+      <h3>Summary</h3>
+      <p><span>Subtotal</span><b>N$ {{ "%.2f"|format(invoice.amount) }}</b></p>
+      <p><span>Discount {{ invoice.discount }}%</span><b>N$ {{ "%.2f"|format(invoice.amount * (invoice.discount / 100)) }}</b></p>
+      <p><span>VAT {{ invoice.vat }}%</span><b>Included</b></p>
+      <div><span>Total Due</span><strong>N$ {{ "%.2f"|format(invoice.final_total) }}</strong></div>
+    </div>
+  </section>
+
+  {% if invoice.notes %}
+  <section class="doc-notes">
+    <h3>Notes / Instructions</h3>
+    <p>{{ invoice.notes }}</p>
+  </section>
+  {% endif %}
+
+  <section class="doc-thankyou">
+    <span></span>
+    <b>Safe. Reliable. Professional.</b>
+    <span></span>
+  </section>
+
+  <footer class="doc-footer">
+    <div>
+      <h3>Premium Transport</h3>
+      <p>Airport Transfers · VIP Services · Corporate · Tours · Shuttles</p>
+    </div>
+    <div class="footer-emblem">T</div>
+    <div>
+      <p>+264 81 416 7042</p>
+      <p>tarasishuttle@gmail.com</p>
+      <p>P.O. Box 60216, Windhoek</p>
+    </div>
+  </footer>
+</section>
+
+{% endblock %}

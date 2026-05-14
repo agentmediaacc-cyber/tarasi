@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Driver Dashboard | Tarasi{% endblock %}
+{% block content %}
+<section class="hero-grid">
+  <article class="hero-card">
+    <span class="eyebrow">Driver shell</span>
+    <h1>Driver mobile dashboard</h1>
+    <p>Assigned trips, route status updates and customer contact actions optimized for a phone screen.</p>
+    <div class="pill-row">
+      <span class="pill">{{ driver.full_name }}</span>
+      <span class="pill">{{ driver.vehicle_name or "Vehicle pending" }}</span>
+      <span class="pill">{{ driver.status }}</span>
+    </div>
+  </article>
+  <aside class="panel">
+    <h3>Trip counts</h3>
+    <ul class="list-clean">
+      <li>Total trips: {{ bookings|length }}</li>
+      <li>Assigned or active: {{ assigned|length }}</li>
+    </ul>
+    <a class="btn btn-primary btn-block" href="{{ url_for('driver.trips') }}">Open trip list</a>
+  </aside>
+</section>
+{% endblock %}

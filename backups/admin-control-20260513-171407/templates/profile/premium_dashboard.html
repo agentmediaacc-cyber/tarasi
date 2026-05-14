@@ -1,0 +1,267 @@
+{% extends "profile/superapp_base.html" %}
+{% block title %}Profile Dashboard | Tarasi{% endblock %}
+
+{% block superapp_header %}
+<section class="hero-premium-card">
+  <div class="hero-premium-copy">
+    <div class="hero-kicker-row">
+      <span class="hero-kicker">Tarasi premium profile</span>
+      {% if dashboard.profile.verified %}
+      <span class="verified-badge">Verified</span>
+      {% endif %}
+    </div>
+    <h1>{{ dashboard.profile.full_name }}</h1>
+    <p>{{ dashboard.profile.town }}, {{ dashboard.profile.region }} · {{ dashboard.profile.email or "Member profile ready" }}</p>
+
+    <div class="hero-luxury-row">
+      <div class="hero-loyalty-glow">
+        <strong>{{ dashboard.profile.level }}</strong>
+        <span>{{ dashboard.loyalty.points }} pts</span>
+      </div>
+      <div class="hero-live-trip {% if dashboard.active_ride %}is-live{% endif %}">
+        <strong>{% if dashboard.active_ride %}Active ride{% else %}No live ride{% endif %}</strong>
+        <span>{% if dashboard.active_ride %}ETA {{ dashboard.active_ride.eta }}{% else %}Book your next trip{% endif %}</span>
+      </div>
+      <div class="hero-wallet-preview">
+        <strong>{{ dashboard.wallet.balance }}</strong>
+        <span>Wallet balance</span>
+      </div>
+    </div>
+
+    <div class="hero-stat-row">
+      <div><strong>{{ dashboard.stats.total }}</strong><span>Total trips</span></div>
+      <div><strong>{{ dashboard.stats.active }}</strong><span>Active now</span></div>
+      <div><strong>{{ dashboard.stats.completed }}</strong><span>Completed</span></div>
+      <div><strong>{{ dashboard.profile_completion.percent }}%</strong><span>Profile complete</span></div>
+    </div>
+
+    <div class="hero-action-row">
+      <a class="premium-btn gold" href="{{ url_for('booking.book_index') }}">Book Again</a>
+      <a class="premium-btn glass" href="{{ url_for('track.track_index') }}">Track Current Ride</a>
+      <a class="premium-btn danger" href="{{ url_for('profile.safety') }}">Emergency Support</a>
+    </div>
+  </div>
+
+  <div class="hero-premium-side">
+    <div class="profile-orb-avatar">{{ dashboard.profile.full_name[:1] if dashboard.profile.full_name else "T" }}</div>
+    <div class="hero-side-card glass-card">
+      <span class="mini-label">Preferred vehicle</span>
+      <strong>{{ dashboard.profile.preferred_vehicle }}</strong>
+      <p>{{ dashboard.profile.quiet_ride }} · {{ dashboard.profile.language }}</p>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block superapp_content %}
+<section class="dashboard-module-grid">
+  <article class="module-card feature-card">
+    <div class="module-heading">
+      <div>
+        <span class="module-kicker">Active ride</span>
+        <h2>Live transport snapshot</h2>
+      </div>
+      <a href="{{ url_for('track.track_index') }}">Track</a>
+    </div>
+    {% if dashboard.active_ride %}
+    <div class="active-ride-card">
+      <div class="status-pulse"></div>
+      <div>
+        <strong>{{ dashboard.active_ride.reference }}</strong>
+        <p>{{ dashboard.active_ride.route }}</p>
+      </div>
+      <div class="metric-stack">
+        <span>ETA</span>
+        <strong>{{ dashboard.active_ride.eta }}</strong>
+      </div>
+      <div class="metric-stack">
+        <span>Status</span>
+        <strong>{{ dashboard.active_ride.status }}</strong>
+      </div>
+      <div class="metric-stack">
+        <span>Driver</span>
+        <strong>{{ dashboard.active_ride.driver }}</strong>
+      </div>
+      <div class="metric-stack">
+        <span>Vehicle</span>
+        <strong>{{ dashboard.active_ride.vehicle }}</strong>
+      </div>
+    </div>
+    {% else %}
+    <div class="empty-premium-block">
+      <h3>No active ride right now</h3>
+      <p>Your next airport, city or VIP transfer will appear here with ETA, driver and vehicle details.</p>
+    </div>
+    {% endif %}
+  </article>
+
+  <article class="module-card">
+    <div class="module-heading">
+      <div>
+        <span class="module-kicker">Upcoming trips</span>
+        <h2>Swipe-ready travel queue</h2>
+      </div>
+      <a href="{{ url_for('profile.account_bookings') }}">All trips</a>
+    </div>
+    <div class="horizontal-card-row">
+      {% for booking in dashboard.upcoming_trips[:5] %}
+      <a class="trip-glass-card" href="{{ url_for('profile.account_bookings', status='all') }}">
+        <span>{{ booking.booking_type|replace('-', ' ')|title }}</span>
+        <strong>{{ booking.pickup }} to {{ booking.dropoff }}</strong>
+        <p>{{ booking.date or "Date TBD" }} · {{ booking.time or "Time TBD" }}</p>
+        <em>{{ booking.status }}</em>
+      </a>
+      {% else %}
+      <div class="trip-glass-card static">
+        <span>Ready when you are</span>
+        <strong>No upcoming trips yet</strong>
+        <p>Book a premium ride to populate your travel queue.</p>
+      </div>
+      {% endfor %}
+    </div>
+  </article>
+
+  <article class="module-card">
+    <div class="module-heading">
+      <div>
+        <span class="module-kicker">Loyalty progress</span>
+        <h2>{{ dashboard.loyalty.level }} progress</h2>
+      </div>
+      <a href="{{ url_for('profile.loyalty') }}">Open loyalty</a>
+    </div>
+    <div class="progress-ring-card">
+      <div class="progress-ring" style="--progress: {{ dashboard.loyalty.percent }}%;">
+        <div>
+          <strong>{{ dashboard.loyalty.percent }}%</strong>
+          <span>{{ dashboard.loyalty.points }} pts</span>
+        </div>
+      </div>
+      <div class="progress-copy">
+        <p>{{ dashboard.loyalty.next_level_hint }}</p>
+        <div class="linear-progress">
+          <span style="width: {{ dashboard.loyalty.percent }}%"></span>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <article class="module-card">
+    <div class="module-heading">
+      <div>
+        <span class="module-kicker">Wallet snapshot</span>
+        <h2>Credits and rewards</h2>
+      </div>
+      <a href="{{ url_for('profile.wallet') }}">Wallet</a>
+    </div>
+    <div class="wallet-snapshot-grid">
+      <div><strong>{{ dashboard.wallet.balance }}</strong><span>Available balance</span></div>
+      <div><strong>{{ dashboard.wallet.ride_credits }}</strong><span>Ride credits</span></div>
+      <div><strong>{{ dashboard.wallet.coupon_count }}</strong><span>Coupons</span></div>
+      <div><strong>{{ dashboard.wallet.rewards_value }}</strong><span>Rewards value</span></div>
+    </div>
+  </article>
+
+  <article class="module-card">
+    <div class="module-heading">
+      <div>
+        <span class="module-kicker">Saved places</span>
+        <h2>Fast pickup shortcuts</h2>
+      </div>
+      <a href="{{ url_for('profile.saved_places') }}">Manage</a>
+    </div>
+    <div class="saved-place-grid">
+      {% for place in dashboard.saved_places %}
+      <div class="saved-place-card">
+        <strong>{{ place.symbol }}</strong>
+        <div>
+          <h3>{{ place.label }}</h3>
+          <p>{{ place.address }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </article>
+
+  <article class="module-card">
+    <div class="module-heading">
+      <div>
+        <span class="module-kicker">Notifications feed</span>
+        <h2>Recent updates</h2>
+      </div>
+      <a href="{{ url_for('profile.notifications') }}">View all</a>
+    </div>
+    <div class="feed-list">
+      {% for note in dashboard.notifications[:4] %}
+      <div class="feed-item">
+        <span>{{ note.type }}</span>
+        <strong>{{ note.title }}</strong>
+        <p>{{ note.text }}</p>
+        <small>{{ note.time }}</small>
+      </div>
+      {% endfor %}
+    </div>
+  </article>
+
+  <article class="module-card wide-card">
+    <div class="module-heading">
+      <div>
+        <span class="module-kicker">Quick rebook</span>
+        <h2>One-tap repeat routes</h2>
+      </div>
+      <a href="{{ url_for('booking.book_index') }}">Book ride</a>
+    </div>
+    <div class="quick-rebook-grid">
+      {% for trip in dashboard.quick_rebook %}
+      <a class="rebook-card" href="{{ url_for('booking.book_index') }}">
+        <span>{{ trip.booking_type }}</span>
+        <strong>{{ trip.label }}</strong>
+        <p>Launch booking flow with this route again.</p>
+      </a>
+      {% else %}
+      <div class="rebook-card static">
+        <span>Premium shortcut</span>
+        <strong>Your recent routes will appear here</strong>
+        <p>Once you complete a trip, rebooking becomes one tap.</p>
+      </div>
+      {% endfor %}
+    </div>
+  </article>
+
+  <article class="module-card">
+    <div class="module-heading">
+      <div>
+        <span class="module-kicker">Profile depth</span>
+        <h2>Trusted contacts</h2>
+      </div>
+      <a href="{{ url_for('profile.safety') }}">Safety center</a>
+    </div>
+    <div class="stack-list">
+      {% for contact in dashboard.trusted_contacts %}
+      <div class="stack-row">
+        <div>
+          <strong>{{ contact.name }}</strong>
+          <p>{{ contact.value }}</p>
+        </div>
+        <span>{{ contact.status }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </article>
+
+  <article class="module-card">
+    <div class="module-heading">
+      <div>
+        <span class="module-kicker">Travel insights</span>
+        <h2>Ride history analytics</h2>
+      </div>
+      <a href="{{ url_for('profile.account_bookings') }}">History</a>
+    </div>
+    <div class="analytics-grid">
+      <div><strong>{{ dashboard.ride_history.favorite_mode }}</strong><span>Favorite mode</span></div>
+      <div><strong>{{ dashboard.ride_history.completion_rate }}%</strong><span>Completion rate</span></div>
+      <div><strong>{{ dashboard.ride_history.total_routes }}</strong><span>Routes used</span></div>
+      <div><strong>{{ dashboard.ride_history.night_rides }}</strong><span>Night rides</span></div>
+    </div>
+  </article>
+</section>
+{% endblock %}

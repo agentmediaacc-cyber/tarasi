@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Tarasi Route Intelligence Center</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/tarasi_routes_real.css') }}">
+</head>
+<body>
+
+<header class="topbar">
+  <a href="/" class="brand"><span>T</span><div><b>Tarasi</b><small>Route Intelligence</small></div></a>
+  <button class="menu" onclick="document.body.classList.toggle('open')">☰</button>
+  <nav>
+    <a href="/">Home</a>
+    <a href="/book">Book</a>
+    <a href="/routes">Routes</a>
+    <a href="/fleet">Fleet</a>
+    <a href="/tours">Tours</a>
+    <a href="/track">Track</a>
+    <a href="/support">Support</a>
+    <a class="gold" href="/book">Book Now</a>
+  </nav>
+</header>
+
+<main>
+
+<section class="hero">
+  <div class="hero-copy">
+    <span class="kicker">Real platform routes</span>
+    <h1>Namibia Route Control</h1>
+    <p>
+      Explore routes loaded from your connected database. Prices are never invented:
+      if admin has not set a route price yet, Tarasi displays <b>N$0.00</b>.
+    </p>
+
+    <div class="stats">
+      <div><b>{{ route_count }}</b><small>Active routes</small></div>
+      <div><b>{{ route_source|upper }}</b><small>Data source</small></div>
+      <div><b>N$0</b><small>Default when unset</small></div>
+    </div>
+  </div>
+
+  <aside class="command-map">
+    <div class="map-head">
+      <b>Premium Route Map</b>
+      <small>No fake movement</small>
+    </div>
+
+    <div class="map-screen">
+      <div class="pulse"></div>
+      <div class="line coast-line"></div>
+      <div class="line safari-line"></div>
+      <div class="line desert-line"></div>
+      <span class="pin windhoek">Windhoek</span>
+      <span class="pin coast">Coast</span>
+      <span class="pin safari">Safari</span>
+      <span class="pin desert">Desert</span>
+    </div>
+
+    <p>
+      Coordinates can be added by admin later. When coordinates are missing,
+      the route still appears without fake map movement.
+    </p>
+  </aside>
+</section>
+
+<section class="control-strip">
+  <button class="active" data-filter="all">All routes</button>
+  <button data-filter="airport">Airport</button>
+  <button data-filter="tour">Tours</button>
+  <button data-filter="long">Long-distance</button>
+  <button data-filter="vip">VIP</button>
+  <button data-filter="school">School</button>
+  <button data-filter="business">Business</button>
+</section>
+
+{% if routes %}
+<section class="route-grid">
+  {% for route in routes %}
+  <article class="route-card" data-category="{{ route.category|lower }}">
+    <div class="card-top">
+      <div>
+        <span class="type">{{ route.category }}</span>
+        <h2>{{ route.pickup }}</h2>
+        <em>to</em>
+        <h2>{{ route.dropoff }}</h2>
+      </div>
+
+      <div class="price-box {% if route.price == 0 %}unset{% endif %}">
+        <small>Starting price</small>
+        <strong>N$ {{ "%.2f"|format(route.price) }}</strong>
+      </div>
+    </div>
+
+    <div class="route-name">
+      <span></span>
+      <b>{{ route.name }}</b>
+      <span></span>
+    </div>
+
+    <div class="badge-row">
+      <span>{{ route.region }}</span>
+      <span>{{ route.road_type }}</span>
+      <span>Best for {{ route.best_for }}</span>
+      <span>{{ route.comfort }}</span>
+    </div>
+
+    <div class="specs">
+      <div><b>{{ route.distance_km }}</b><small>Distance km</small></div>
+      <div><b>{{ route.duration }}</b><small>Duration</small></div>
+      <div><b>{{ route.vehicle }}</b><small>Vehicle fit</small></div>
+      <div>
+        <b>{% if route.origin_lat and route.destination_lat %}Ready{% else %}Pending{% endif %}</b>
+        <small>Coordinates</small>
+      </div>
+    </div>
+
+    {% if route.price == 0 %}
+    <div class="price-warning">
+      Admin has not set this route price yet. Customers see N$0.00 until admin updates pricing.
+    </div>
+    {% endif %}
+
+    <div class="actions">
+      <a href="/book?route={{ route.id }}">Book this route</a>
+      <a href="/support" class="outline">Ask support</a>
+    </div>
+  </article>
+  {% endfor %}
+</section>
+{% else %}
+<section class="empty">
+  <span>Setup required</span>
+  <h2>No active routes found in Supabase yet.</h2>
+  <p>{{ route_message or "Create active routes in your Supabase table or admin dashboard. No demo prices are shown." }}</p>
+  <a href="/admin">Open Admin</a>
+</section>
+{% endif %}
+
+</main>
+
+<footer class="footer">
+  <h3>Tarasi</h3>
+  <p>Premium Namibia transport routes powered by real admin data.</p>
+</footer>
+
+<script src="{{ url_for('static', filename='js/tarasi_routes_real.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Tarasi Route Command Center</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/tarasi_routes_real.css') }}">
+</head>
+<body>
+
+<header class="topbar">
+  <a href="/" class="brand"><span>T</span><div><b>Tarasi</b><small>Live Route Command</small></div></a>
+  <button class="menu" onclick="document.body.classList.toggle('open')">☰</button>
+  <nav>
+    <a href="/">Home</a>
+    <a href="/book">Book</a>
+    <a href="/routes">Routes</a>
+    <a href="/fleet">Fleet</a>
+    <a href="/tours">Tours</a>
+    <a href="/track">Track</a>
+    <a href="/support">Support</a>
+    <a class="gold" href="/book">Book Now</a>
+  </nav>
+</header>
+
+<main>
+
+<section class="hero live-hero">
+  <div class="hero-copy">
+    <span class="kicker">Real route intelligence</span>
+    <h1>Live Namibia Route Map</h1>
+    <p>
+      Explore admin-created Tarasi routes on a real interactive map with street view,
+      satellite mode, live location, route lines, hotspots, coordinates and route cards.
+    </p>
+
+    <div class="stats">
+      <div><b>{{ route_count }}</b><small>Active routes</small></div>
+      <div><b>GPS</b><small>Live location ready</small></div>
+      <div><b>SAT</b><small>Satellite layer</small></div>
+    </div>
+  </div>
+
+  <aside class="map-legend">
+    <h3>Map Features</h3>
+    <p>Real OpenStreetMap tiles, satellite view, pickup/drop-off pins, hotspots and live user location.</p>
+    <div class="legend-grid">
+      <span><i class="green"></i> Pickup</span>
+      <span><i class="gold-dot"></i> Drop-off</span>
+      <span><i class="red"></i> Hotspot</span>
+      <span><i class="blue"></i> Your location</span>
+    </div>
+  </aside>
+</section>
+
+<section class="live-map-shell">
+  <div class="map-toolbar">
+    <div>
+      <span class="kicker small">Command map</span>
+      <h2>Route Control Map</h2>
+    </div>
+
+    <div class="map-actions">
+      <button id="locateMe">📍 My Location</button>
+      <button id="fitRoutes">🛰 Fit Routes</button>
+      <button id="satelliteMode">Satellite</button>
+      <button id="streetMode">Street</button>
+    </div>
+  </div>
+
+  <div id="tarasiLiveMap"></div>
+
+  <div class="map-note">
+    Routes draw only when coordinates exist in Supabase. No fake movement is created.
+    If a route has no coordinates, the card still shows setup status.
+  </div>
+</section>
+
+<section class="control-strip">
+  <button class="active" data-filter="all">All routes</button>
+  <button data-filter="airport">Airport</button>
+  <button data-filter="tour">Tours</button>
+  <button data-filter="long">Long-distance</button>
+  <button data-filter="vip">VIP</button>
+  <button data-filter="school">School</button>
+  <button data-filter="business">Business</button>
+  <button data-filter="available">Available</button>
+</section>
+
+{% if routes %}
+<section class="route-grid">
+  {% for route in routes %}
+  <article
+    class="route-card"
+    data-category="{{ route.category|lower }} {{ route.live_status|lower }}"
+    data-route-id="{{ route.id }}"
+    data-pickup="{{ route.pickup }}"
+    data-dropoff="{{ route.dropoff }}"
+    data-origin-lat="{{ route.origin_lat or '' }}"
+    data-origin-lng="{{ route.origin_lng or '' }}"
+    data-destination-lat="{{ route.destination_lat or '' }}"
+    data-destination-lng="{{ route.destination_lng or '' }}"
+    data-hotspot-lat="{{ route.hotspot_lat or '' }}"
+    data-hotspot-lng="{{ route.hotspot_lng or '' }}"
+    data-hotspot-name="{{ route.hotspot_name or '' }}"
+    data-price="{{ route.price }}"
+  >
+    <div class="card-top">
+      <div>
+        <span class="type">{{ route.category }}</span>
+        <h2>{{ route.pickup }}</h2>
+        <em>to</em>
+        <h2>{{ route.dropoff }}</h2>
+      </div>
+
+      <div class="price-box {% if route.price == 0 %}unset{% endif %}">
+        <small>Starting price</small>
+        <strong>N$ {{ "%.2f"|format(route.price) }}</strong>
+      </div>
+    </div>
+
+    <div class="route-name">
+      <span></span>
+      <b>{{ route.name }}</b>
+      <span></span>
+    </div>
+
+    <div class="badge-row">
+      <span>{{ route.region }}</span>
+      <span>{{ route.road_type }}</span>
+      <span>{{ route.live_status }}</span>
+      <span>{{ route.comfort }}</span>
+    </div>
+
+    <div class="specs">
+      <div><b>{{ route.distance_km }}</b><small>Distance km</small></div>
+      <div><b>{{ route.duration }}</b><small>Duration</small></div>
+      <div><b>{{ route.vehicle }}</b><small>Vehicle fit</small></div>
+      <div>
+        <b>{% if route.origin_lat and route.destination_lat %}Ready{% else %}Pending{% endif %}</b>
+        <small>Map route</small>
+      </div>
+    </div>
+
+    {% if route.hotspot_name %}
+    <div class="hotspot-box">
+      🔥 Hotspot: <b>{{ route.hotspot_name }}</b>
+    </div>
+    {% endif %}
+
+    {% if route.map_notes %}
+    <p class="map-card-note">{{ route.map_notes }}</p>
+    {% endif %}
+
+    {% if route.price == 0 %}
+    <div class="price-warning">
+      Admin has not set this route price yet. Customers see N$0.00 until admin updates pricing.
+    </div>
+    {% endif %}
+
+    <div class="actions">
+      <a href="/book?route={{ route.id }}">Book this route</a>
+      <button type="button" class="outline focus-route">View on map</button>
+    </div>
+  </article>
+  {% endfor %}
+</section>
+{% else %}
+<section class="empty">
+  <span>Setup required</span>
+  <h2>No active routes found in Supabase yet.</h2>
+  <p>{{ route_message or "Create active routes in your Supabase table or admin dashboard. No demo prices are shown." }}</p>
+  <a href="/admin">Open Admin</a>
+</section>
+{% endif %}
+
+</main>
+
+<footer class="footer">
+  <h3>Tarasi</h3>
+  <p>Premium Namibia transport routes powered by real admin data and live maps.</p>
+</footer>
+
+<script>
+window.TARASI_ROUTES = [
+  {% for route in routes %}
+  {
+    id: {{ route.id|tojson }},
+    name: {{ route.name|tojson }},
+    pickup: {{ route.pickup|tojson }},
+    dropoff: {{ route.dropoff|tojson }},
+    category: {{ route.category|tojson }},
+    price: {{ route.price|tojson }},
+    origin_lat: {{ route.origin_lat|tojson }},
+    origin_lng: {{ route.origin_lng|tojson }},
+    destination_lat: {{ route.destination_lat|tojson }},
+    destination_lng: {{ route.destination_lng|tojson }},
+    hotspot_lat: {{ route.hotspot_lat|tojson }},
+    hotspot_lng: {{ route.hotspot_lng|tojson }},
+    hotspot_name: {{ route.hotspot_name|tojson }},
+    live_status: {{ route.live_status|tojson }}
+  }{% if not loop.last %},{% endif %}
+  {% endfor %}
+];
+</script>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="{{ url_for('static', filename='js/tarasi_routes_real.js') }}"></script>
+</body>
+</html>

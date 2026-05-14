@@ -1,0 +1,120 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ invoice.invoice_code }} | Tarasi Invoice{% endblock %}
+{% block admin_page %}
+
+<section class="invoice-toolbar">
+  <a href="{{ url_for('admin.create_invoice') }}">New Invoice</a>
+  <button onclick="window.print()">Print / Save PDF</button>
+</section>
+
+<section class="premium-invoice">
+  <img
+    src="{{ url_for('static', filename='img/branding/tarasi-logo.jpeg') }}"
+    alt=""
+    class="invoice-watermark-logo"
+  >
+
+  <header class="premium-invoice-head">
+
+    <div class="premium-brand">
+      <img
+  src="{{ url_for('static', filename='img/branding/tarasi-logo.jpeg') }}"
+  alt="Tarasi Logo"
+  class="premium-real-logo exact-tarasi-logo"
+>
+
+      <div>
+        <h1>Tarasi Executive Transport</h1>
+        <p>Premium Namibia Shuttle, Airport & VIP Transport</p>
+      </div>
+    </div>
+
+    <div class="premium-invoice-meta">
+      <span>Invoice</span>
+      <strong>{{ invoice.invoice_code }}</strong>
+      <small>{{ invoice.created_at }}</small>
+    </div>
+
+  </header>
+
+  <section class="premium-invoice-grid">
+
+    <div class="premium-card">
+      <span>Bill To</span>
+      <strong>{{ invoice.client_name }}</strong>
+      <p>{{ invoice.contact_number }}</p>
+      <p>{{ invoice.email }}</p>
+    </div>
+
+    <div class="premium-card">
+      <span>Service Details</span>
+      <strong>{{ invoice.service_type }}</strong>
+      <p>{{ invoice.pickup }} → {{ invoice.dropoff }}</p>
+      <p>{{ invoice.service_date }} at {{ invoice.service_time }}</p>
+    </div>
+
+  </section>
+
+  <table class="premium-invoice-table">
+    <thead>
+      <tr>
+        <th>Service</th>
+        <th>Vehicle</th>
+        <th>Passengers</th>
+        <th>Status</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr>
+        <td>{{ invoice.service_type }}</td>
+        <td>{{ invoice.vehicle_type }}</td>
+        <td>{{ invoice.passengers }}</td>
+        <td>{{ invoice.payment_status }}</td>
+        <td>N$ {{ "%.2f"|format(invoice.final_total) }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <section class="premium-totals">
+
+    <div class="totals-box">
+      <div>
+        <span>Subtotal</span>
+        <strong>N$ {{ "%.2f"|format(invoice.amount) }}</strong>
+      </div>
+
+      <div>
+        <span>Discount</span>
+        <strong>{{ invoice.discount }}%</strong>
+      </div>
+
+      <div>
+        <span>VAT</span>
+        <strong>{{ invoice.vat }}%</strong>
+      </div>
+
+      <div class="grand-total">
+        <span>Total Due</span>
+        <strong>N$ {{ "%.2f"|format(invoice.final_total) }}</strong>
+      </div>
+    </div>
+
+  </section>
+
+  {% if invoice.notes %}
+  <section class="invoice-notes">
+    <h3>Operational Notes</h3>
+    <p>{{ invoice.notes }}</p>
+  </section>
+  {% endif %}
+
+  <footer class="premium-invoice-footer">
+    <p>Thank you for choosing Tarasi Executive Transport.</p>
+    <small>This invoice was generated from the Tarasi Operations Control Center.</small>
+  </footer>
+
+</section>
+
+{% endblock %}

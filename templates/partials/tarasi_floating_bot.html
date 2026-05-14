@@ -1,0 +1,47 @@
+<div id="tarasiBotWidget" class="tarasi-bot-widget">
+  <button id="tarasiBotBubble" class="tarasi-bot-bubble" aria-label="Open Tarasi assistant">
+    <span class="bot-pulse"></span>
+    💬
+  </button>
+
+  <section id="tarasiBotPanel" class="tarasi-bot-panel">
+    <div class="bot-panel-head">
+      <div class="bot-head-icon">⚜️</div>
+      <div class="bot-head-info">
+        <b>Tarasi Concierge</b>
+        <div class="bot-status-row">
+          <span class="online-dot"></span>
+          <span id="tarasiBotStatus">AI + Human Support</span>
+        </div>
+      </div>
+      <div id="tarasiBotModeBadge" class="bot-mode-badge">Bot</div>
+      <button id="tarasiBotClose" aria-label="Close">×</button>
+    </div>
+
+    <div id="tarasiBotMessages" class="bot-panel-messages"></div>
+
+    <div id="tarasiBotTyping" class="bot-typing-indicator" hidden>
+      <span></span><span></span><span></span>
+    </div>
+
+    <div id="tarasiBotSuggestions" class="bot-panel-suggestions">
+      <button>Talk to support</button>
+      <button>Create quote</button>
+      <button>Explore Namibia</button>
+      <button>Airport transfer price</button>
+    </div>
+
+    <div id="tarasiBotFeedback" class="bot-panel-feedback" hidden>
+      <span>Was this reply helpful?</span>
+      <div class="bot-feedback-actions">
+        <button type="button" data-review="up">👍 Helpful</button>
+        <button type="button" data-review="down">👎 Not helpful</button>
+      </div>
+    </div>
+
+    <form id="tarasiBotForm" class="bot-panel-form">
+      <input id="tarasiBotInput" placeholder="Ask Tarasi anything...">
+      <button>Send</button>
+    </form>
+  </section>
+</div>

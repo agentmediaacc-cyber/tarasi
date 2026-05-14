@@ -21,6 +21,21 @@ def create_app() -> Flask:
 
     register_blueprints(app)
 
+    try:
+        from routes.driver_routes import driver_bp
+        if "driver" not in app.blueprints:
+            app.register_blueprint(driver_bp)
+    except Exception as exc:
+        print("Driver route skipped:", exc)
+
+    try:
+        from routes.admin_control_routes import admin_control_bp
+        if "admin_control" not in app.blueprints:
+            app.register_blueprint(admin_control_bp)
+    except Exception as exc:
+        print("Admin control route skipped:", exc)
+
+
     @app.context_processor
     def inject_shell_context():
         return {
@@ -83,6 +98,29 @@ def create_app() -> Flask:
 
 app = create_app()
 
+
+
+
+# --- Tarasi bot fallback registration ---
+try:
+    from routes.bot_routes import bot_bp
+    if "bot" not in app.blueprints:
+        app.register_blueprint(bot_bp)
+except Exception as e:
+    print("Tarasi bot registration warning:", e)
+# --- end Tarasi bot fallback registration ---
+
+
+
+from flask import send_from_directory
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(
+        'static',
+        'favicon.ico',
+        mimetype='image/vnd.microsoft.icon'
+    )
 
 
 if __name__ == "__main__":

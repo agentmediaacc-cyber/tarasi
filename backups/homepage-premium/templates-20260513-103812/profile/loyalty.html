@@ -1,0 +1,65 @@
+{% extends "profile/superapp_base.html" %}
+{% block title %}Loyalty | Tarasi{% endblock %}
+
+{% block superapp_header %}
+<section class="subpage-hero glass-card">
+  <div>
+    <span class="hero-kicker">Loyalty</span>
+    <h1>{{ dashboard.loyalty.level }} member status</h1>
+    <p>Your loyalty tier now has a premium progress treatment with visible momentum toward the next benefit set.</p>
+  </div>
+  <div class="subpage-highlight">
+    <strong>{{ dashboard.loyalty.points }}</strong>
+    <span>Loyalty points</span>
+  </div>
+</section>
+{% endblock %}
+
+{% block superapp_content %}
+<section class="dashboard-module-grid">
+  <article class="module-card feature-card">
+    <div class="progress-ring-card">
+      <div class="progress-ring" style="--progress: {{ dashboard.loyalty.percent }}%;">
+        <div>
+          <strong>{{ dashboard.loyalty.percent }}%</strong>
+          <span>{{ dashboard.loyalty.level }}</span>
+        </div>
+      </div>
+      <div class="progress-copy">
+        <h2>{{ dashboard.loyalty.points }} / {{ dashboard.loyalty.target }} pts</h2>
+        <p>{{ dashboard.loyalty.next_level_hint }}</p>
+        <div class="linear-progress"><span style="width: {{ dashboard.loyalty.percent }}%"></span></div>
+      </div>
+    </div>
+  </article>
+
+  <article class="module-card">
+    <div class="module-heading">
+      <div>
+        <span class="module-kicker">Tier preview</span>
+        <h2>Benefit ladder</h2>
+      </div>
+    </div>
+    <div class="quick-rebook-grid">
+      <div class="rebook-card static"><span>Silver</span><strong>Fast booking history</strong><p>Base premium account access and ride visibility.</p></div>
+      <div class="rebook-card static"><span>Gold</span><strong>Priority support</strong><p>Higher service speed and stronger reward value.</p></div>
+      <div class="rebook-card static"><span>Platinum</span><strong>VIP mobility</strong><p>Executive handling and elevated loyalty treatment.</p></div>
+    </div>
+  </article>
+
+  <article class="module-card">
+    <div class="module-heading">
+      <div>
+        <span class="module-kicker">Trip contribution</span>
+        <h2>Points drivers</h2>
+      </div>
+    </div>
+    <div class="analytics-grid">
+      <div><strong>{{ dashboard.loyalty.completed_trips }}</strong><span>Completed trips</span></div>
+      <div><strong>{{ dashboard.stats.active }}</strong><span>Active journeys</span></div>
+      <div><strong>{{ dashboard.wallet.rewards_value }}</strong><span>Reward value</span></div>
+      <div><strong>{{ dashboard.profile.level }}</strong><span>Current tier</span></div>
+    </div>
+  </article>
+</section>
+{% endblock %}

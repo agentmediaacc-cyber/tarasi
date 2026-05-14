@@ -14,7 +14,7 @@
     </div>
     <div class="admin-hero-card">
       <span>Drivers online</span>
-      <strong data-live-drivers-count>0</strong>
+      <strong data-live-drivers-count>{% if available %}{{ drivers_online or 0 }}{% else %}0{% endif %}</strong>
     </div>
     <div class="admin-hero-card">
       <span>Support queue</span>
@@ -26,8 +26,13 @@
 <section class="admin-metric-grid">
   {% for metric in metrics %}
   <article class="admin-metric-card tone-{{ metric.tone }}">
-    <span>{{ metric.label }}</span>
-    <strong>{{ metric.value }}</strong>
+    <div class="metric-icon">
+      {% if "booking" in metric.label|lower %}◈{% elif "ride" in metric.label|lower %}⌖{% elif "customer" in metric.label|lower %}◌{% elif "driver" in metric.label|lower %}◎{% elif "ticket" in metric.label|lower %}✦{% elif "vehicle" in metric.label|lower %}◫{% elif "payment" in metric.label|lower %}${% else %}◉{% endif %}
+    </div>
+    <div class="metric-content">
+      <span>{{ metric.label }}</span>
+      <strong>{{ metric.value }}</strong>
+    </div>
   </article>
   {% endfor %}
 </section>
@@ -54,7 +59,14 @@
             <td><span class="status-badge" data-status="{{ booking.status|lower|replace(' ', '-') }}">{{ booking.status }}</span></td>
           </tr>
           {% else %}
-          <tr><td colspan="5"><div class="admin-empty">No bookings found yet.</div></td></tr>
+          <tr>
+            <td colspan="5">
+              <div class="admin-empty-state">
+                <p>No records yet.</p>
+                <a class="admin-btn gold" href="{{ url_for('booking.book_index') }}">Create booking</a>
+              </div>
+            </td>
+          </tr>
           {% endfor %}
         </tbody>
       </table>
@@ -78,7 +90,10 @@
         <span>{{ ride.status }}</span>
       </div>
       {% else %}
-      <div class="admin-empty">No live trips active right now.</div>
+      <div class="admin-empty-state">
+        <p>No records yet.</p>
+        <a class="admin-btn gold" href="{{ url_for('admin.bookings') }}">Open bookings</a>
+      </div>
       {% endfor %}
       {% for ticket in support_rows[:2] %}
       <div class="admin-stack-row">
@@ -100,35 +115,21 @@
       const supportCount = document.querySelector("[data-live-support-count]");
       const driversCount = document.querySelector("[data-live-drivers-count]");
 
-      TarasiLive.init({
-        interval: 30000,
-        endpoints: ["/api/health", "/api/bookings"],
-        onUpdate: (results) => {
-          const health = results.find(r => r.url === "/api/health")?.data;
-          const bookings = results.find(r => r.url === "/api/bookings")?.data;
-
-          if (health && driversCount) {
-             driversCount.textContent = health.drivers_online ?? "0";
-          }
-
-          if (bookings && Array.isArray(bookings)) {
-            if (tripsCount) {
-              const active = bookings.filter(b => ["Driver assigned", "On the way", "Picked up"].includes(b.status));
-              tripsCount.textContent = active.length;
-            }
-            
-            // Update table badges if visible
-            document.querySelectorAll(".admin-table .status-badge").forEach(badge => {
-               const row = badge.closest("tr");
-               const ref = row?.querySelector("td a")?.textContent;
-               const booking = bookings.find(b => b.reference === ref);
-               if (booking) {
-                 TarasiLive.updateStatusBadge(badge, booking.status);
-               }
-            });
-          }
+      const updateLive = async () => {
+        try {
+          const response = await fetch("/admin/api/dashboard/live", {headers: {"X-Requested-With": "XMLHttpRequest"}});
+          if (!response.ok) return;
+          const data = await response.json();
+          if (tripsCount) tripsCount.textContent = String((data.active_rides || []).length);
+          if (supportCount) supportCount.textContent = String(data.support_queue || 0);
+          if (driversCount) driversCount.textContent = String(data.drivers_online || 0);
+        } catch (_error) {
+          // Keep the last visible values if live refresh fails.
         }
-      });
+      };
+
+      updateLive();
+      window.setInterval(updateLive, 30000);
     });
   </script>
 {% endblock %}

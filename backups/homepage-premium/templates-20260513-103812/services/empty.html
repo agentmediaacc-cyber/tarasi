@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} | Tarasi{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="section-head">
+    <span class="eyebrow">{{ title }}</span>
+    <h1>{{ title }}</h1>
+  </div>
+  <div class="empty-state">{{ message }}</div>
+</section>
+{% endblock %}

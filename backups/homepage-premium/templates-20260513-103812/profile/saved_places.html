@@ -1,0 +1,54 @@
+{% extends "profile/superapp_base.html" %}
+{% block title %}Saved Places | Tarasi{% endblock %}
+
+{% block superapp_header %}
+<section class="subpage-hero glass-card">
+  <div>
+    <span class="hero-kicker">Saved places</span>
+    <h1>Pickup shortcuts for daily travel</h1>
+    <p>Home, work, airport and school locations now sit in richer visual cards designed for faster mobile scanning.</p>
+  </div>
+  <div class="subpage-highlight">
+    <strong>{{ dashboard.saved_places|length }}</strong>
+    <span>Saved place cards</span>
+  </div>
+</section>
+{% endblock %}
+
+{% block superapp_content %}
+<section class="dashboard-module-grid">
+  <article class="module-card wide-card">
+    <div class="saved-place-grid">
+      {% for place in dashboard.saved_places %}
+      <div class="saved-place-card large">
+        <strong>{{ place.symbol }}</strong>
+        <div>
+          <h3>{{ place.label }}</h3>
+          <p>{{ place.address }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </article>
+
+  <article class="module-card">
+    <div class="module-heading">
+      <div>
+        <span class="module-kicker">Favorite routes</span>
+        <h2>Quick route memory</h2>
+      </div>
+    </div>
+    <div class="stack-list">
+      {% for route in dashboard.favorite_routes %}
+      <div class="stack-row">
+        <div>
+          <strong>{{ route.label }}</strong>
+          <p>Route memory based on your booking history</p>
+        </div>
+        <span>{{ route.count }}x</span>
+      </div>
+      {% endfor %}
+    </div>
+  </article>
+</section>
+{% endblock %}

@@ -1,0 +1,146 @@
+.tarasi-booking-flow {
+  position: relative;
+}
+
+.booking-flow-intro {
+  padding: 1rem 1.05rem;
+  border-radius: 1.2rem;
+  background: linear-gradient(180deg, rgba(12, 107, 112, 0.1), rgba(211, 168, 61, 0.08));
+  border: 1px solid rgba(12, 107, 112, 0.12);
+}
+
+.booking-flow-intro p {
+  margin: 0.4rem 0 0;
+  color: var(--muted);
+}
+
+.booking-action-row {
+  display: grid;
+  gap: 0.85rem;
+  grid-template-columns: 1fr;
+}
+
+.tarasi-pricing-card,
+.tarasi-booking-confirmation {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 1.35rem;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(248, 252, 251, 0.96));
+  border: 1px solid rgba(12, 107, 112, 0.12);
+  box-shadow: 0 18px 40px rgba(17, 32, 51, 0.08);
+}
+
+.tarasi-pricing-card.is-hidden,
+.tarasi-booking-confirmation.is-hidden {
+  display: none;
+}
+
+.tarasi-pricing-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.tarasi-pricing-card-head h3,
+.tarasi-booking-confirmation h3 {
+  margin: 0.35rem 0 0;
+  color: var(--navy);
+}
+
+.pricing-confidence,
+.tarasi-note-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(211, 168, 61, 0.16);
+  color: #936516;
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.tarasi-pricing-summary,
+.tarasi-pricing-breakdown {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.tarasi-pricing-summary div,
+.tarasi-pricing-breakdown div {
+  padding: 0.85rem;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(17, 32, 51, 0.06);
+}
+
+.tarasi-pricing-summary span,
+.tarasi-pricing-breakdown span {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.tarasi-pricing-summary strong,
+.tarasi-pricing-breakdown strong {
+  color: var(--navy);
+}
+
+.tarasi-price-total {
+  position: sticky;
+  bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.1rem;
+  border-radius: 1.1rem;
+  background: linear-gradient(135deg, #0c6b70, #d3a83d);
+  color: white;
+}
+
+.tarasi-price-total strong {
+  font-size: 1.5rem;
+}
+
+.tarasi-pricing-notes p,
+.tarasi-booking-confirmation p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.tarasi-bank-details {
+  padding: 0.95rem 1rem;
+  border-radius: 1rem;
+  background: rgba(12, 107, 112, 0.06);
+  border: 1px solid rgba(12, 107, 112, 0.12);
+}
+
+.tarasi-bank-details p {
+  margin: 0.25rem 0 0;
+}
+
+.btn.is-hidden {
+  display: none;
+}
+
+.booking-fallback-submit {
+  margin-top: 0.25rem;
+}
+
+@media (min-width: 768px) {
+  .booking-action-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .tarasi-pricing-summary,
+  .tarasi-pricing-breakdown {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

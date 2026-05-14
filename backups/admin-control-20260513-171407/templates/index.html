@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Tarasi | Premium Namibia Transport</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/tarasi_premium_home.css') }}">
+</head>
+<body>
+
+<header class="nav">
+  <a class="brand" href="/">
+    <span>T</span>
+    <div>
+      <b>Tarasi</b>
+      <small>Premium Namibia transport</small>
+    </div>
+  </a>
+
+  <button class="menu-btn" onclick="document.body.classList.toggle('menu-open')">☰</button>
+
+  <nav class="nav-links">
+    <a href="/">Home</a>
+    <a href="/book">Book</a>
+    <a href="/routes">Routes</a>
+    <a href="/fleet">Fleet</a>
+    <a href="/tours">Tours</a>
+    <a href="/track">Track</a>
+    <a href="/support">Support</a>
+    <a class="login" href="/login">Login</a>
+    <a class="book-now" href="/book">Book Now</a>
+  </nav>
+</header>
+
+<main>
+
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-glow"></div>
+
+  <div class="hero-content">
+    <div class="hero-copy">
+      <span class="eyebrow">Premium Namibia mobility</span>
+      <h1>Move Across Namibia in Premium Comfort.</h1>
+      <p>
+        Airport transfers, city rides, school transport, executive VIP movement,
+        long-distance routes and curated desert, coast and safari journeys.
+      </p>
+
+      <div class="hero-actions">
+        <a href="/book" class="primary-btn">Book Journey</a>
+        <a href="/routes" class="secondary-btn">Explore Routes</a>
+      </div>
+
+      <div class="trust-strip">
+        <span>Verified drivers</span>
+        <span>Airport-ready</span>
+        <span>Tour-friendly</span>
+        <span>Mobile-first</span>
+      </div>
+    </div>
+
+    <form class="booking-glass" action="/book" method="get">
+      <span class="form-label">Quick booking</span>
+      <h2>Where are you going?</h2>
+
+      <label>Pickup
+        <input name="pickup" placeholder="Windhoek, HKIA, Swakopmund">
+      </label>
+
+      <label>Drop-off
+        <input name="dropoff" placeholder="Airport, lodge, school, city">
+      </label>
+
+      <div class="two">
+        <label>Date
+          <input name="date" type="date">
+        </label>
+        <label>Passengers
+          <input name="passengers" type="number" min="1" value="1">
+        </label>
+      </div>
+
+      <button type="submit">Start Booking</button>
+
+      <div class="mini-stats">
+        <div><b>{{ live_bookings|default(1) }}</b><small>Live bookings</small></div>
+        <div><b>{{ routes_count|default(5) }}</b><small>Routes</small></div>
+        <div><b>{{ fleet_count|default(3) }}</b><small>Fleet</small></div>
+      </div>
+    </form>
+  </div>
+</section>
+
+<section class="luxury-categories">
+  <div class="section-head">
+    <span>Book services</span>
+    <h2>Premium movement for every Namibian journey</h2>
+  </div>
+
+  <div class="category-grid">
+    <a href="/book/airport" class="cat-card"><i>✈</i><b>Airport</b><p>Reliable HKIA transfers</p></a>
+    <a href="/book/vip" class="cat-card"><i>★</i><b>VIP</b><p>Executive private hire</p></a>
+    <a href="/book/business" class="cat-card"><i>💼</i><b>Business</b><p>Corporate staff mobility</p></a>
+    <a href="/tours" class="cat-card"><i>🏜</i><b>Tours</b><p>Safari, dunes and coast</p></a>
+    <a href="/book/school" class="cat-card"><i>🎒</i><b>School</b><p>Safe recurring transport</p></a>
+    <a href="/routes" class="cat-card"><i>🛣</i><b>Long-distance</b><p>Inter-city premium trips</p></a>
+  </div>
+</section>
+
+<section class="route-board">
+  <div class="board-copy">
+    <span>Live route board</span>
+    <h2>Current premium movement</h2>
+    <p>Real route previews for airport, coast, safari and desert transfers.</p>
+    <a href="/routes">View all routes</a>
+  </div>
+
+  <div class="route-list">
+    {% for route in routes|default([]) %}
+    <div class="route-row">
+      <div>
+        <b>{{ route.name|default('Windhoek to Hosea Kutako Airport') }}</b>
+        <small>{{ route.category|default('Airport transfer') }}</small>
+      </div>
+      <span>On Time</span>
+      <strong>N$ {{ route.price|default('850') }}</strong>
+    </div>
+    {% else %}
+    <div class="route-row"><div><b>Windhoek to Hosea Kutako Airport</b><small>Airport transfer</small></div><span>On Time</span><strong>N$ 850</strong></div>
+    <div class="route-row"><div><b>Windhoek to Swakopmund</b><small>Tourist route</small></div><span>On Time</span><strong>N$ 950</strong></div>
+    <div class="route-row"><div><b>Windhoek to Etosha</b><small>Safari route</small></div><span>On Time</span><strong>N$ 1800</strong></div>
+    <div class="route-row"><div><b>Windhoek to Sossusvlei</b><small>Desert route</small></div><span>On Time</span><strong>N$ 1650</strong></div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="experience">
+  <div class="section-head light">
+    <span>Namibia experience</span>
+    <h2>Desert. Coast. Safari. City.</h2>
+  </div>
+
+  <div class="experience-grid">
+    <a href="/tours" class="experience-card desert">
+      <span>Sossusvlei</span>
+      <h3>Sunrise dune transfers</h3>
+      <p>Luxury desert movement, lodge pickups and curated tour routes.</p>
+    </a>
+
+    <a href="/routes" class="experience-card coast">
+      <span>Swakopmund & Walvis Bay</span>
+      <h3>Atlantic coastal travel</h3>
+      <p>Airport, harbour, hotel and coastal road transfers.</p>
+    </a>
+
+    <a href="/tours" class="experience-card safari">
+      <span>Etosha</span>
+      <h3>Safari shuttle coordination</h3>
+      <p>Premium comfort routes for camps, lodges and family trips.</p>
+    </a>
+  </div>
+</section>
+
+<section class="fleet">
+  <div class="section-head">
+    <span>Premium fleet</span>
+    <h2>Vehicles matched to your journey</h2>
+  </div>
+
+  <div class="fleet-grid">
+    {% for vehicle in fleet|default([]) %}
+    <article class="fleet-card">
+      <div class="vehicle-photo"></div>
+      <span class="badge">Available</span>
+      <h3>{{ vehicle.name|default('Toyota Quantum') }}</h3>
+      <p>{{ vehicle.type|default('Shuttle Van') }} • {{ vehicle.seats|default('14') }} seats</p>
+      <div class="specs">
+        <span>A/C</span><span>Luggage</span><span>Comfort</span><span>USB</span>
+      </div>
+      <a href="/fleet">Book vehicle</a>
+    </article>
+    {% else %}
+    <article class="fleet-card"><div class="vehicle-photo"></div><span class="badge">Available</span><h3>Toyota Quantum</h3><p>Shuttle Van • 14 seats</p><div class="specs"><span>A/C</span><span>10 bags</span><span>Premium</span><span>USB</span></div><a href="/fleet">Book vehicle</a></article>
+    <article class="fleet-card"><div class="vehicle-photo suv"></div><span class="badge">Available</span><h3>Executive SUV</h3><p>SUV • 6 seats</p><div class="specs"><span>A/C</span><span>5 bags</span><span>VIP</span><span>USB</span></div><a href="/fleet">Book vehicle</a></article>
+    <article class="fleet-card"><div class="vehicle-photo bus"></div><span class="badge">Available</span><h3>Minibus</h3><p>Group Transport • 22 seats</p><div class="specs"><span>A/C</span><span>16 bags</span><span>Tour</span><span>Safe</span></div><a href="/fleet">Book vehicle</a></article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="executive">
+  <div>
+    <span>Business access</span>
+    <h2>Built for airport arrivals, corporate mobility and private VIP travel.</h2>
+    <p>
+      Tarasi combines fast booking, reliable route coordination, premium fleet matching
+      and human support for families, companies, tourists and executive travellers.
+    </p>
+  </div>
+
+  <div class="executive-cards">
+    <div><b>24/7</b><span>Support-ready assistance</span></div>
+    <div><b>14</b><span>Namibia regions vision</span></div>
+    <div><b>VIP</b><span>Private transport options</span></div>
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <div>
+    <h3>Tarasi</h3>
+    <p>Premium Namibia transport, airport transfer and tour booking with clean mobile-first support.</p>
+  </div>
+  <div>
+    <b>Explore</b>
+    <a href="/book">Book</a>
+    <a href="/routes">Routes</a>
+    <a href="/fleet">Fleet</a>
+    <a href="/tours">Tours</a>
+  </div>
+  <div>
+    <b>Support</b>
+    <a href="/track">Track booking</a>
+    <a href="/support">Help center</a>
+    <a href="/login">Business access</a>
+  </div>
+</footer>
+
+<script src="{{ url_for('static', filename='js/tarasi_home.js') }}"></script>
+
+{% include 'partials/tarasi_floating_bot.html' %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tarasi_floating_bot.css') }}">
+<script src="{{ url_for('static', filename='js/tarasi_floating_bot.js') }}"></script>
+
+</body>
+</html>

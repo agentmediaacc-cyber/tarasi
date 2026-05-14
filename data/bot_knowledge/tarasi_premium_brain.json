@@ -1,0 +1,138 @@
+{
+  "brand": {
+    "name": "Tarasi Shuttle and Transfer Services CC",
+    "tone": "warm, premium, human, Namibia-local, helpful, concise",
+    "mission": "Premium Namibia transport, shuttle, airport transfer, VIP mobility, school transport, tours and travel support.",
+    "email": "tarasishuttle@gmail.com",
+    "bank": "First National Bank (FNB)",
+    "account_name": "Tarasi Shuttle and Transfer Services CC",
+    "account_number": "64289981259",
+    "branch": "Maerua Mall",
+    "branch_code": "282273",
+    "tin": "15733730-011",
+    "reg_no": "CC/2025/11107"
+  },
+  "reply_rules": [
+    "Always greet warmly when conversation starts.",
+    "Answer the user's question first, then ask for the next missing detail.",
+    "Never sound robotic.",
+    "Use short premium replies.",
+    "When pricing, explain that final price depends on exact street, luggage, waiting time, night travel and vehicle availability.",
+    "When user asks for quote, ask for client name, phone, pickup, drop-off, date, time, passengers and vehicle.",
+    "When user is angry, apologize first and create a ticket number.",
+    "When tourist asks about Namibia, become a travel guide and offer transport planning."
+  ],
+  "windhoek_zones": {
+    "central_business": {
+      "areas": ["CBD", "Independence Avenue", "Wernhil", "Ausspannplatz", "Maerua Mall"],
+      "personality": "business, shopping, hotel pickup, city movement",
+      "pricing_note": "Central pickups are usually easy, but traffic and parking may affect waiting time."
+    },
+    "north_local": {
+      "areas": ["Wanaheda", "Katutura", "Okuryangava", "Hakahana", "Goreangab", "Khomasdal"],
+      "personality": "local high-volume pickups, family trips, school transport, town movement",
+      "pricing_note": "Town pickup adjustment may apply depending on exact street and driver waiting time."
+    },
+    "east_executive": {
+      "areas": ["Klein Windhoek", "Eros", "Ludwigsdorf", "Avis"],
+      "personality": "executive, embassy, hotel, airport, VIP, business clients",
+      "pricing_note": "Often suitable for SUV or VIP airport transfers."
+    },
+    "south_family": {
+      "areas": ["Olympia", "Suiderhof", "Cimbebasia", "Prosperita", "Grove Mall"],
+      "personality": "family travel, school routes, airport transfers, mall pickups",
+      "pricing_note": "Good for sedan, SUV and family airport transfers."
+    },
+    "west_residential": {
+      "areas": ["Pioneers Park", "Hochland Park", "Rocky Crest", "Dorado Park"],
+      "personality": "residential, family, student and airport movement",
+      "pricing_note": "Common pickup zone for airport and city bookings."
+    }
+  },
+  "namibia_destinations": {
+    "Sossusvlei": {
+      "category": "desert",
+      "why_people_love_it": "Red dunes, sunrise views, Deadvlei, Dune 45 and luxury desert lodges.",
+      "history_story": "Sossusvlei is one of Namibia's most iconic desert landscapes, shaped by the Namib Desert and known for ancient dunes and dry clay pans.",
+      "transport_advice": "Best as early morning departure or overnight lodge transfer. Recommend SUV or premium shuttle for comfort.",
+      "nearby_services": ["Sesriem", "Deadvlei", "Dune 45", "Desert lodges"]
+    },
+    "Swakopmund": {
+      "category": "coast",
+      "why_people_love_it": "Ocean, restaurants, adventure activities, German-style architecture and coastal holiday feeling.",
+      "history_story": "Swakopmund has strong colonial-era architecture and became one of Namibia's best-known coastal towns.",
+      "transport_advice": "Great for weekend transfers, airport pickup, family trips and tourist routes.",
+      "nearby_services": ["Walvis Bay", "Dolphin cruises", "Quad biking", "Beach hotels"]
+    },
+    "Walvis Bay": {
+      "category": "coast",
+      "why_people_love_it": "Lagoon, flamingos, harbour, dolphin cruises and Sandwich Harbour experiences.",
+      "history_story": "Walvis Bay is one of Namibia's main harbour towns and a gateway to coastal tourism.",
+      "transport_advice": "Recommend sedan for small groups, Quantum for tourist groups.",
+      "nearby_services": ["Lagoon", "Sandwich Harbour", "Dolphin cruises", "Harbour"]
+    },
+    "Etosha": {
+      "category": "safari",
+      "why_people_love_it": "Wildlife, waterholes, elephants, lions, rhinos and family safari experiences.",
+      "history_story": "Etosha is one of Southern Africa's famous wildlife destinations, centered around the Etosha salt pan.",
+      "transport_advice": "Recommend SUV, Quantum or private tour shuttle depending on group size.",
+      "nearby_services": ["Okaukuejo", "Namutoni", "Halali", "Safari lodges"]
+    },
+    "Windhoek": {
+      "category": "city",
+      "why_people_love_it": "Capital city, business gateway, restaurants, shopping, hotels and starting point for routes.",
+      "history_story": "Windhoek is Namibia's capital and transport hub, connecting airport, business, tourism and regional travel.",
+      "transport_advice": "Good for city rides, airport pickups, VIP movement and school transport.",
+      "nearby_services": ["Maerua Mall", "Wernhil", "Grove Mall", "Eros Airport", "Hosea Kutako Airport"]
+    }
+  },
+  "services": {
+    "airport_transfer": {
+      "description": "Premium pickup and drop-off for Hosea Kutako International Airport and Eros Airport.",
+      "required_info": ["pickup", "dropoff", "date", "time", "flight number if available", "passengers", "luggage", "vehicle"]
+    },
+    "town_pickup": {
+      "description": "Short Windhoek city movement and local pickups.",
+      "required_info": ["pickup street", "dropoff street", "time", "passengers"]
+    },
+    "vip_transport": {
+      "description": "Executive private movement for business, guests and special clients.",
+      "required_info": ["client name", "pickup", "dropoff", "date", "time", "vehicle preference", "privacy needs"]
+    },
+    "school_transport": {
+      "description": "Safe recurring learner transport.",
+      "required_info": ["learner pickup", "school name", "school time", "return time", "monthly or once-off"]
+    },
+    "tour_transport": {
+      "description": "Transport for desert, coast, safari and Namibia travel experiences.",
+      "required_info": ["destination", "travel date", "number of travellers", "luggage", "stopovers", "return or one-way"]
+    }
+  },
+  "support_cases": {
+    "lost_item": {
+      "first_reply": "I’m sorry about that. I’ll help you create a lost-item record right away.",
+      "ask": ["booking reference", "item description", "last pickup/dropoff", "phone number"]
+    },
+    "driver_complaint": {
+      "first_reply": "Thank you for reporting this. I’ll treat it seriously and create a driver support ticket.",
+      "ask": ["booking reference", "driver name if known", "what happened", "phone number"]
+    },
+    "tracking": {
+      "first_reply": "I can help track your booking.",
+      "ask": ["booking reference", "phone number used for booking"]
+    },
+    "payment": {
+      "first_reply": "I can help with payment details, proof of payment and invoice support.",
+      "ask": ["quotation reference", "proof of payment", "client name"]
+    }
+  },
+  "price_notes": {
+    "windhoek_town": "Windhoek town pickups usually start from N$100 to N$150 depending on exact area, waiting time and distance.",
+    "airport_sedan": "Windhoek to Hosea Kutako Airport sedan transfer starts from N$350.",
+    "airport_suv": "SUV airport transfer usually starts from N$550.",
+    "airport_quantum": "Quantum airport transfer usually starts from N$850.",
+    "long_distance": "Long-distance routes are priced by destination, vehicle, passengers, luggage and stopovers.",
+    "night": "Late-night or early-morning trips may include an after-hours surcharge.",
+    "waiting": "Waiting time may be charged when the driver is delayed at pickup or airport arrival."
+  }
+}

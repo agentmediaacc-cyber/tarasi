@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Login | Tarasi{% endblock %}
+{% block content %}
+<section class="hero-grid">
+  <article class="hero-card">
+    <span class="eyebrow">Login</span>
+    <h1>Login to Tarasi</h1>
+    <p>Continue to your bookings, profile and support history.</p>
+    <div class="cta-row">
+      <a class="btn btn-secondary" href="{{ url_for('auth.oauth_google') }}">Google</a>
+      <a class="btn btn-secondary" href="{{ url_for('auth.oauth_facebook') }}">Facebook</a>
+    </div>
+  </article>
+  <aside class="panel">
+    <form method="post" class="field-grid">
+      <div class="field"><label for="email">Email address</label><input id="email" type="email" name="email" required></div>
+      <div class="field"><label for="password">Password</label><input id="password" type="password" name="password" required></div>
+      <button class="btn btn-primary btn-block" type="submit">Login</button>
+      <a class="btn btn-secondary btn-block" href="{{ url_for('auth.register') }}">Create account</a>
+    </form>
+  </aside>
+</section>
+{% endblock %}

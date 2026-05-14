@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="partner-shell single">
+  <div class="partner-form-card">
+    <p class="eyebrow">Booking management</p>
+    <h1>Create and manage bookings</h1>
+    <form method="POST" class="partner-form">
+      <label>Customer name<input name="customer_name" required></label>
+      <label>Customer phone<input name="customer_phone" required></label>
+      <label>Pickup<input name="pickup" required></label>
+      <label>Drop-off<input name="dropoff" required></label>
+      <label>Date<input type="date" name="date"></label>
+      <label>Time<input type="time" name="time"></label>
+      <label>Service type<input name="service_type" placeholder="Monthly, school, airport, tour"></label>
+      <label>Amount<input name="amount" placeholder="450"></label>
+      <label>Assign driver
+        <select name="assigned_driver_id"><option value="">Later</option>{% for d in drivers %}<option value="{{ d.driver_id }}">{{ d.full_name }}</option>{% endfor %}</select>
+      </label>
+      <label>Assign vehicle
+        <select name="assigned_vehicle_id"><option value="">Later</option>{% for car in fleet %}<option value="{{ car.vehicle_id }}">{{ car.vehicle_name }} - {{ car.plate_number }}</option>{% endfor %}</select>
+      </label>
+      <button>Create booking</button>
+    </form>
+
+    <div class="partner-card wide">
+      <h2>Bookings</h2>
+      {% for b in bookings %}
+      <div class="partner-row">
+        <strong>{{ b.booking_id }}</strong><span>{{ b.customer_name }}</span><span>{{ b.pickup }} → {{ b.dropoff }}</span><em>{{ b.status }}</em>
+      </div>
+      {% else %}<p>No bookings yet.</p>{% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

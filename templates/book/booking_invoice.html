@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Invoice {{ invoice.invoice_number if invoice else booking.booking_number }} | Tarasi{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="invoice-box">
+    <div class="invoice-header">
+      <div>
+        <div class="invoice-brand">Tarasi</div>
+        <p>Tarasi Shuttle and Transfer Services CC</p>
+        <p>TIN: 15733730-011</p>
+        <p>Reg No: CC/2025/11107</p>
+      </div>
+      <div style="text-align:right;">
+        <strong>{{ invoice.document_type if invoice else "Invoice" }}</strong><br>
+        <strong>{{ invoice.invoice_number if invoice else "Pending invoice" }}</strong><br>
+        <span>{{ booking.booking_number }}</span>
+      </div>
+    </div>
+
+    <div class="invoice-details">
+      <div>
+        <strong>Client</strong><br>
+        {{ booking.client_name or "Tarasi customer" }}<br>
+        {{ booking.client_phone or "No phone saved" }}
+      </div>
+      <div>
+        <strong>Route</strong><br>
+        {{ booking.pickup_text }} to {{ booking.dropoff_text }}<br>
+        Vehicle: {{ (booking.vehicle_type or "-")|upper }}<br>
+        Service: {{ booking.service_type|replace('_', ' ')|title }}
+      </div>
+    </div>
+
+    <table class="invoice-table">
+      <thead>
+        <tr>
+          <th>Booking</th>
+          <th>Payment status</th>
+          <th>Assigned driver</th>
+          <th style="text-align:right;">Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>{{ booking.booking_number }}</td>
+          <td>{{ booking.payment_status or "unpaid" }}</td>
+          <td>{{ booking.assigned_driver_name or "Awaiting assignment" }}</td>
+          <td style="text-align:right;">N${{ "%.2f"|format((invoice.amount if invoice else booking.final_price)|float) }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="invoice-total">
+      Total: N${{ "%.2f"|format((invoice.amount if invoice else booking.final_price)|float) }}
+    </div>
+
+    <div style="margin: 32px 0;">
+      <strong>Banking Details</strong><br>
+      Bank: {{ bank_details.bank }}<br>
+      Account Name: {{ bank_details.account_name }}<br>
+      Account Number: {{ bank_details.account_number }}<br>
+      Branch: {{ bank_details.branch }}<br>
+      Branch Code: {{ bank_details.branch_code }}<br>
+      Email: {{ bank_details.email }}
+    </div>
+
+    <div class="invoice-footer">
+      <p>Invoice number: {{ invoice.invoice_number if invoice else "Pending creation" }}</p>
+      <p>QR / Link: {{ invoice.qr_url if invoice else request.url }}</p>
+      <p>Payment should use booking or invoice reference for faster verification.</p>
+    </div>
+  </div>
+
+  <div class="cta-row" style="justify-content:center;margin-top:20px;">
+    <button class="btn btn-primary" onclick="window.print()">Print Invoice</button>
+    <a class="btn btn-secondary" href="{{ url_for('track.track_detail', reference=booking.booking_number) }}">Track booking</a>
+  </div>
+</section>
+{% endblock %}

@@ -25,7 +25,47 @@
     </div>
   </article>
   {% else %}
-  <div class="admin-empty">No real fleet rows are available from the connected backend.</div>
+  <div class="admin-empty-state">
+    <p>No records yet.</p>
+    <a class="admin-btn gold" href="{{ url_for('admin.fleet') }}#fleet-add">Add vehicle</a>
+  </div>
   {% endfor %}
+</section>
+
+<section class="admin-panel" id="fleet-add">
+  <div class="admin-panel-head"><div><span class="admin-kicker">Add vehicle</span><h2>Fleet record</h2></div></div>
+  <form method="post" action="{{ url_for('admin.fleet_save') }}" class="admin-form-grid">
+    <label>Name<input name="name" placeholder="Toyota Quantum"></label>
+    <label>Vehicle type<input name="vehicle_type" placeholder="Shuttle / Sedan / SUV"></label>
+    <label>Plate number<input name="plate_number" placeholder="N 12345 W"></label>
+    <label>Seats<input name="seats" type="number" min="1" placeholder="14"></label>
+    <label>Luggage capacity<input name="luggage_capacity" placeholder="10 bags"></label>
+    <label>Aircon
+      <select name="aircon">
+        <option value="true">Yes</option>
+        <option value="false">No</option>
+      </select>
+    </label>
+    <label>Status<input name="status" value="available"></label>
+    <label>Fleet group
+      <input name="fleet_group_name" list="fleet-groups" placeholder="Executive">
+      <datalist id="fleet-groups">
+        {% for group in fleet_groups %}
+        <option value="{{ group.name }}"></option>
+        {% endfor %}
+      </datalist>
+    </label>
+    <label>Assigned driver
+      <select name="driver_id">
+        <option value="">Select driver</option>
+        {% for driver in drivers %}
+        <option value="{{ driver.raw.id or driver.driver_id }}">{{ driver.full_name }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>Image URL<input name="image_url" placeholder="https://.../vehicle.jpg"></label>
+    <label>Document URLs<textarea name="document_urls" rows="3" placeholder="https://.../registration.pdf, https://.../insurance.pdf"></textarea></label>
+    <button class="admin-btn gold" type="submit">Save vehicle</button>
+  </form>
 </section>
 {% endblock %}

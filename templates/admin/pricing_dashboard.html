@@ -1,0 +1,205 @@
+{% extends "admin/base.html" %}
+{% block title %}Pricing | Tarasi{% endblock %}
+{% block admin_page %}
+<section class="admin-subhero">
+  <div>
+    <span class="admin-kicker">Pricing</span>
+    <h1>Zones, rules, quotes and booking conversion</h1>
+  </div>
+  <div class="admin-stat-pair">
+    <div><strong>{{ pricing_metrics.total_quotes }}</strong><span>Quotes</span></div>
+    <div><strong>{{ pricing_metrics.total_bookings }}</strong><span>Bookings</span></div>
+    <div><strong>{{ pricing_metrics.estimated_profit }}</strong><span>Estimated profit</span></div>
+  </div>
+</section>
+
+<section class="admin-grid-2">
+  <article class="admin-panel">
+    <div class="admin-panel-head"><div><span class="admin-kicker">Simulator</span><h2>Taximeter quote test</h2></div></div>
+    <form method="post" action="{{ url_for('admin.pricing_simulate') }}" class="admin-form-grid">
+      <label>Pickup<input name="pickup_text" value="{{ simulator_payload.pickup_text if simulator_payload else '' }}" placeholder="Wanaheda"></label>
+      <label>Drop-off<input name="dropoff_text" value="{{ simulator_payload.dropoff_text if simulator_payload else '' }}" placeholder="Grove Mall"></label>
+      <label>Vehicle
+        <select name="vehicle_type">
+          {% set vehicle_value = simulator_payload.vehicle_type if simulator_payload else 'sedan' %}
+          <option value="sedan" {% if vehicle_value == 'sedan' %}selected{% endif %}>Sedan</option>
+          <option value="suv" {% if vehicle_value == 'suv' %}selected{% endif %}>SUV</option>
+          <option value="quantum" {% if vehicle_value == 'quantum' %}selected{% endif %}>Quantum</option>
+          <option value="vip" {% if vehicle_value == 'vip' %}selected{% endif %}>VIP</option>
+        </select>
+      </label>
+      <label>Service type<input name="service_type" value="{{ simulator_payload.service_type if simulator_payload else 'town' }}" placeholder="town"></label>
+      <label>Passengers<input name="passengers" type="number" min="1" value="{{ simulator_payload.passengers if simulator_payload else '1' }}"></label>
+      <label>Luggage count<input name="luggage_count" type="number" min="0" value="{{ simulator_payload.luggage_count if simulator_payload else '0' }}"></label>
+      <label>Pickup time<input name="pickup_time" type="time" value="{{ simulator_payload.pickup_time if simulator_payload else '' }}"></label>
+      <button type="submit" class="admin-btn gold">Run simulator</button>
+    </form>
+    {% if simulator_result %}
+    <div class="admin-stack-list" style="margin-top:1rem;">
+      <div class="admin-stack-row"><div><strong>Customer price</strong><p>{{ simulator_result.pickup_text }} to {{ simulator_result.dropoff_text }}</p></div><span>N$ {{ simulator_result.final_price }}</span></div>
+      <div class="admin-stack-row"><div><strong>Distance / duration</strong><p>{{ simulator_result.pickup_zone or 'No pickup zone' }} to {{ simulator_result.dropoff_zone or 'No drop-off zone' }}</p></div><span>{{ simulator_result.distance_km }} km · {{ simulator_result.duration_minutes }} min</span></div>
+      <div class="admin-stack-row"><div><strong>Confidence</strong><p>{{ simulator_result.pricing_notes }}</p></div><span>{{ simulator_result.price_confidence }}</span></div>
+      <div class="admin-stack-row"><div><strong>Admin breakdown</strong><p>Base {{ simulator_result.base_fare }}, distance {{ simulator_result.distance_fee }}, zone {{ simulator_result.zone_fee }}, airport {{ simulator_result.airport_fee }}, luggage {{ simulator_result.luggage_fee }}, waiting {{ simulator_result.waiting_fee }}, night {{ simulator_result.night_fee }}, multiplier {{ simulator_result.vehicle_multiplier }}</p></div><span>Subtotal N$ {{ simulator_result.subtotal }}</span></div>
+    </div>
+    {% endif %}
+  </article>
+
+  <article class="admin-panel">
+    <div class="admin-panel-head"><div><span class="admin-kicker">Pricing rules</span><h2>Live rule table</h2></div></div>
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead><tr><th>Name</th><th>Type</th><th>Vehicle</th><th>Value</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody>
+          {% for rule in pricing_rules %}
+          <tr>
+            <td>{{ rule.rule_name or rule.name or "-" }}</td>
+            <td>{{ rule.rule_type or "-" }}</td>
+            <td>{{ rule.vehicle_type or "All" }}</td>
+            <td>{{ rule.value if rule.value is not none else "-" }}</td>
+            <td><span class="status-badge" data-status="{{ 'active' if rule.is_active else 'inactive' }}">{{ "Active" if rule.is_active else "Inactive" }}</span></td>
+            <td>
+              {% if rule.id %}
+              <form method="post" action="{{ url_for('admin.pricing_rule_deactivate', rule_id=rule.id) }}">
+                <button type="submit" class="admin-mini-btn">Deactivate</button>
+              </form>
+              {% else %}
+              -
+              {% endif %}
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="6">
+              <div class="admin-empty-state">
+                <p>No records yet.</p>
+                <a class="admin-btn gold" href="#pricing-rule-form">Add pricing rule</a>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </article>
+
+  <article class="admin-panel" id="pricing-rule-form">
+    <div class="admin-panel-head"><div><span class="admin-kicker">Add rule</span><h2>Save to Neon pricing table</h2></div></div>
+    <form method="post" action="{{ url_for('admin.pricing_rules_save') }}" class="admin-form-grid">
+      <label>Rule name<input name="rule_name" placeholder="base_fare"></label>
+      <label>Rule type<input name="rule_type" placeholder="flat / per_km / surcharge"></label>
+      <label>Vehicle type<input name="vehicle_type" placeholder="sedan / suv / shuttle"></label>
+      <label>Value<input name="value" type="number" step="0.01" placeholder="0.00"></label>
+      <label class="admin-checkbox"><input type="checkbox" name="is_active" checked> <span>Active</span></label>
+      <button type="submit" class="admin-btn gold">Save pricing rule</button>
+    </form>
+  </article>
+</section>
+
+<section class="admin-grid-2">
+  <article class="admin-panel">
+    <div class="admin-panel-head"><div><span class="admin-kicker">Pricing zones</span><h2>Zone table</h2></div></div>
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead><tr><th>Zone</th><th>Area</th><th>Base fare</th><th>Per km</th><th>Radius</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody>
+          {% for zone in pricing_zones %}
+          <tr>
+            <td>{{ zone.zone_name or zone.name or "-" }}</td>
+            <td>{{ zone.suburb_area or "-" }}</td>
+            <td>{{ zone.base_fare if zone.base_fare is not none else "-" }}</td>
+            <td>{{ zone.price_per_km if zone.price_per_km is not none else "-" }}</td>
+            <td>{{ zone.map_radius_km if zone.map_radius_km is not none else "-" }}</td>
+            <td><span class="status-badge" data-status="{{ 'active' if zone.is_active else 'inactive' }}">{{ "Active" if zone.is_active else "Inactive" }}</span></td>
+            <td>
+              {% if zone.id %}
+              <form method="post" action="{{ url_for('admin.pricing_zone_delete', zone_id=zone.id) }}">
+                <button type="submit" class="admin-mini-btn">Deactivate</button>
+              </form>
+              {% else %}
+              -
+              {% endif %}
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="7">
+              <div class="admin-empty-state">
+                <p>No records yet.</p>
+                <a class="admin-btn gold" href="#pricing-zone-form">Add zone</a>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </article>
+
+  <article class="admin-panel" id="pricing-zone-form">
+    <div class="admin-panel-head"><div><span class="admin-kicker">Add zone</span><h2>Save to Neon zone table</h2></div></div>
+    <form method="post" action="{{ url_for('admin.pricing_zones_save') }}" class="admin-form-grid">
+      <label>Zone name<input name="zone_name" placeholder="Hosea Kutako Airport"></label>
+      <label>Suburb / area<input name="suburb_area" placeholder="Klein Windhoek"></label>
+      <label>Description<textarea name="description" rows="3" placeholder="Optional pricing or geography note"></textarea></label>
+      <label>Base fare<input name="base_fare" type="number" step="0.01" placeholder="0.00"></label>
+      <label>Price per km<input name="price_per_km" type="number" step="0.01" placeholder="0.00"></label>
+      <label>Airport fee<input name="airport_fee" type="number" step="0.01" placeholder="0.00"></label>
+      <label>Minimum fare<input name="minimum_fare" type="number" step="0.01" placeholder="0.00"></label>
+      <label>Night fee<input name="night_fee" type="number" step="0.01" placeholder="0.00"></label>
+      <label>Luggage fee<input name="luggage_fee" type="number" step="0.01" placeholder="0.00"></label>
+      <label>Waiting fee<input name="waiting_fee" type="number" step="0.01" placeholder="0.00"></label>
+      <label>Latitude<input name="latitude" type="number" step="0.000001" placeholder="-22.57"></label>
+      <label>Longitude<input name="longitude" type="number" step="0.000001" placeholder="17.08"></label>
+      <label>Map radius km<input name="map_radius_km" type="number" step="0.1" placeholder="3.0"></label>
+      <label class="admin-checkbox"><input type="checkbox" name="is_active" checked> <span>Active</span></label>
+      <button type="submit" class="admin-btn gold">Save zone</button>
+    </form>
+  </article>
+</section>
+
+<section class="admin-grid-2">
+  <article class="admin-panel">
+    <div class="admin-panel-head"><div><span class="admin-kicker">Recent quotes</span><h2>Quote output</h2></div></div>
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead><tr><th>Quote</th><th>Route</th><th>Vehicle</th><th>Final price</th><th>Confidence</th></tr></thead>
+        <tbody>
+          {% for quote in quotes %}
+          <tr>
+            <td>{{ quote.quote_number }}</td>
+            <td>{{ quote.route or "-" }}</td>
+            <td>{{ quote.vehicle_type or "-" }}</td>
+            <td>{{ quote.final_price or "-" }}</td>
+            <td>{{ quote.price_confidence or "-" }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="5"><div class="admin-empty-state"><p>No records yet.</p></div></td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </article>
+
+  <article class="admin-panel">
+    <div class="admin-panel-head"><div><span class="admin-kicker">Pricing bookings</span><h2>Converted booking rows</h2></div></div>
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead><tr><th>Booking</th><th>Route</th><th>Status</th><th>Payment</th><th>Invoice</th></tr></thead>
+        <tbody>
+          {% for booking in pricing_bookings %}
+          <tr>
+            <td>{{ booking.booking_number }}</td>
+            <td>{{ booking.route or "-" }}</td>
+            <td>{{ booking.status }}</td>
+            <td>{{ booking.payment_status }}</td>
+            <td>{{ booking.invoice_number or "-" }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="5"><div class="admin-empty-state"><p>No records yet.</p></div></td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </article>
+</section>
+{% endblock %}

@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Tarasi{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="preload" href="{{ url_for('static', filename='css/tarasi_premium.css') }}" as="style">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/tarasi_premium.css') }}">
+  <noscript><link rel="stylesheet" href="{{ url_for('static', filename='css/tarasi_premium.css') }}"></noscript>
+  {% block head %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+  <header class="site-header">
+    <div class="nav-shell">
+      <a class="brand" href="{{ url_for('public.home') }}">
+        <span class="brand-mark">T</span>
+        <span class="brand-copy">
+          <strong>Tarasi</strong>
+          <span>Premium Namibia transport</span>
+        </span>
+      </a>
+      <nav class="desktop-nav" aria-label="Desktop navigation">
+        {% for item in nav_links %}
+        <a href="{{ item.href }}">{{ item.label }}</a>
+        {% endfor %}
+      </nav>
+      <div class="nav-actions">
+        <div class="nav-notification-shell" data-notification-shell>
+          <button class="nav-notification-trigger" aria-label="Notifications" data-notification-trigger>
+            <span class="bell-icon">🔔</span>
+            <span class="unread-badge" data-unread-count hidden>0</span>
+          </button>
+          <div class="notification-dropdown" data-notification-dropdown hidden>
+            <div class="notification-head">
+              <strong>Notifications</strong>
+              <button class="btn-text" data-clear-notifications>Clear all</button>
+            </div>
+            <div class="notification-list" data-notification-list>
+              <div class="empty-state">No new notifications</div>
+            </div>
+          </div>
+        </div>
+        <a class="btn btn-secondary" href="{{ url_for('auth.login') }}">Login</a>
+        <a class="btn btn-accent" href="{{ url_for('booking.book_index') }}">Book Now</a>
+        <button class="hamburger" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="mobile-drawer" data-menu-open>
+          <span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="mobile-drawer" id="mobile-drawer" data-mobile-drawer aria-hidden="true">
+    <div class="drawer-panel">
+      <div class="drawer-head">
+        <div class="drawer-brand">
+          <span class="brand-mark">T</span>
+          <div class="brand-copy">
+            <strong>Tarasi</strong>
+            <span>Premium Namibia transport</span>
+          </div>
+        </div>
+        <button class="drawer-close" type="button" aria-label="Close navigation menu" data-menu-close>×</button>
+      </div>
+      <div class="drawer-intro">
+        <p>Book transport, airport transfers, tours and scheduled mobility from one clean mobile-first platform.</p>
+      </div>
+      <div class="drawer-cta-row">
+        <a class="btn btn-secondary btn-block" href="{{ url_for('auth.login') }}">Login</a>
+        <a class="btn btn-primary btn-block" href="{{ url_for('booking.book_index') }}">Book now</a>
+      </div>
+      <nav class="mobile-nav" aria-label="Mobile navigation">
+        {% for item in nav_links %}
+        <a href="{{ item.href }}">{{ item.label }}</a>
+        {% endfor %}
+      </nav>
+    </div>
+  </div>
+
+  <div class="flash-shell">
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+        <div class="flash">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+  </div>
+
+  <main class="page-shell">
+    {% block content %}{% endblock %}
+  </main>
+
+  <div class="booking-launch-overlay booking-loader" data-booking-overlay hidden aria-hidden="true">
+    <div class="booking-launch-loader" role="status" aria-live="polite">
+      <div class="loader-road">
+        <div class="loader-car">▸</div>
+      </div>
+      <strong>Preparing your Tarasi booking…</strong>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-shell">
+      <div class="footer-block">
+        <strong>Tarasi</strong>
+        <p>Premium Namibia transport, airport transfer and tour booking with clean mobile-first support.</p>
+      </div>
+      <div class="footer-block footer-access">
+        <a href="{{ url_for('auth.login') }}">Business access</a>
+      </div>
+    </div>
+  </footer>
+
+  <div class="sticky-mobile-cta">
+    <a class="btn btn-primary btn-block" href="{{ url_for('booking.book_index') }}">Book now</a>
+  </div>
+
+  <div class="floating-support-shell">
+    <button class="support-trigger" aria-label="Open support menu" type="button">
+      <span>?</span>
+    </button>
+    <div class="support-menu">
+      <a href="https://wa.me/264812345678" class="support-link">
+        <span>💬</span>
+        <div>
+          <strong>WhatsApp Support</strong>
+          <p>Instant chat with Tarasi team</p>
+        </div>
+      </a>
+      <a href="{{ url_for('support.support_page') }}" class="support-link">
+        <span>📧</span>
+        <div>
+          <strong>Submit Ticket</strong>
+          <p>Email our support desk</p>
+        </div>
+      </a>
+      <div class="support-emergency">
+        <a href="tel:+264812345678" class="support-link">
+          <span>🚨</span>
+          <div>
+            <strong>Emergency Line</strong>
+            <p>24/7 priority assistance</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <nav class="mobile-bottom-nav" aria-label="Mobile quick navigation">
+    <a href="/"><strong>⌂</strong><span>Home</span></a>
+    <a href="/book"><strong>＋</strong><span>Book</span></a>
+    <a href="/track"><strong>⌖</strong><span>Track</span></a>
+    <a href="/account/bookings"><strong>▣</strong><span>Trips</span></a>
+    <a href="/profile"><strong>●</strong><span>Profile</span></a>
+  </nav>
+
+  <script src="{{ url_for('static', filename='js/tarasi_mobile.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/tarasi_live.js') }}" defer></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

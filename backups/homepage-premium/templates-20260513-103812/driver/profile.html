@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="driver-command single">
+  <div class="driver-form-card">
+    <p class="eyebrow">Driver profile</p>
+    <h1>Complete driver onboarding</h1>
+    <p>Admin will review your details, documents, car condition and service zone before assigning trips.</p>
+
+    <form method="POST" class="driver-form">
+      <label>Full name<input name="full_name" value="{{ driver.full_name }}" required></label>
+      <label>Cellphone number<input name="phone" value="{{ driver.phone }}" required></label>
+      <label>Based area
+        <select name="based_area">
+          <option value="">Choose area</option>
+          {% for area in service_areas %}
+          <option value="{{ area }}" {% if driver.based_area == area %}selected{% endif %}>{{ area }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>Preferred service
+        <select name="service_type">
+          <option>Monthly pickups</option>
+          <option>School transport</option>
+          <option>Airport transfers</option>
+          <option>Tourism routes</option>
+          <option>Corporate transport</option>
+          <option>Long distance</option>
+          <option>Any admin assigned route</option>
+        </select>
+      </label>
+      <button class="driver-btn">Submit for admin review</button>
+    </form>
+  </div>
+</section>
+{% endblock %}

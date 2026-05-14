@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Tarasi Executive Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/tarasi_admin_control.css') }}">
+</head>
+<body>
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><b>T</b><span>Tarasi Executive</span></div>
+    {% for item in [
+      "Executive Dashboard","Operational Alerts","Bookings Control","Live Trips","Drivers","Customers","Fleet",
+      "Routes & Pricing","Tours","School Transport","Monthly Plans","Airport Transfers","VIP / Private Hire",
+      "Business Transport","Support Tickets","Bot OS","Complaints","Lost Items","Payments","Refunds","Wallets",
+      "Coupons","Invoices","Reports","Notifications","Content / Homepage","System Health","Audit Logs","Admin Users / Roles"
+    ] %}
+      <a href="#{{ item|lower|replace(' ','-')|replace('/','') }}">{{ item }}</a>
+    {% endfor %}
+  </aside>
+
+  <main class="main">
+    <header class="top">
+      <div>
+        <p>System mode: <b>{{ system_mode }}</b></p>
+        <h1>Tarasi Executive Admin control center</h1>
+      </div>
+      <input placeholder="Search bookings, drivers, customers, routes">
+    </header>
+
+    <section class="hero">
+      <h2>Executive dashboard</h2>
+      <p>Real operations command center for bookings, trips, support, fleet, payments and infrastructure.</p>
+    </section>
+
+    <section class="grid">
+      {% for label, value in metrics.items() %}
+      <div class="card">
+        <span>{{ label.replace("_"," ").title() }}</span>
+        <strong>{% if "revenue" in label %}N${{ "%.2f"|format(value) }}{% else %}{{ value }}{% endif %}</strong>
+      </div>
+      {% endfor %}
+    </section>
+
+    <section class="panel" id="bookings-control">
+      <h2>Recent bookings</h2>
+      <table>
+        <thead><tr><th>Reference</th><th>Customer</th><th>Type</th><th>Route</th><th>Status</th></tr></thead>
+        <tbody>
+        {% for b in recent_bookings %}
+          <tr>
+            <td>{{ b.reference or b.booking_reference or b.id }}</td>
+            <td>{{ b.customer_name or b.name or b.full_name }}</td>
+            <td>{{ b.service_type or b.type }}</td>
+            <td>{{ b.route or ((b.pickup or b.pickup_location or '') ~ ' to ' ~ (b.dropoff or b.dropoff_location or '')) }}</td>
+            <td><span class="pill">{{ b.status }}</span></td>
+          </tr>
+        {% else %}
+          <tr><td colspan="5">No real booking records found yet.</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </section>
+
+    <section class="two">
+      <div class="panel" id="live-trips">
+        <h2>Live operations</h2>
+        {% for t in live_trips %}
+          <div class="feed"><b>{{ t.reference or t.id }}</b><span>{{ t.pickup }} to {{ t.dropoff }}</span><em>{{ t.status }}</em></div>
+        {% else %}<p>No active live trips.</p>{% endfor %}
+      </div>
+
+      <div class="panel" id="support-tickets">
+        <h2>Support queue</h2>
+        {% for s in support_queue %}
+          <div class="feed danger"><b>{{ s.subject or s.type or "Support" }}</b><span>{{ s.customer_name or s.name or s.message }}</span><em>{{ s.status or "open" }}</em></div>
+        {% else %}<p>No open support tickets.</p>{% endfor %}
+      </div>
+    </section>
+
+    <section class="two">
+      <div class="panel" id="fleet">
+        <h2>Fleet</h2>
+        {% for v in vehicles %}
+          <div class="feed"><b>{{ v.name or v.model or v.plate }}</b><span>{{ v.type or v.category }}</span><em>{{ v.status }}</em></div>
+        {% else %}<p>No real fleet records found.</p>{% endfor %}
+      </div>
+
+      <div class="panel" id="audit-logs">
+        <h2>Audit logs</h2>
+        {% for a in audit_logs %}
+          <div class="feed"><b>{{ a.action or a.event }}</b><span>{{ a.user or a.admin or "" }}</span><em>{{ a.created_at or a.time }}</em></div>
+        {% else %}<p>No audit logs found.</p>{% endfor %}
+      </div>
+    </section>
+  </main>
+</div>
+</body>
+</html>

@@ -32,7 +32,14 @@
           </td>
         </tr>
         {% else %}
-        <tr><td colspan="7"><div class="admin-empty">No real customer profiles are available from the connected backend.</div></td></tr>
+        <tr>
+          <td colspan="7">
+            <div class="admin-empty-state">
+              <p>No records yet.</p>
+              <a class="admin-btn gold" href="{{ url_for('auth.register') }}">Create customer</a>
+            </div>
+          </td>
+        </tr>
         {% endfor %}
       </tbody>
     </table>

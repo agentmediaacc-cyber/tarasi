@@ -23,6 +23,7 @@ from services.pricing_service import (
     list_routes,
 )
 from services.profile_service import get_saved_profile
+from services.tarasi_pricing_engine import calculate_customer_quote, get_bank_details, get_booking_by_number as get_pricing_booking_by_number, get_invoice_by_booking_number
 
 
 booking_bp = Blueprint("booking", __name__)
@@ -69,15 +70,24 @@ def build_booking_payload(booking_type: str, routes: list[dict] | None = None):
         value = request.form.get(field["name"], "")
         payload[field["name"]] = value
         payload["special_fields"][field["name"]] = value
-    matched_route = next(
-        (
-            route for route in routes
-            if route["pickup"].lower() in payload["pickup"].lower()
-            and route["dropoff"].lower() in payload["dropoff"].lower()
-        ),
-        None,
+    quote = calculate_customer_quote(
+        {
+            "pickup_text": payload["pickup"],
+            "dropoff_text": payload["dropoff"],
+            "vehicle_type": payload["preferred_vehicle"] or "sedan",
+            "service_type": booking_type,
+            "passengers": payload["passengers"],
+            "luggage_count": 0,
+            "pickup_time": payload["time"],
+        }
     )
-    payload["amount"] = matched_route["base_price"] if matched_route else "Quote required"
+    payload["amount"] = quote["final_price"] if quote.get("final_price") else "Quote required"
+    payload["metadata"] = {
+        **payload.get("metadata", {}),
+        "pricing_quote": quote,
+        "pickup_zone": quote.get("pickup_zone"),
+        "dropoff_zone": quote.get("dropoff_zone"),
+    }
     return payload
 
 
@@ -146,6 +156,7 @@ def book_form(booking_type: str):
         popular_routes=get_popular_routes(),
         saved_places=_booking_map_saved_places(),
         initial_route_preview=build_route_preview("", "", routes=routes),
+        prefill=request.args,
     )
     logger.debug("booking.book_form render_time_ms=%.2f booking_type=%s", (time.perf_counter() - start) * 1000, booking_type)
     return response
@@ -194,6 +205,16 @@ def booking_payment(reference: str):
 @booking_bp.route("/booking/<reference>/invoice")
 def booking_invoice(reference: str):
     booking = get_booking(reference)
+    if not booking:
+        pricing_booking = get_pricing_booking_by_number(reference)
+        invoice = get_invoice_by_booking_number(reference)
+        if pricing_booking:
+            return render_template(
+                "book/booking_invoice.html",
+                booking=pricing_booking,
+                invoice=invoice,
+                bank_details=get_bank_details(),
+            )
     if not booking:
         return "Invoice not found", 404
     return render_template("book/invoice.html", booking=booking)

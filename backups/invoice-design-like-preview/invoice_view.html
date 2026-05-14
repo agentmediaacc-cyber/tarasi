@@ -1,0 +1,108 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ invoice.document_type }} {{ invoice.invoice_code }} | Tarasi{% endblock %}
+{% block admin_page %}
+
+<section class="invoice-toolbar no-print">
+  <a href="{{ url_for('admin.create_invoice') }}">New Document</a>
+  <button onclick="window.print()">Download / Save PDF</button>
+  <a target="_blank" href="https://wa.me/?text={{ invoice.share_text|urlencode }}">Send to WhatsApp</a>
+  {% if invoice.email %}
+  <a href="mailto:{{ invoice.email }}?subject={{ invoice.document_type }} {{ invoice.invoice_code }} from Tarasi&body={{ invoice.share_text|urlencode }}">Send Email</a>
+  {% endif %}
+</section>
+
+<section class="premium-invoice one-page-invoice">
+  <img src="{{ url_for('static', filename='img/branding/tarasi-logo.jpeg') }}" alt="" class="invoice-watermark-logo">
+
+  <header class="premium-invoice-head">
+    <div class="premium-brand">
+      <img src="{{ url_for('static', filename='img/branding/tarasi-logo.jpeg') }}" alt="Tarasi Logo" class="premium-real-logo exact-tarasi-logo">
+      <div>
+        <h1>Tarasi Shuttle and Transfer Services CC</h1>
+        <p>TIN: 15733730-011 · Reg No: CC/2025/11107</p>
+        <p>P.O. Box 60216, Windhoek</p>
+      </div>
+    </div>
+
+    <div class="premium-invoice-meta">
+      <span>{{ invoice.document_type }}</span>
+      <strong>{{ invoice.invoice_code }}</strong>
+      <small>{{ invoice.created_at }}</small>
+      <em>{{ invoice.payment_status }}</em>
+    </div>
+  </header>
+
+  <section class="premium-invoice-grid compact-grid">
+    <div class="premium-card">
+      <span>Bill To</span>
+      <strong>{{ invoice.client_name }}</strong>
+      <p>{{ invoice.contact_number }}</p>
+      {% if invoice.email %}<p>{{ invoice.email }}</p>{% endif %}
+    </div>
+
+    <div class="premium-card">
+      <span>Service</span>
+      <strong>{{ invoice.service_type }}</strong>
+      <p>{{ invoice.service_description }}</p>
+      {% if invoice.detail_mode == "Full Trip Details" %}
+      <p>{{ invoice.pickup }} → {{ invoice.dropoff }}</p>
+      <p>{{ invoice.service_date }} {{ invoice.service_time }}</p>
+      {% endif %}
+    </div>
+  </section>
+
+  <table class="premium-invoice-table compact-table">
+    <thead>
+      <tr>
+        <th>Description</th>
+        <th>Vehicle</th>
+        <th>Passengers</th>
+        <th>Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <strong>{{ invoice.service_type }}</strong>
+          <br>
+          <small>{{ invoice.service_description }}</small>
+        </td>
+        <td>{{ invoice.vehicle_type }}</td>
+        <td>{{ invoice.passengers }}</td>
+        <td>N$ {{ "%.2f"|format(invoice.amount) }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <section class="invoice-bank-total-row">
+    <div class="bank-details-box">
+      <h3>Banking Details</h3>
+      <p><strong>Bank:</strong> First National Bank (FNB)</p>
+      <p><strong>Account Name:</strong> Tarasi Shuttle and Transfer Services CC</p>
+      <p><strong>Account Number:</strong> 64289981259</p>
+      <p><strong>Branch:</strong> Maerua Mall · Code: 282273</p>
+      <p><strong>Reference:</strong> {{ invoice.invoice_code }}</p>
+    </div>
+
+    <div class="totals-box compact-totals">
+      <div><span>Subtotal</span><strong>N$ {{ "%.2f"|format(invoice.amount) }}</strong></div>
+      <div><span>Discount</span><strong>{{ invoice.discount }}%</strong></div>
+      <div><span>VAT</span><strong>{{ invoice.vat }}%</strong></div>
+      <div class="grand-total"><span>Total Due</span><strong>N$ {{ "%.2f"|format(invoice.final_total) }}</strong></div>
+    </div>
+  </section>
+
+  {% if invoice.notes %}
+  <section class="invoice-notes compact-notes">
+    <h3>Notes</h3>
+    <p>{{ invoice.notes }}</p>
+  </section>
+  {% endif %}
+
+  <footer class="premium-invoice-footer">
+    <p>This {{ invoice.document_type|lower }} was created from Tarasi Shuttle Operations with unique code <strong>{{ invoice.invoice_code }}</strong>.</p>
+    <small>Prepared by: {{ invoice.prepared_by }} · Tarasi Shuttle and Transfer Services CC</small>
+  </footer>
+</section>
+
+{% endblock %}

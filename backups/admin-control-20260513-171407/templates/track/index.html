@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Track Booking | Tarasi{% endblock %}
+{% block content %}
+<section class="hero-grid">
+  <article class="hero-card">
+    <span class="eyebrow">Track booking</span>
+    <h1>Search by booking reference</h1>
+    <p>Use a reference such as `TAR-2026-0001` to check booking progress.</p>
+  </article>
+  <aside class="panel">
+    <h3>Track a trip</h3>
+    <form method="post" class="field-grid">
+      <div class="field"><label for="reference">Booking reference</label><input id="reference" name="reference" required></div>
+      <button class="btn btn-primary btn-block" type="submit">Track booking</button>
+    </form>
+  </aside>
+</section>
+{% endblock %}

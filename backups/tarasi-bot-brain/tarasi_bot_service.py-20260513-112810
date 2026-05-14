@@ -1,0 +1,154 @@
+import os, re, uuid
+from datetime import datetime
+
+COMPANY = {
+    "name": "Tarasi Shuttle and Transfer Services CC",
+    "tin": "15733730-011",
+    "reg_no": "CC/2025/11107",
+    "po_box": "P.O. Box 60216, Windhoek",
+    "email": "tarasishuttle@gmail.com",
+    "bank": "First National Bank (FNB)",
+    "account_name": "Tarasi Shuttle and Transfer Services CC",
+    "account_number": "64289981259",
+    "branch": "Maerua Mall",
+    "branch_code": "282273",
+}
+
+DEFAULT_ROUTES = [
+    {"from": "windhoek", "to": "hosea kutako airport", "vehicle": "sedan", "price": 350, "label": "Windhoek to Hosea Kutako Airport"},
+    {"from": "hosea kutako airport", "to": "windhoek", "vehicle": "sedan", "price": 350, "label": "Hosea Kutako Airport to Windhoek"},
+    {"from": "windhoek", "to": "swakopmund", "vehicle": "sedan", "price": 950, "label": "Windhoek to Swakopmund"},
+    {"from": "windhoek", "to": "walvis bay", "vehicle": "sedan", "price": 1050, "label": "Windhoek to Walvis Bay"},
+    {"from": "windhoek", "to": "sossusvlei", "vehicle": "sedan", "price": 1650, "label": "Windhoek to Sossusvlei"},
+    {"from": "windhoek", "to": "etosha", "vehicle": "sedan", "price": 1800, "label": "Windhoek to Etosha"},
+]
+
+VEHICLE_MULTIPLIERS = {
+    "sedan": 1,
+    "suv": 1.45,
+    "quantum": 2.1,
+    "minibus": 2.8,
+    "vip": 1.8,
+}
+
+def normalise(text):
+    return (text or "").lower().strip()
+
+def ticket_number(prefix="TRQ"):
+    return f"{prefix}-{datetime.now().strftime('%Y%m%d')}-{str(uuid.uuid4())[:6].upper()}"
+
+def detect_vehicle(message):
+    msg = normalise(message)
+    if "quantum" in msg or "van" in msg:
+        return "quantum"
+    if "minibus" in msg or "bus" in msg:
+        return "minibus"
+    if "suv" in msg:
+        return "suv"
+    if "vip" in msg or "executive" in msg:
+        return "vip"
+    return "sedan"
+
+def extract_route(message):
+    msg = normalise(message)
+    patterns = [
+        r"from\s+(.+?)\s+to\s+(.+)",
+        r"(.+?)\s+to\s+(.+)",
+    ]
+    for p in patterns:
+        m = re.search(p, msg)
+        if m:
+            return m.group(1).strip(" .,-"), m.group(2).strip(" .,-")
+    return "", ""
+
+def extract_passengers(message):
+    msg = normalise(message)
+    found = re.findall(r"\b(\d{1,2})\s*(people|passengers|pax|persons|person)?\b", msg)
+    if found:
+        return max(1, int(found[0][0]))
+    return 1
+
+def detect_service_type(message):
+    msg = normalise(message)
+    if any(x in msg for x in ["airport", "hosea", "kutako", "hikia", "flight"]):
+        return "airport transfer"
+    if any(x in msg for x in ["school", "learner", "student"]):
+        return "school transport"
+    if any(x in msg for x in ["tour", "safari", "sossusvlei", "etosha", "coast", "swakopmund"]):
+        return "tour / long-distance"
+    if any(x in msg for x in ["vip", "executive", "business", "corporate"]):
+        return "VIP / corporate"
+    return "shuttle"
+
+def price_for_route(pickup, dropoff, vehicle="sedan"):
+    p = normalise(pickup)
+    d = normalise(dropoff)
+    v = normalise(vehicle) or "sedan"
+
+    for r in DEFAULT_ROUTES:
+        if r["from"] in p and r["to"] in d:
+            return round(r["price"] * VEHICLE_MULTIPLIERS.get(v, 1), 2), r["label"]
+
+    if any(x in p+d for x in ["wanaheda", "katutura", "khomasdal", "eros", "pioneerspark", "cimbebasia", "klein windhoek"]):
+        return 150, "Windhoek town pickup estimate"
+
+    if "windhoek" in p and "windhoek" in d:
+        return 100, "Windhoek local ride estimate"
+
+    return 0, "Manual pricing required"
+
+def fees_answer():
+    return (
+        "Here are our current guide prices: "
+        "Windhoek to Hosea Kutako Airport sedan starts from N$350. "
+        "Town pickups around Windhoek are usually N$100 to N$150 depending on area and waiting time. "
+        "Windhoek to Swakopmund starts from N$950, Walvis Bay from N$1050, "
+        "Sossusvlei from N$1650 and Etosha from N$1800. "
+        "SUV, Quantum, minibus and VIP options cost more depending on passengers and vehicle type. "
+        "Send pickup, drop-off, date, passengers and vehicle type, and I can create a premium quote for you."
+    )
+
+def build_bot_reply(message, session_data=None):
+    session_data = session_data or {}
+    msg = normalise(message)
+
+    if any(x in msg for x in ["fee", "fees", "price", "prices", "cost", "how much", "charge", "charges"]):
+        return {
+            "reply": fees_answer(),
+            "session_data": session_data,
+            "suggestions": ["Create a quote", "Airport transfer", "Town pickup", "VIP transport"]
+        }
+
+    pickup, dropoff = extract_route(message)
+    vehicle = detect_vehicle(message)
+    passengers = extract_passengers(message)
+
+    if pickup:
+        session_data["pickup"] = pickup
+    if dropoff:
+        session_data["dropoff"] = dropoff
+    session_data["vehicle"] = vehicle
+    session_data["passengers"] = passengers
+    session_data["service_type"] = detect_service_type(message)
+
+    price, label = price_for_route(session_data.get("pickup",""), session_data.get("dropoff",""), vehicle)
+
+    if price:
+        session_data["estimated_price"] = price
+        reply = (
+            f"Great, I can help with that. For {label} using {vehicle.title()}, "
+            f"the estimated price is N${price:.2f}. "
+            f"This is a guide price for {passengers} passenger(s). "
+            "Would you like me to create a premium quotation PDF for you?"
+        )
+    else:
+        reply = (
+            "I can help with that. Please send me the pickup location, drop-off location, travel date, "
+            "number of passengers and vehicle type. Then I can calculate the route and prepare a premium quote."
+        )
+
+    return {
+        "reply": reply,
+        "session_data": session_data,
+        "suggestions": ["Create a quote", "Airport transfer", "Town pickup", "Tour package", "Talk to support"]
+    }

@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Driver Trip Detail | Tarasi{% endblock %}
+{% block head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/tarasi_maps.css') }}">
+{% endblock %}
+{% block content %}
+<section class="section">
+  {% if not_found %}
+  <div class="empty-state">Trip not found.</div>
+  {% else %}
+  <div class="hero-grid">
+    <article class="hero-card">
+      <span class="eyebrow">Driver trip</span>
+      <h1>{{ booking.reference }}</h1>
+      <p>{{ booking.full_name }} • {{ booking.phone }} • {{ booking.route_summary }}</p>
+      <div class="pill-row">
+        <span class="pill">{{ booking.status }}</span>
+        <span class="pill">{{ booking.vehicle_name or driver.vehicle_name or "Vehicle pending" }}</span>
+        {% if booking.booking_pin %}<span class="pill">PIN {{ booking.booking_pin }}</span>{% endif %}
+      </div>
+      <div class="cta-row">
+        <a class="btn btn-secondary" href="tel:{{ booking.phone }}">Call customer</a>
+        <a class="btn btn-secondary" href="{{ url_for('track.track_detail', reference=booking.reference) }}">Customer tracking</a>
+      </div>
+    </article>
+    <aside class="panel">
+      <h3>Status actions</h3>
+      <div class="field-grid">
+        <form method="post" action="{{ url_for('driver.trip_status', reference=booking.reference) }}"><input type="hidden" name="status" value="Accepted"><button class="btn btn-secondary btn-block" type="submit">Accepted</button></form>
+        <form method="post" action="{{ url_for('driver.trip_status', reference=booking.reference) }}"><input type="hidden" name="status" value="On the way"><button class="btn btn-secondary btn-block" type="submit">On the way</button></form>
+        <form method="post" action="{{ url_for('driver.trip_status', reference=booking.reference) }}"><input type="hidden" name="status" value="Arrived"><button class="btn btn-secondary btn-block" type="submit">Arrived</button></form>
+        <form method="post" action="{{ url_for('driver.trip_status', reference=booking.reference) }}"><input type="hidden" name="status" value="Picked up"><button class="btn btn-secondary btn-block" type="submit">Picked up</button></form>
+        <form method="post" action="{{ url_for('driver.trip_status', reference=booking.reference) }}"><input type="hidden" name="status" value="Completed"><button class="btn btn-primary btn-block" type="submit">Complete trip</button></form>
+      </div>
+    </aside>
+  </div>
+  <section class="section">
+    <div class="grid">
+      <article class="panel">
+        <h3>Live location</h3>
+        <p>Sharing only starts when you press the button. Tarasi does not auto-track your device.</p>
+        <button
+          class="btn btn-primary btn-block"
+          type="button"
+          data-share-driver-location
+          data-driver-id="{{ driver.driver_id }}"
+        >
+          Share my live location
+        </button>
+        <p class="meta" data-driver-location-feedback aria-live="polite"></p>
+      </article>
+      <article class="panel">
+        <h3>Trip detail</h3>
+        <ul class="list-clean">
+          <li><strong>Driver:</strong> {{ driver.full_name }}</li>
+          <li><strong>Driver phone:</strong> {{ driver.phone or "Unavailable" }}</li>
+          <li><strong>Pickup:</strong> {{ booking.pickup }}</li>
+          <li><strong>Drop-off:</strong> {{ booking.dropoff }}</li>
+        </ul>
+      </article>
+    </div>
+  </section>
+  {% endif %}
+</section>
+{% endblock %}
+{% block scripts %}
+  <script src="{{ url_for('static', filename='js/tarasi_maps.js') }}" defer></script>
+{% endblock %}

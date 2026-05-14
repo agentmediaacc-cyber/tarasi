@@ -1,0 +1,73 @@
+{% extends "profile/superapp_base.html" %}
+{% block title %}Safety | Tarasi{% endblock %}
+
+{% block superapp_header %}
+<section class="subpage-hero glass-card safety-hero">
+  <div>
+    <span class="hero-kicker">Safety center</span>
+    <h1>Emergency tools and trusted contacts</h1>
+    <p>Access SOS support, keep trusted contacts visible, and make live-ride help one tap away across the whole profile experience.</p>
+  </div>
+  <div class="subpage-cta-stack">
+    <a class="premium-btn danger" href="{{ url_for('support.support_page') }}">Emergency Support</a>
+    <a class="premium-btn glass" href="{{ url_for('profile.edit_profile') }}">Update Contact</a>
+  </div>
+</section>
+{% endblock %}
+
+{% block superapp_content %}
+<section class="dashboard-module-grid">
+  <article class="module-card feature-card">
+    <div class="module-heading">
+      <div>
+        <span class="module-kicker">Trusted contacts</span>
+        <h2>Safety network</h2>
+      </div>
+    </div>
+    <div class="stack-list">
+      {% for contact in dashboard.trusted_contacts %}
+      <div class="stack-row">
+        <div>
+          <strong>{{ contact.name }}</strong>
+          <p>{{ contact.value }}</p>
+        </div>
+        <span>{{ contact.status }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </article>
+
+  <article class="module-card">
+    <div class="module-heading">
+      <div>
+        <span class="module-kicker">SOS readiness</span>
+        <h2>Current safety state</h2>
+      </div>
+    </div>
+    <div class="analytics-grid">
+      <div><strong>{% if dashboard.profile.emergency_contact %}Ready{% else %}Needs setup{% endif %}</strong><span>Emergency contact</span></div>
+      <div><strong>{{ dashboard.support_summary.open }}</strong><span>Open support cases</span></div>
+      <div><strong>{{ dashboard.stats.active }}</strong><span>Trips trackable now</span></div>
+      <div><strong>{{ dashboard.profile_completion.percent }}%</strong><span>Profile completion</span></div>
+    </div>
+  </article>
+
+  <article class="module-card">
+    <div class="module-heading">
+      <div>
+        <span class="module-kicker">Saved drivers</span>
+        <h2>Recent trusted operators</h2>
+      </div>
+    </div>
+    <div class="feed-list">
+      {% for driver in dashboard.saved_drivers %}
+      <div class="feed-item">
+        <span>{{ driver.rating }}</span>
+        <strong>{{ driver.name }}</strong>
+        <p>{{ driver.vehicle }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </article>
+</section>
+{% endblock %}

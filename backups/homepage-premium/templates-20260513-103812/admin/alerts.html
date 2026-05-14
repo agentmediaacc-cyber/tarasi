@@ -1,0 +1,47 @@
+{% extends "admin/base.html" %}
+{% block title %}Operational Alerts | Tarasi Admin{% endblock %}
+{% block admin_page %}
+<section class="admin-subhero">
+  <div>
+    <span class="admin-kicker">Operational alerts</span>
+    <h1>Live platform signals requiring attention</h1>
+  </div>
+</section>
+
+<section class="admin-panel">
+  <div class="admin-table-wrap">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>Type</th>
+          <th>Subject</th>
+          <th>User</th>
+          <th>Reference</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for alert in alerts %}
+        <tr>
+          <td>{{ alert.created_at[11:16] }}</td>
+          <td><span class="status-badge" data-status="{{ alert.type }}">{{ alert.type|replace('_', ' ')|title }}</span></td>
+          <td><strong>{{ alert.title }}</strong><br><small>{{ alert.message[:60] }}...</small></td>
+          <td>{{ alert.user_email or 'System' }}</td>
+          <td>{{ alert.booking_reference or '-' }}</td>
+          <td>
+            {% if alert.action_url %}
+            <a href="{{ alert.action_url }}" class="admin-action-link">Resolve →</a>
+            {% else %}
+            -
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6"><div class="admin-empty">No active operational alerts.</div></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends "admin/base.html" %}
+{% block title %}Drivers | Tarasi{% endblock %}
+{% block admin_page %}
+<section class="admin-subhero">
+  <div>
+    <span class="admin-kicker">Drivers</span>
+    <h1>Driver approvals, availability and assignment view</h1>
+  </div>
+  <div class="admin-stat-pair">
+    <div><strong>{% if available %}{{ driver_metrics.approved or 0 }}{% else %}Unavailable{% endif %}</strong><span>Approved</span></div>
+    <div><strong>{% if available %}{{ driver_metrics.active_trips or 0 }}{% else %}Unavailable{% endif %}</strong><span>Active trips</span></div>
+  </div>
+</section>
+
+<section class="admin-grid-2">
+  <article class="admin-panel">
+    <div class="admin-panel-head"><div><span class="admin-kicker">Driver table</span><h2>Operations roster</h2></div></div>
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead><tr><th>Driver</th><th>Area</th><th>Status</th><th>Vehicle</th><th>Rating</th><th>Controls</th></tr></thead>
+        <tbody>
+          {% for driver in drivers %}
+          <tr>
+            <td>{{ driver.full_name }}</td>
+            <td>{{ driver.based_area or "Unassigned" }}</td>
+            <td><span class="status-badge">{{ driver.verification_status or driver.availability }}</span></td>
+            <td>{{ driver.assigned_vehicle_name or "None" }}</td>
+            <td>{{ driver.rating or "Unavailable" }}</td>
+            <td>
+              <div class="admin-inline-actions">
+                <form method="post" action="{{ url_for('admin.drivers') }}">
+                  <input type="hidden" name="action" value="approve">
+                  <input type="hidden" name="driver_id" value="{{ driver.driver_id }}">
+                  <button class="admin-mini-btn" type="submit">Approve</button>
+                </form>
+                <form method="post" action="{{ url_for('admin.drivers') }}">
+                  <input type="hidden" name="action" value="suspend">
+                  <input type="hidden" name="driver_id" value="{{ driver.driver_id }}">
+                  <button class="admin-mini-btn danger" type="submit">Suspend</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="6"><div class="admin-empty">No driver rows are available from the connected backend.</div></td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </article>
+
+  <article class="admin-panel">
+    <div class="admin-panel-head"><div><span class="admin-kicker">Create driver</span><h2>Admin driver onboarding</h2></div></div>
+    <form method="post" action="{{ url_for('admin.drivers') }}" class="admin-form-grid">
+      <input type="hidden" name="action" value="create">
+      <label>Driver ID<input name="new_driver_id" placeholder="DRV-001"></label>
+      <label>Full name<input name="full_name" placeholder="Driver full name"></label>
+      <label>Email<input name="email" type="email" placeholder="driver@tarasi.com"></label>
+      <label>Phone<input name="phone" placeholder="+264..."></label>
+      <label>Based area<input name="based_area" placeholder="Windhoek"></label>
+      <label>Service type<input name="service_type" placeholder="Airport / VIP / School"></label>
+      <button class="admin-btn gold" type="submit">Create driver</button>
+    </form>
+  </article>
+</section>
+{% endblock %}
